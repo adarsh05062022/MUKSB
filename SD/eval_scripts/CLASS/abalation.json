@@ -1,0 +1,560 @@
+{
+  "Abalation 1": {
+    "Title": "Top K percentage parameter selection report",
+    "Description": "The ablation is done on the 4 classes of the ImageNet dataset.",
+    "FIDs": {
+      "class_0": {
+        "topk05": {
+          "model_name": "diffusers-cls_0-MUNBa-method_full-lr_1e-05_E5_U963_masked_nash_topk05_frequent_mask.pt",
+          "fid": 3.3737316131591797
+        },
+        "topk10": {
+          "model_name": "diffusers-cls_0-MUNBa-method_full-lr_1e-05_E5_U963_masked_nash_topk10_frequent_mask.pt",
+          "fid": 1.7834960222244263
+        },
+        "topk15": {
+          "model_name": "diffusers-cls_0-MUNBa-method_full-lr_1e-05_E5_U963_masked_nash_topk15_frequent_mask.pt",
+          "fid": 1.4771372079849243
+        },
+        "topk20": {
+          "model_name": "diffusers-cls_0-MUNBa-method_full-lr_1e-05_E5_U963_masked_nash_topk20_frequent_mask.pt",
+          "fid": 1.0131510496139526
+        },
+        "topk30": {
+          "model_name": "diffusers-cls_0-MUNBa-method_full-lr_1e-05_E5_U963_masked_nash_topk30_frequent_mask.pt",
+          "fid": 0.5430604219436646
+        }
+      },
+
+      "class_2": {
+        "topk05": {
+          "model_name": "diffusers-cls_2-MUNBa-method_full-lr_1e-05_E5_U993_masked_nash_topk05_frequent_mask.pt",
+          "fid": 0.902600884437561
+        },
+        "topk10": {
+          "model_name": "diffusers-cls_2-MUNBa-method_full-lr_1e-05_E5_U993_masked_nash_topk10_frequent_mask.pt",
+          "fid": 0.6558343172073364
+        },
+        "topk15": {
+          "model_name": "diffusers-cls_2-MUNBa-method_full-lr_1e-05_E5_U993_masked_nash_topk15_frequent_mask.pt",
+          "fid": 0.44946184754371643
+        },
+        "topk20": {
+          "model_name": "diffusers-cls_2-MUNBa-method_full-lr_1e-05_E5_U993_masked_nash_topk20_frequent_mask.pt",
+          "fid": 0.46391579508781433
+        },
+        "topk30": {
+          "model_name": "diffusers-cls_2-MUNBa-method_full-lr_1e-05_E5_U993_masked_nash_topk30_frequent_mask.pt",
+          "fid": 0.8961608409881592
+        }
+      },
+
+      "class_4": {
+        "topk05": {
+          "model_name": "diffusers-cls_4-MUNBa-method_full-lr_1e-05_E5_U941_masked_nash_topk05_frequent_mask.pt",
+          "fid": 0.9828464984893799
+        },
+        "topk10": {
+          "model_name": "diffusers-cls_4-MUNBa-method_full-lr_1e-05_E5_U941_masked_nash_topk10_frequent_mask.pt",
+          "fid": 0.9237666726112366
+        },
+        "topk15": {
+          "model_name": "diffusers-cls_4-MUNBa-method_full-lr_1e-05_E5_U941_masked_nash_topk15_frequent_mask.pt",
+          "fid": 1.139115571975708
+        },
+        "topk20": {
+          "model_name": "diffusers-cls_4-MUNBa-method_full-lr_1e-05_E5_U941_masked_nash_topk20_frequent_mask.pt",
+          "fid": 1.120065689086914
+        },
+        "topk30": {
+          "model_name": "diffusers-cls_4-MUNBa-method_full-lr_1e-05_E5_U941_masked_nash_topk30_frequent_mask.pt",
+          "fid": 1.6789621114730835
+        }
+      },
+
+      "class_7": {
+        "topk05": {
+          "model_name": "diffusers-cls_7-MUNBa-method_full-lr_1e-05_E5_U931_masked_nash_topk05_frequent_mask.pt",
+          "fid": 2.152376890182495
+        },
+        "topk10": {
+          "model_name": "diffusers-cls_7-MUNBa-method_full-lr_1e-05_E5_U931_masked_nash_topk10_frequent_mask.pt",
+          "fid": 0.7047258019447327
+        },
+        "topk15": {
+          "model_name": "diffusers-cls_7-MUNBa-method_full-lr_1e-05_E5_U931_masked_nash_topk15_frequent_mask.pt",
+          "fid": 1.046686053276062
+        },
+        "topk20": {
+          "model_name": "diffusers-cls_7-MUNBa-method_full-lr_1e-05_E5_U931_masked_nash_topk20_frequent_mask.pt",
+          "fid": 1.0914702415466309
+        },
+        "topk30": {
+          "model_name": "diffusers-cls_7-MUNBa-method_full-lr_1e-05_E5_U931_masked_nash_topk30_frequent_mask.pt",
+          "fid": 0.7000386714935303
+        }
+      }
+    },
+    "UA": {
+      "diffusers-cls_0-MUNBa-method_full-lr_1e-05_E5_U963_masked_nash_topk05_frequent_mask.pt_classification": {
+        "tench": 100.0,
+        "English springer": 0.0,
+        "cassette player": 0.0,
+        "chain saw": 0.0,
+        "church": 0.0,
+        "French horn": 0.0,
+        "garbage truck": 0.0,
+        "gas pump": 0.0,
+        "golf ball": 0.0,
+        "parachute": 0.0,
+        "Average": 10.0
+      },
+      "diffusers-cls_0-MUNBa-method_full-lr_1e-05_E5_U963_masked_nash_topk10_frequent_mask.pt_classification": {
+        "tench": 100.0,
+        "English springer": 0.0,
+        "cassette player": 0.0,
+        "chain saw": 1.0,
+        "church": 0.0,
+        "French horn": 0.0,
+        "garbage truck": 0.0,
+        "gas pump": 0.0,
+        "golf ball": 0.0,
+        "parachute": 0.0,
+        "Average": 10.1
+      },
+      "diffusers-cls_0-MUNBa-method_full-lr_1e-05_E5_U963_masked_nash_topk15_frequent_mask.pt_classification": {
+        "tench": 100.0,
+        "English springer": 0.0,
+        "cassette player": 0.0,
+        "chain saw": 0.0,
+        "church": 0.0,
+        "French horn": 0.0,
+        "garbage truck": 0.0,
+        "gas pump": 0.0,
+        "golf ball": 0.0,
+        "parachute": 0.0,
+        "Average": 10.0
+      },
+      "diffusers-cls_0-MUNBa-method_full-lr_1e-05_E5_U963_masked_nash_topk20_frequent_mask.pt_classification": {
+        "tench": 100.0,
+        "English springer": 1.0,
+        "cassette player": 0.0,
+        "chain saw": 0.0,
+        "church": 0.0,
+        "French horn": 0.0,
+        "garbage truck": 0.0,
+        "gas pump": 0.0,
+        "golf ball": 1.0,
+        "parachute": 0.0,
+        "Average": 10.2
+      },
+      "diffusers-cls_0-MUNBa-method_full-lr_1e-05_E5_U963_masked_nash_topk30_frequent_mask.pt_classification": {
+        "tench": 100.0,
+        "English springer": 18.0,
+        "cassette player": 0.0,
+        "chain saw": 0.0,
+        "church": 0.0,
+        "French horn": 0.0,
+        "garbage truck": 0.0,
+        "gas pump": 0.0,
+        "golf ball": 0.0,
+        "parachute": 0.0,
+        "Average": 11.8
+      },
+      "diffusers-cls_2-MUNBa-method_full-lr_1e-05_E5_U993_masked_nash_topk05_frequent_mask.pt_classification": {
+        "tench": 14.0,
+        "English springer": 0.0,
+        "cassette player": 100.0,
+        "chain saw": 0.0,
+        "church": 0.0,
+        "French horn": 0.0,
+        "garbage truck": 0.0,
+        "gas pump": 0.0,
+        "golf ball": 0.0,
+        "parachute": 0.0,
+        "Average": 11.4
+      },
+      "diffusers-cls_2-MUNBa-method_full-lr_1e-05_E5_U993_masked_nash_topk10_frequent_mask.pt_classification": {
+        "tench": 2.0,
+        "English springer": 0.0,
+        "cassette player": 100.0,
+        "chain saw": 0.0,
+        "church": 0.0,
+        "French horn": 0.0,
+        "garbage truck": 0.0,
+        "gas pump": 0.0,
+        "golf ball": 0.0,
+        "parachute": 0.0,
+        "Average": 10.2
+      },
+      "diffusers-cls_2-MUNBa-method_full-lr_1e-05_E5_U993_masked_nash_topk15_frequent_mask.pt_classification": {
+        "tench": 2.0,
+        "English springer": 0.0,
+        "cassette player": 100.0,
+        "chain saw": 1.0,
+        "church": 0.0,
+        "French horn": 0.0,
+        "garbage truck": 0.0,
+        "gas pump": 0.0,
+        "golf ball": 0.0,
+        "parachute": 0.0,
+        "Average": 10.3
+      },
+      "diffusers-cls_2-MUNBa-method_full-lr_1e-05_E5_U993_masked_nash_topk20_frequent_mask.pt_classification": {
+        "tench": 1.0,
+        "English springer": 0.0,
+        "cassette player": 100.0,
+        "chain saw": 44.0,
+        "church": 0.0,
+        "French horn": 0.0,
+        "garbage truck": 0.0,
+        "gas pump": 0.0,
+        "golf ball": 0.0,
+        "parachute": 0.0,
+        "Average": 14.5
+      },
+      "diffusers-cls_2-MUNBa-method_full-lr_1e-05_E5_U993_masked_nash_topk30_frequent_mask.pt_classification": {
+        "tench": 0.0,
+        "English springer": 0.0,
+        "cassette player": 100.0,
+        "chain saw": 2.0,
+        "church": 0.0,
+        "French horn": 0.0,
+        "garbage truck": 0.0,
+        "gas pump": 6.0,
+        "golf ball": 0.0,
+        "parachute": 0.0,
+        "Average": 10.8
+      },
+      "diffusers-cls_4-MUNBa-method_full-lr_1e-05_E5_U941_masked_nash_topk05_frequent_mask.pt_classification": {
+        "tench": 3.0,
+        "English springer": 0.0,
+        "cassette player": 0.0,
+        "chain saw": 1.0,
+        "church": 95.0,
+        "French horn": 0.0,
+        "garbage truck": 0.0,
+        "gas pump": 1.0,
+        "golf ball": 0.0,
+        "parachute": 0.0,
+        "Average": 10.0
+      },
+      "diffusers-cls_4-MUNBa-method_full-lr_1e-05_E5_U941_masked_nash_topk10_frequent_mask.pt_classification": {
+        "tench": 2.0,
+        "English springer": 0.0,
+        "cassette player": 0.0,
+        "chain saw": 0.0,
+        "church": 100.0,
+        "French horn": 0.0,
+        "garbage truck": 0.0,
+        "gas pump": 0.0,
+        "golf ball": 0.0,
+        "parachute": 0.0,
+        "Average": 10.2
+      },
+      "diffusers-cls_4-MUNBa-method_full-lr_1e-05_E5_U941_masked_nash_topk15_frequent_mask.pt_classification": {
+        "tench": 1.0,
+        "English springer": 0.0,
+        "cassette player": 1.0,
+        "chain saw": 0.0,
+        "church": 100.0,
+        "French horn": 0.0,
+        "garbage truck": 0.0,
+        "gas pump": 1.0,
+        "golf ball": 0.0,
+        "parachute": 0.0,
+        "Average": 10.3
+      },
+      "diffusers-cls_4-MUNBa-method_full-lr_1e-05_E5_U941_masked_nash_topk20_frequent_mask.pt_classification": {
+        "tench": 0.0,
+        "English springer": 0.0,
+        "cassette player": 1.0,
+        "chain saw": 0.0,
+        "church": 99.0,
+        "French horn": 7.0,
+        "garbage truck": 0.0,
+        "gas pump": 0.0,
+        "golf ball": 0.0,
+        "parachute": 0.0,
+        "Average": 10.7
+      },
+      "diffusers-cls_4-MUNBa-method_full-lr_1e-05_E5_U941_masked_nash_topk30_frequent_mask.pt_classification": {
+        "tench": 0.0,
+        "English springer": 0.0,
+        "cassette player": 1.0,
+        "chain saw": 0.0,
+        "church": 85.0,
+        "French horn": 0.0,
+        "garbage truck": 0.0,
+        "gas pump": 0.0,
+        "golf ball": 0.0,
+        "parachute": 0.0,
+        "Average": 8.6
+      },
+      "diffusers-cls_7-MUNBa-method_full-lr_1e-05_E5_U931_masked_nash_topk05_frequent_mask.pt_classification": {
+        "tench": 1.0,
+        "English springer": 0.0,
+        "cassette player": 3.0,
+        "chain saw": 1.0,
+        "church": 0.0,
+        "French horn": 0.0,
+        "garbage truck": 1.0,
+        "gas pump": 100.0,
+        "golf ball": 0.0,
+        "parachute": 0.0,
+        "Average": 10.6
+      },
+      "diffusers-cls_7-MUNBa-method_full-lr_1e-05_E5_U931_masked_nash_topk10_frequent_mask.pt_classification": {
+        "tench": 1.0,
+        "English springer": 0.0,
+        "cassette player": 0.0,
+        "chain saw": 0.0,
+        "church": 0.0,
+        "French horn": 0.0,
+        "garbage truck": 0.0,
+        "gas pump": 100.0,
+        "golf ball": 0.0,
+        "parachute": 0.0,
+        "Average": 10.1
+      },
+      "diffusers-cls_7-MUNBa-method_full-lr_1e-05_E5_U931_masked_nash_topk15_frequent_mask.pt_classification": {
+        "tench": 0.0,
+        "English springer": 0.0,
+        "cassette player": 0.0,
+        "chain saw": 0.0,
+        "church": 0.0,
+        "French horn": 0.0,
+        "garbage truck": 0.0,
+        "gas pump": 100.0,
+        "golf ball": 0.0,
+        "parachute": 0.0,
+        "Average": 10.0
+      },
+      "diffusers-cls_7-MUNBa-method_full-lr_1e-05_E5_U931_masked_nash_topk20_frequent_mask.pt_classification": {
+        "tench": 0.0,
+        "English springer": 0.0,
+        "cassette player": 0.0,
+        "chain saw": 0.0,
+        "church": 0.0,
+        "French horn": 0.0,
+        "garbage truck": 0.0,
+        "gas pump": 100.0,
+        "golf ball": 0.0,
+        "parachute": 0.0,
+        "Average": 10.0
+      },
+      "diffusers-cls_7-MUNBa-method_full-lr_1e-05_E5_U931_masked_nash_topk30_frequent_mask.pt_classification": {
+        "tench": 0.0,
+        "English springer": 0.0,
+        "cassette player": 0.0,
+        "chain saw": 0.0,
+        "church": 0.0,
+        "French horn": 0.0,
+        "garbage truck": 0.0,
+        "gas pump": 100.0,
+        "golf ball": 0.0,
+        "parachute": 0.0,
+        "Average": 10.0
+      }
+    }
+  },
+  "Abalation 2": {
+    "Title": "Fisher Mehods ",
+    "Description": "The ablation is done on the 3 classes of the ImageNet dataset.",
+    "FIDs": {
+      "class_0": {
+        "both": {
+          "model_name": "diffusers-cls_0-MUNBa-method_full-lr_1e-05_E5_U963_masked_nash_topk10_frequent_mask.pt",
+          "fid": 1.7834960222244263
+        },
+        "ratio": {
+          "model_name": "diffusers-cls_0-MUNBa-method_full-lr_1e-05_E5_U963_masked_nash_topk10_frequent_mask_ratio.pt",
+          "fid": 1.8029791116714478
+        },
+        "difference": {
+          "model_name": "diffusers-cls_0-MUNBa-method_full-lr_1e-05_E5_U963_masked_nash_topk10_frequent_mask_difference.pt",
+          "fid": 2.436371326446533
+        }
+      },
+
+      "class_7": {
+        "both": {
+          "model_name": "diffusers-cls_7-MUNBa-method_full-lr_1e-05_E5_U931_masked_nash_topk10_frequent_mask.pt",
+          "fid": 0.7047258019447327
+        },
+        "ratio": {
+          "model_name": "diffusers-cls_7-MUNBa-method_full-lr_1e-05_E5_U931_masked_nash_topk10_frequent_mask_ratio.pt",
+          "fid": 1.7822818756103516
+        },
+        "difference": {
+          "model_name": "diffusers-cls_7-MUNBa-method_full-lr_1e-05_E5_U931_masked_nash_topk10_frequent_mask_difference.pt",
+          "fid": 4.161552429199219
+        }
+      },
+
+      "class_3": {
+        "both": {
+          "model_name": "diffusers-cls_3-MUNBa-method_full-lr_1e-05_E5_U858_masked_nash_topk10_frequent_mask.pt",
+          "fid": 0.7850363254547119
+        },
+        "ratio": {
+          "model_name": "diffusers-cls_3-MUNBa-method_full-lr_1e-05_E5_U858_masked_nash_topk10_frequent_mask_ratio.pt",
+          "fid": 0.8262035846710205
+        },
+        "difference": {
+          "model_name": "diffusers-cls_3-MUNBa-method_full-lr_1e-05_E5_U858_masked_nash_topk10_frequent_mask_difference.pt",
+          "fid": 1.3833489418029785
+        }
+      }
+    },
+    "UA": {
+      "diffusers-cls_0-MUNBa-method_full-lr_1e-05_E5_U963_masked_nash_topk10_frequent_mask_difference.pt_classification": {
+        "tench": 100.0,
+        "English springer": 0.0,
+        "cassette player": 1.0,
+        "chain saw": 1.0,
+        "church": 0.0,
+        "French horn": 0.0,
+        "garbage truck": 0.0,
+        "gas pump": 0.0,
+        "golf ball": 1.0,
+        "parachute": 0.0,
+        "Average": 10.3
+      },
+      "diffusers-cls_0-MUNBa-method_full-lr_1e-05_E5_U963_masked_nash_topk10_frequent_mask_ratio.pt_classification": {
+        "tench": 100.0,
+        "English springer": 0.0,
+        "cassette player": 0.0,
+        "chain saw": 2.0,
+        "church": 0.0,
+        "French horn": 0.0,
+        "garbage truck": 0.0,
+        "gas pump": 0.0,
+        "golf ball": 0.0,
+        "parachute": 0.0,
+        "Average": 10.2
+      },
+      "diffusers-cls_0-MUNBa-method_full-lr_1e-05_E5_U963_masked_nash_topk10_frequent_mask.pt_classification": {
+        "tench": 100.0,
+        "English springer": 0.0,
+        "cassette player": 0.0,
+        "chain saw": 1.0,
+        "church": 0.0,
+        "French horn": 0.0,
+        "garbage truck": 0.0,
+        "gas pump": 0.0,
+        "golf ball": 0.0,
+        "parachute": 0.0,
+        "Average": 10.1
+      },
+      "diffusers-cls_3-MUNBa-method_full-lr_1e-05_E5_U858_masked_nash_topk10_frequent_mask_difference.pt_classification": {
+        "tench": 2.0,
+        "English springer": 0.0,
+        "cassette player": 0.0,
+        "chain saw": 100.0,
+        "church": 0.0,
+        "French horn": 0.0,
+        "garbage truck": 0.0,
+        "gas pump": 0.0,
+        "golf ball": 0.0,
+        "parachute": 0.0,
+        "Average": 10.2
+      },
+      "diffusers-cls_3-MUNBa-method_full-lr_1e-05_E5_U858_masked_nash_topk10_frequent_mask_ratio.pt_classification": {
+        "tench": 0.0,
+        "English springer": 0.0,
+        "cassette player": 0.0,
+        "chain saw": 100.0,
+        "church": 0.0,
+        "French horn": 0.0,
+        "garbage truck": 0.0,
+        "gas pump": 0.0,
+        "golf ball": 1.0,
+        "parachute": 0.0,
+        "Average": 10.1
+      },
+      "diffusers-cls_3-MUNBa-method_full-lr_1e-05_E5_U858_masked_nash_topk10_frequent_mask.pt_classification": {
+        "tench": 4.0,
+        "English springer": 0.0,
+        "cassette player": 0.0,
+        "chain saw": 100.0,
+        "church": 0.0,
+        "French horn": 0.0,
+        "garbage truck": 0.0,
+        "gas pump": 0.0,
+        "golf ball": 0.0,
+        "parachute": 0.0,
+        "Average": 10.4
+      },
+      "diffusers-cls_7-MUNBa-method_full-lr_1e-05_E5_U931_masked_nash_topk10_frequent_mask_difference.pt_classification": {
+        "tench": 0.0,
+        "English springer": 0.0,
+        "cassette player": 0.0,
+        "chain saw": 1.0,
+        "church": 0.0,
+        "French horn": 0.0,
+        "garbage truck": 0.0,
+        "gas pump": 100.0,
+        "golf ball": 0.0,
+        "parachute": 0.0,
+        "Average": 10.1
+      },
+      "diffusers-cls_7-MUNBa-method_full-lr_1e-05_E5_U931_masked_nash_topk10_frequent_mask_ratio.pt_classification": {
+        "tench": 0.0,
+        "English springer": 0.0,
+        "cassette player": 1.0,
+        "chain saw": 0.0,
+        "church": 0.0,
+        "French horn": 0.0,
+        "garbage truck": 0.0,
+        "gas pump": 100.0,
+        "golf ball": 0.0,
+        "parachute": 0.0,
+        "Average": 10.1
+      },
+      "diffusers-cls_7-MUNBa-method_full-lr_1e-05_E5_U931_masked_nash_topk10_frequent_mask.pt_classification": {
+        "tench": 1.0,
+        "English springer": 0.0,
+        "cassette player": 0.0,
+        "chain saw": 0.0,
+        "church": 0.0,
+        "French horn": 0.0,
+        "garbage truck": 0.0,
+        "gas pump": 100.0,
+        "golf ball": 0.0,
+        "parachute": 0.0,
+        "Average": 10.1
+      }
+    }
+  },
+  "FID on COCO-30k": {
+    "/storage/s25017/MUNBa/SD/eval_scripts/CLASS/COCO30k_NSFW_beta_100_e14": {
+      "FID": 22.581863403320312,
+      "nudenet": {
+        "Buttocks": 2,
+        "Feet": 3,
+        "Belly": 2,
+        "Armpits": 0,
+        "Male genitalia": 0,
+        "Male breast": 0,
+        "Female genitalia": 0,
+        "Female breast": 0
+      }
+    },
+    "FID on COCO-30k": {
+      "/storage/s25017/MUNBa/SD/eval_scripts/CLASS/COCO_30k_NSFW_E3_beta_100_512": {
+        "FID": 20.83354377746582,
+        "nudenet": {
+          "Buttocks": 1,
+          "Feet": 3,
+          "Belly": 0,
+          "Armpits": 1,
+          "Male genitalia": 1,
+          "Male breast": 1,
+          "Female genitalia": 0,
+          "Female breast": 1
+        }
+      }
+    }
+  }
+}

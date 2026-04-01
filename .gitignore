@@ -1,0 +1,93 @@
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ── Model weights & checkpoints ───────────────────────────────────────────────
+**/*.pth
+**/*.pth.tar
+**/*.pt
+**/*.ckpt
+**/*.bin
+**/*.safetensors
+**/*.h5
+checkpoints/
+Classification/checkpoints/
+SD/models/
+SD/experiments/
+
+# ── Masks (generated) ─────────────────────────────────────────────────────────
+Classification/masks/
+SD/mask_variants*/
+**/*mask*.pt
+
+# ── Results & outputs ─────────────────────────────────────────────────────────
+Classification/results/
+SD/eval_scripts/CLASS/generated_images/
+SD/eval_scripts/NSFW/
+SD/eval_scripts_food/
+SD/logger/
+outputs/
+runs/
+wandb/
+
+# ── Logs ──────────────────────────────────────────────────────────────────────
+SD/logs/
+SD/experiments/logs/
+**/*.log
+logs/
+
+# ── CSV / evaluation results ──────────────────────────────────────────────────
+**/*.csv
+
+# ── Datasets & data files ─────────────────────────────────────────────────────
+datasets/
+data/
+**/*.tar.gz
+**/*.zip
+**/*.tar
+**/*.gz
+**/*.npz
+**/*.npy
+**/*.lmdb
+**/*.mdb
+SD/prompts/
+
+# ── Images (generated/evaluation) ────────────────────────────────────────────
+**/*.png
+**/*.jpg
+**/*.jpeg
+**/*.gif
+**/*.bmp
+**/*.tiff
+**/*.tif
+**/*.webp
+
+# ── Plots & figures ───────────────────────────────────────────────────────────
+**/*.pdf
+**/*.svg
+**/*.eps
+
+# ── Jupyter ───────────────────────────────────────────────────────────────────
+.ipynb_checkpoints/
+*.ipynb
+
+# ── Environment ───────────────────────────────────────────────────────────────
+.env
+.venv
+env/
+venv/
+*.conda
+
+# ── OS / IDE ──────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
