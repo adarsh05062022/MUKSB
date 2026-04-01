@@ -85,8 +85,9 @@ def ks_step(gr_flat: torch.Tensor, gf_flat: torch.Tensor, eps: float = 1e-8):
     g_hat_r = gr_flat / norm_gr
     g_hat_f = gf_flat / norm_gf
 
-    g_sum    = g_hat_r + g_hat_f
-    norm_sum = torch.norm(g_sum)
+    forget_weight = 0.1
+    g_sum    = g_hat_r + g_hat_f * forget_weight 
+    norm_sum = torch.norm(g_sum).clamp(min=1e-6)
 
     if norm_sum < 1e-6:
         # Anti-parallel: no Pareto-improving update exists.
