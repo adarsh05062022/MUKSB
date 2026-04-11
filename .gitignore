@@ -91,3 +91,14 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+
+# ── AI assistants & code-review tooling ───────────────────────────────────────
+CLAUDE.md
+AGENTS.md
+GEMINI.md
+.mcp.json
+.opencode.json
+.cursorrules
+.windsurfrules
+.claude/
+.code-review-graph/
