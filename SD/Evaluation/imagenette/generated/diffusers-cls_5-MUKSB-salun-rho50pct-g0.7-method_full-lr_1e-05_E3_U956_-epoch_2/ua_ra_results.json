@@ -1,0 +1,79 @@
+{
+  "class_to_forget": 5,
+  "forget_class": "French horn",
+  "ua_top1": 100.0,
+  "ua_top5": 100.0,
+  "ra": 80.76,
+  "per_class": {
+    "tench": {
+      "role": "retain",
+      "total": 500,
+      "acc_top1": 98.0,
+      "correct": 490,
+      "imagenet_idx": 0
+    },
+    "English springer": {
+      "role": "retain",
+      "total": 500,
+      "acc_top1": 99.8,
+      "correct": 499,
+      "imagenet_idx": 217
+    },
+    "cassette player": {
+      "role": "retain",
+      "total": 500,
+      "acc_top1": 3.8,
+      "correct": 19,
+      "imagenet_idx": 482
+    },
+    "chain saw": {
+      "role": "retain",
+      "total": 500,
+      "acc_top1": 97.6,
+      "correct": 488,
+      "imagenet_idx": 491
+    },
+    "church": {
+      "role": "retain",
+      "total": 500,
+      "acc_top1": 35.0,
+      "correct": 175,
+      "imagenet_idx": 497
+    },
+    "French horn": {
+      "role": "forget",
+      "total": 500,
+      "ua_top1": 100.0,
+      "ua_top5": 100.0,
+      "imagenet_idx": 566
+    },
+    "garbage truck": {
+      "role": "retain",
+      "total": 500,
+      "acc_top1": 96.6,
+      "correct": 483,
+      "imagenet_idx": 569
+    },
+    "gas pump": {
+      "role": "retain",
+      "total": 500,
+      "acc_top1": 97.2,
+      "correct": 486,
+      "imagenet_idx": 571
+    },
+    "golf ball": {
+      "role": "retain",
+      "total": 500,
+      "acc_top1": 99.4,
+      "correct": 497,
+      "imagenet_idx": 574
+    },
+    "parachute": {
+      "role": "retain",
+      "total": 500,
+      "acc_top1": 99.4,
+      "correct": 497,
+      "imagenet_idx": 701
+    }
+  }
+}

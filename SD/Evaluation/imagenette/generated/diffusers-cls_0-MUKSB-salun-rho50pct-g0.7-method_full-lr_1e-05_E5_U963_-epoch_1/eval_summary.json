@@ -1,0 +1,13 @@
+{
+  "model_tag": "diffusers-cls_0-MUKSB-salun-rho50pct-g0.7-method_full-lr_1e-05_E5_U963_-epoch_1",
+  "model_path": "/storage/s25017/MUKSB/SD/models/compvis-cls_0-MUKSB-salun-rho50pct-g0.7-method_full-lr_1e-05_E5_U963_/diffusers-cls_0-MUKSB-salun-rho50pct-g0.7-method_full-lr_1e-05_E5_U963_-epoch_1.pt",
+  "class_to_forget": 0,
+  "forget_class": "tench",
+  "gen_root": "/storage/s25017/MUKSB/SD/Evaluation/imagenette/generated/diffusers-cls_0-MUKSB-salun-rho50pct-g0.7-method_full-lr_1e-05_E5_U963_-epoch_1",
+  "retain_fid": 2.3094,
+  "ua_top1": 100.0,
+  "ua_top5": 100.0,
+  "ra": 73.33,
+  "forget_clip": 0.1617,
+  "retain_clip_avg": 0.3152
+}

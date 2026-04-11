@@ -151,12 +151,12 @@ def main():
         model, evaluation_result = checkpoint
     else:
 
-        checkpoint = torch.load(args.mask, map_location=device)
+        checkpoint = torch.load(args.mask, map_location=device, weights_only=False)
         if "state_dict" in checkpoint.keys():
             checkpoint = checkpoint["state_dict"]
         mask = None
         if args.path:
-            mask = torch.load(args.path)
+            mask = torch.load(args.path, weights_only=False)
 
         if args.unlearn != "retrain":
             model.load_state_dict(checkpoint, strict=False)
@@ -189,6 +189,7 @@ def main():
         utils.dataset_convert_to_test(test_loader.dataset, args)
 
         mia = mia_.get_mia(model, forget_loader, test_loader, device)
+        print(f"Paper MIA:{(mia - 0.5) * 100}%")
         print(f"The MIA has an accuracy of {mia:.3f} on forgotten vs unseen images")
         evaluation_result["MIA"] = mia
 

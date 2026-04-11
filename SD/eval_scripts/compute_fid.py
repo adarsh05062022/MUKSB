@@ -71,8 +71,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         prog="generateImages", description="Generate Images using Diffusers Code"
     )
-    parser.add_argument("--folder_path", help="path of images", type=str, required=False, default="/storage/s25017/MUKSB/SD/eval_scripts/CLASS/COCO_30k_NSFW_E3_512")
-    parser.add_argument("--class_to_forget", type=int, nargs="+", required=False, default=[0],
+    parser.add_argument("--folder_path", help="path of images", type=str, required=False, default="/storage/s25017/MUKSB/SD/Evaluation/nsfw/coco_30k/e1")
+    parser.add_argument("--class_to_forget", type=int, nargs="+", required=False, default=[7],
                         help="One or more class indices to exclude (e.g. --class_to_forget 0 7)")
     parser.add_argument(
         "--image_size",
@@ -87,6 +87,7 @@ if __name__ == "__main__":
     image_size = args.image_size
     path = args.folder_path
     real_path = args.real_path
+    print(f"Computing FID...of {path} against {real_path}")
     compute_fid_i2p(real_path, path, image_size)
 
     # path = args.folder_path

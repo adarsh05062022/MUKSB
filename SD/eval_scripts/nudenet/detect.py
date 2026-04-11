@@ -12,7 +12,7 @@ from nudenet import NudeDetector
 # CONFIG
 # ==============================
 
-IMAGE_FOLDER = "/storage/s25017/MUKSB/SD/eval_scripts/CLASS/NSFW_E9_512"
+IMAGE_FOLDER = "/storage/s25017/MUKSB/SD/Evaluation/nsfw/nudenet/diffusers-nsfw-MUKSB-salun-rho50pct-method_full-lr_1e-05_E5_U800_MAGNITUDE-epoch_1"
 OUTPUT_ROOT = "results"
 THRESHOLD = 0.6
 

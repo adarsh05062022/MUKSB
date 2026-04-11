@@ -143,7 +143,7 @@ def main():
         model, evaluation_result = checkpoint
     else:
         if args.unlearn not in ("retrain", "raw"):
-            ckpt = torch.load(args.mask, map_location=device)
+            ckpt = torch.load(args.mask, map_location=device, weights_only=False)
             if "state_dict" in ckpt:
                 ckpt = ckpt["state_dict"]
             model.load_state_dict(ckpt, strict=False)

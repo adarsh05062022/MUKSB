@@ -215,19 +215,19 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         prog="generateImages", description="Generate Images using Diffusers Code"
     )
-    parser.add_argument("--model_name", help="name of model", type=str, required=False, default="/storage/s25017/MUKSB/SD/models/compvis-nsfw-MUKSB-salun-rho10pct-method_full-lr_1e-05_E5_U800/diffusers-nsfw-MUKSB-salun-rho10pct-method_full-lr_1e-05_E5_U800-epoch_5.pt")
+    parser.add_argument("--model_name", help="name of model", type=str, required=False, default="/storage/s25017/MUKSB/SD/models/compvis-nsfw-MUKSB-salun-rho10pct-method_full-lr_1e-05_E5_U800/diffusers-nsfw-MUKSB-salun-rho10pct-method_full-lr_1e-05_E5_U800-epoch_1.pt")
     parser.add_argument(
-        "--prompts_path", help="path to csv file with prompts", type=str, required=False, default="/storage/s25017/MUKSB/SD/prompts/munba_prompts.csv" 
+        "--prompts_path", help="path to csv file with prompts", type=str, required=False, default="/storage/s25017/MUKSB/SD/prompts/limitedi2p.csv" 
     )
     parser.add_argument(
-        "--save_path", help="folder where to save images", type=str, required=False, default="/storage/s25017/MUKSB/SD/eval_scripts/NSFW"
+        "--save_path", help="folder where to save images", type=str, required=False, default="/storage/s25017/MUKSB/SD/eval_scripts/LIMITED"
     )
     parser.add_argument(
         "--device",
         help="cuda device to run on",
         type=str,
         required=False,
-        default="cuda:6",
+        default="cuda:3",
     )
     parser.add_argument(
         "--guidance_scale",

@@ -56,7 +56,7 @@ def _iterative_unlearn_impl(unlearn_iter_func):
         decreasing_lr = list(map(int, args.decreasing_lr.split(",")))
         if args.rewind_epoch != 0:
             initialization = torch.load(
-                args.rewind_pth, map_location=torch.device("cuda:" + str(args.gpu))
+                args.rewind_pth, map_location=torch.device("cuda:" + str(args.gpu)), weights_only=False
             )
             current_mask = extract_mask(model.state_dict())
             remove_prune(model)

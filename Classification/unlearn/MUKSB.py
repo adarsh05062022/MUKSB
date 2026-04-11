@@ -85,17 +85,20 @@ def ks_step(gr_flat: torch.Tensor, gf_flat: torch.Tensor, eps: float = 1e-8):
     g_hat_r = gr_flat / norm_gr
     g_hat_f = gf_flat / norm_gf
 
-    forget_weight = 0.1
-    g_sum    = g_hat_r + g_hat_f * forget_weight 
-    norm_sum = torch.norm(g_sum).clamp(min=1e-6)
+    # KS equi-proportional-gain condition: bisect in normalised space.
+    g_sum    = g_hat_r + g_hat_f
+    norm_sum = torch.norm(g_sum)
 
     if norm_sum < 1e-6:
-        # Anti-parallel: no Pareto-improving update exists.
-        g_star    = torch.zeros_like(gr_flat)
-        lambda_ks = torch.tensor(0.0, device=gr_flat.device)
+        # Gradients are anti-parallel — retain and forget are in direct conflict.
+        # In this case the forget gradient alone is the KS-optimal update:
+        # any step along g_r hurts forgetting, so we follow g_f exclusively.
+        g_star    = g_hat_f          # unit vector in forget direction
+        lambda_ks = torch.tensor(1.0, device=gr_flat.device)
     else:
-        g_star    = g_sum / norm_sum
-        lambda_ks = torch.dot(g_hat_r, g_star)  # == torch.dot(g_hat_f, g_star)
+        g_star_unit = g_sum / norm_sum
+        lambda_ks   = torch.dot(g_hat_r, g_star_unit)
+        g_star      = g_star_unit
 
     return lambda_ks, cos_phi, g_star
 
@@ -178,17 +181,16 @@ def muksb(data_loaders, model, criterion, args, mask=None):
     for epoch in range(args.unlearn_epochs):
         start_time = time.time()
         model.train()
-        print(f"Epoch #{epoch}, LR: {optimizer.state_dict()['param_groups'][0]['lr']:.6f}")
+        print("Epoch #{}, Learning rate: {}".format(epoch, optimizer.state_dict()["param_groups"][0]["lr"]))
 
         i = 0
         start = time.time()
         for data_r, data_u in zip_longest(retain_loader, forget_loader, fillvalue=None):
             i += 1
-            if data_r is None and data_u is None:
+            if (data_r is None) and (data_u is None):
                 break
-
-            elif data_u is None:
-                # Only retain samples remain — plain retain step.
+            elif (data_u is None) and (data_r is not None):
+                # Only retain samples remain — plain retain step (same as MUNBa).
                 image_r, target_r = data_r
                 image_r, target_r = image_r.to(device), target_r.to(device)
 
@@ -207,74 +209,60 @@ def muksb(data_loaders, model, criterion, args, mask=None):
                 optimizer.step()
 
                 with torch.no_grad():
-                    prec_r = utils.accuracy(output_r.float().data, target_r)[0]
+                    output_r = output_r.float()
+                    loss = loss.float()
+                    prec_r = utils.accuracy(output_r.data, target_r)[0]
                     losses.update(loss.item(), image_r.size(0))
                     top1.update(prec_r.item(), image_r.size(0))
-                    torch.cuda.empty_cache(); gc.collect()
+                    torch.cuda.empty_cache()
+                    gc.collect()
 
                 if (i + 1) % 10 == 0:
-                    print(f"Batch: {i+1:4d}, prec_r: {top1.val:.3f} ({top1.avg:.3f}), loss: {loss:.4f}")
+                    print(f'Batch: {i+1:4d}, prec_r: {top1.val:.3f} ({top1.avg:.3f}), loss: {loss:.4f}')
 
             else:
-                # Both retain and forget batches available — KS update.
+                # Both retain and forget batches — KS bargaining update.
                 image_r, target_r = data_r
                 image_u, target_u = data_u
                 image_r, target_r = image_r.to(device), target_r.to(device)
                 image_u, target_u = image_u.to(device), target_u.to(device)
 
-                # Forget label: assign a random label (misclassification objective)
-                target_u_rl = torch.randint(
-                    0, args.num_classes, target_u.shape, device=device
-                )
+                # Random label (same forget objective as MUNBa)
+                target_u_rl = torch.randint(0, args.num_classes, target_u.shape, device=device)
 
+                optimizer.zero_grad()
                 output_r = model(image_r)
                 output_u = model(image_u)
                 loss_r = criterion(output_r, target_r)
                 loss_u = criterion(output_u, target_u_rl)
 
-                # ── Compute per-task gradients ───────────────────────────────
-                optimizer.zero_grad()
+                # ── Compute per-task gradients ────────────────────────────────
                 grads_r = torch.autograd.grad(loss_r, params, retain_graph=True)
                 grads_f = torch.autograd.grad(loss_u, params, retain_graph=True)
 
                 gr_flat = _flatten_grads(params, grads_r)
                 gf_flat = _flatten_grads(params, grads_f)
 
-                # ── KS bargaining: unit-vector sum ───────────────────────────
-                # g̃* ∝ ĝ_r + ĝ_f   (eq. KS)
+                # ── KS bargaining: replace Nash weights with KS direction ─────
                 lambda_ks, cos_phi, g_star = ks_step(gr_flat, gf_flat)
-                norm_gr = torch.norm(gr_flat).clamp(min=1e-8)
-                norm_gf = torch.norm(gf_flat).clamp(min=1e-8)
-                # Use retain norm only — forget player cannot dominate step size
-                scale = norm_gr
-                g_star = g_star * scale
-                print(f"  ||gr||={norm_gr.item():.4f}  ||gf||={norm_gf.item():.4f}  scale={scale.item():.4f}")
-
-                if (i + 1) % 10 == 0:
-                    print(
-                        f"Batch: {i+1:4d} | λ_KS={lambda_ks.item():.4f}"
-                        f"  cos_φ={cos_phi.item():.4f}"
-                        f"  loss_r={loss_r.item():.4f}  loss_u={loss_u.item():.4f}"
-                    )
+                print(f'lambda_ks: [{lambda_ks.item():.4f}]  cos_phi: {cos_phi.item():.4f}')
 
                 del gr_flat, gf_flat, grads_r, grads_f
 
-                # ── Apply KS gradient to model ───────────────────────────────
+                # ── Apply merged gradient ─────────────────────────────────────
                 optimizer.zero_grad()
                 _unpack_to_grads(params, g_star)
                 del g_star
 
                 if args.with_l1:
                     current_alpha = args.alpha * (1 - epoch / args.unlearn_epochs)
-                    # L1 regularisation added on top of KS direction
                     l1_loss = current_alpha * l1_regularization(model)
                     l1_grads = torch.autograd.grad(l1_loss, params)
                     for p, lg in zip(params, l1_grads):
                         if p.grad is not None and lg is not None:
                             p.grad += lg.detach()
 
-                # nn.utils.clip_grad_norm_(params, 1.0)
-                nn.utils.clip_grad_norm_(params, scale.item())
+                nn.utils.clip_grad_norm_(model.parameters(), 1.0)
                 if mask:
                     for name, param in model.named_parameters():
                         if param.grad is not None:
@@ -282,28 +270,30 @@ def muksb(data_loaders, model, criterion, args, mask=None):
                 optimizer.step()
 
                 with torch.no_grad():
-                    prec_r = utils.accuracy(output_r.float().data, target_r)[0]
-                    prec_u = utils.accuracy(output_u.float().data, target_u)[0]
-                    combined_loss = loss_r + loss_u
-                    losses.update(combined_loss.item(), image_r.size(0) + image_u.size(0))
+                    output_r = output_r.float()
+                    output_u = output_u.float()
+                    loss = (loss_r + loss_u).float()
+                    prec_r = utils.accuracy(output_r.data, target_r)[0]
+                    prec_u = utils.accuracy(output_u.data, target_u)[0]
+                    losses.update(loss.item(), image_r.size(0) + image_u.size(0))
                     top1.update(prec_r.item(), image_r.size(0))
                     top1_u.update(prec_u.item(), image_u.size(0))
-                    torch.cuda.empty_cache(); gc.collect()
+                    torch.cuda.empty_cache()
+                    gc.collect()
+
+                if (i + 1) % 10 == 0:
+                    print(f'Batch: {i+1:4d}, prec_u: {top1_u.val:.3f} ({top1_u.avg:.3f}), loss_u: {loss_u:.4f}, loss_r: {loss_r:.4f}')
 
             if (i + 1) % args.print_freq == 0:
                 end = time.time()
-                print(
-                    "Epoch: [{0}][{1}/{2}]\t"
-                    "Loss {loss.val:.4f} ({loss.avg:.4f})\t"
-                    "Accuracy {top1.val:.3f} ({top1.avg:.3f})\t"
-                    "Time {3:.2f}".format(
-                        epoch, i, loader_len, end - start,
-                        loss=losses, top1=top1,
-                    )
-                )
+                print('Epoch: [{0}][{1}/{2}]\t'
+                      'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
+                      'Accuracy {top1.val:.3f} ({top1.avg:.3f})\t'
+                      'Time {3:.2f}'.format(
+                          epoch, i, loader_len, end - start, loss=losses, top1=top1))
                 start = time.time()
 
         scheduler.step()
-        print(f"Epoch {epoch} duration: {time.time() - start_time:.1f}s")
+        print("one epoch duration:{}".format(time.time() - start_time))
 
     return top1.avg

@@ -1,7 +1,5 @@
 import argparse
 import os
-from time import sleep
-
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
@@ -57,8 +55,8 @@ def nsfw_removal(
     )
     criteria = torch.nn.MSELoss()
     forget_dl, remain_dl = setup_nsfw_data(
-        batch_size, forget_path='./dataFolder/NSFW',
-        remain_path='./dataFolder/NotNSFW', image_size=image_size)
+        batch_size, forget_path='/storage/s25017/Datasets/NSFW_removal/nude',
+        remain_path='/storage/s25017/Datasets/NSFW_removal/with_dress', image_size=image_size)
 
     # choose parameters to train based on train_method
     parameters = []
@@ -100,15 +98,16 @@ def nsfw_removal(
     step = 0
     start_time = time.time()
     for epoch in range(epochs):
+        remain_iter = iter(remain_dl)
         with tqdm(total=len(forget_dl)) as time_1:
-            # with tqdm(total=10) as time:
-
-            for i, iages in enumerate(forget_dl):
-                # for i in range(1):
+            for i, forget_batch in enumerate(forget_dl):
                 optimizer.zero_grad()
 
-                forget_batch = next(iter(forget_dl))
-                remain_batch = next(iter(remain_dl))
+                try:
+                    remain_batch = next(remain_iter)
+                except StopIteration:
+                    remain_iter = iter(remain_dl)
+                    remain_batch = next(remain_iter)
 
                 remain_loss = model.shared_step(remain_batch)[0]
 
@@ -163,7 +162,6 @@ def nsfw_removal(
 
                 time_1.set_description("Epoch %i" % epoch)
                 time_1.set_postfix(loss=loss.item() / batch_size)
-                sleep(0.1)
                 time_1.update(1)
 
     print("Time:", time.time() - start_time)
@@ -228,7 +226,7 @@ if __name__ == "__main__":
         help="guidance of start image used to train",
         type=float,
         required=False,
-        default=0.1,
+        default=0.5,
     )
     parser.add_argument(
         "--batch_size",
@@ -266,7 +264,7 @@ if __name__ == "__main__":
         help="mask path for stable diffusion v1-4",
         type=str,
         required=False,
-        default=None,
+        default="/storage/s25017/MUKSB/SD/mask/nsfw/with_0.5.pt",
     )
     parser.add_argument(
         "--diffusers_config_path",
@@ -280,7 +278,7 @@ if __name__ == "__main__":
         help="cuda devices to train on",
         type=str,
         required=False,
-        default="0,0",
+        default="6",
     )
     parser.add_argument(
         "--image_size",

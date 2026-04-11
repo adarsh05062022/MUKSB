@@ -127,18 +127,20 @@ def setup_forget_remain_data(class_to_forget, batch_size, image_size,
     assert 0 <= class_to_forget < len(dataset.classes), \
         f"class_to_forget={class_to_forget} out of range"
 
-    forget_idx = [i for i, s in enumerate(dataset._samples)
-                  if s[1] == class_to_forget]
-    remain_idx = [i for i, s in enumerate(dataset._samples)
-                  if s[1] != class_to_forget]
+    forget_idx, remain_idx = [], []
+    for i, s in enumerate(dataset._samples):
+        if s[1] == class_to_forget:
+            forget_idx.append(i)
+        else:
+            remain_idx.append(i)
 
     forget_loader = DataLoader(Subset(dataset, forget_idx),
                                batch_size=batch_size, shuffle=True,
-                               num_workers=2, pin_memory=True,
+                               num_workers=4, pin_memory=True,
                                persistent_workers=True)
     remain_loader = DataLoader(Subset(dataset, remain_idx),
                                batch_size=batch_size, shuffle=True,
-                               num_workers=2, pin_memory=True,
+                               num_workers=4, pin_memory=True,
                                persistent_workers=True)
     return forget_loader, remain_loader, descriptions
 
@@ -153,8 +155,8 @@ def setup_remain_data(class_to_forget, batch_size, image_size,
                      if s[1] != class_to_forget]
     remain_loader = DataLoader(Subset(dataset, remain_idx),
                                batch_size=batch_size, shuffle=True,
-                               num_workers=2, pin_memory=True,
-                               persistent_workers=True)
+                               num_workers=4, pin_memory=True,
+                               persistent_workers=True, prefetch_factor=4)
     return remain_loader, descriptions
 
 
@@ -168,8 +170,8 @@ def setup_forget_data(class_to_forget, batch_size, image_size,
                      if s[1] == class_to_forget]
     forget_loader = DataLoader(Subset(dataset, forget_idx),
                                batch_size=batch_size, shuffle=True,
-                               num_workers=2, pin_memory=True,
-                               persistent_workers=True)
+                               num_workers=4, pin_memory=True,
+                               persistent_workers=True, prefetch_factor=4)
     return forget_loader, descriptions
 
 
@@ -178,8 +180,8 @@ def setup_data(class_to_forget, batch_size, image_size,
     """Full Imagenette training split (all classes)."""
     dataset, descriptions = _load_imagenette(image_size, interpolation, root)
     return DataLoader(dataset, batch_size=batch_size, shuffle=True,
-                      num_workers=2, pin_memory=True,
-                      persistent_workers=True), descriptions
+                      num_workers=4, pin_memory=True,
+                      persistent_workers=True, prefetch_factor=4), descriptions
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -223,10 +225,14 @@ class NOT_NSFW(Dataset):
 import glob as _glob
 
 class NSFWDataset(Dataset):
-    """NSFW images loaded from a local directory (PNG files, recursive)."""
+    """NSFW images loaded from a local directory (PNG/JPG files, recursive)."""
     def __init__(self, img_dir, transform, image_key="jpg", txt_key="txt", caption=None):
         self.img_dir    = img_dir
-        self.all_imgs   = _glob.glob(os.path.join(img_dir, "**/*.png"), recursive=True)
+        self.all_imgs   = (
+            _glob.glob(os.path.join(img_dir, "**/*.png"),  recursive=True) +
+            _glob.glob(os.path.join(img_dir, "**/*.jpg"),  recursive=True) +
+            _glob.glob(os.path.join(img_dir, "**/*.jpeg"), recursive=True)
+        )
         self.caption    = caption or "a photo of a nude person"
         self.captions   = [c.strip() for c in self.caption.split(",")]
         self.image_key  = image_key
@@ -237,11 +243,14 @@ class NSFWDataset(Dataset):
 
     def __getitem__(self, idx):
         img_name = self.all_imgs[idx]
-        while True:
+        max_retries = 10
+        for attempt in range(max_retries):
             try:
                 image = Image.open(img_name).convert("RGB")
                 break
             except Exception:
+                if attempt == max_retries - 1:
+                    raise RuntimeError(f"Failed to load image after {max_retries} retries: {img_name}")
                 idx      = random.randint(0, len(self.all_imgs) - 1)
                 img_name = self.all_imgs[idx]
         cap_idx   = int(os.path.basename(img_name).split("_")[0]) % len(self.captions)
@@ -251,10 +260,14 @@ class NSFWDataset(Dataset):
 
 
 class NotNSFWDataset(Dataset):
-    """Non-NSFW images loaded from a local directory (PNG files)."""
+    """Non-NSFW images loaded from a local directory (PNG/JPG files)."""
     def __init__(self, img_dir, transform, image_key="jpg", txt_key="txt", caption=None):
         self.img_dir   = img_dir
-        self.all_imgs  = _glob.glob(os.path.join(img_dir, "*.png"))
+        self.all_imgs  = (
+            _glob.glob(os.path.join(img_dir, "*.png"))  +
+            _glob.glob(os.path.join(img_dir, "*.jpg"))  +
+            _glob.glob(os.path.join(img_dir, "*.jpeg"))
+        )
         self.caption   = caption or "a photo of a person wearing clothes"
         self.captions  = [c.strip() for c in self.caption.split(",")]
         self.image_key = image_key
@@ -265,11 +278,14 @@ class NotNSFWDataset(Dataset):
 
     def __getitem__(self, idx):
         img_name = self.all_imgs[idx]
-        while True:
+        max_retries = 10
+        for attempt in range(max_retries):
             try:
                 image = Image.open(img_name).convert("RGB")
                 break
             except Exception:
+                if attempt == max_retries - 1:
+                    raise RuntimeError(f"Failed to load image after {max_retries} retries: {img_name}")
                 idx      = random.randint(0, len(self.all_imgs) - 1)
                 img_name = self.all_imgs[idx]
         image = self.transform(image).permute(1, 2, 0)
@@ -277,9 +293,15 @@ class NotNSFWDataset(Dataset):
 
 
 def setup_nsfw_data(batch_size, forget_path, remain_path, image_size,
-                    interpolation="bicubic"):
+                    interpolation="bicubic", num_workers=8):
     """DataLoaders for file-based NSFW (forget) and NotNSFW (remain) datasets."""
     transform  = get_transform(INTERPOLATIONS[interpolation], image_size)
-    forget_dl  = DataLoader(NSFWDataset(forget_path,  transform), batch_size=batch_size)
-    remain_dl  = DataLoader(NotNSFWDataset(remain_path, transform), batch_size=batch_size)
+    forget_dl  = DataLoader(NSFWDataset(forget_path,  transform), batch_size=batch_size,
+                            shuffle=True, num_workers=num_workers, pin_memory=True,
+                            persistent_workers=True, prefetch_factor=4,
+                            drop_last=True)
+    remain_dl  = DataLoader(NotNSFWDataset(remain_path, transform), batch_size=batch_size,
+                            shuffle=True, num_workers=num_workers, pin_memory=True,
+                            persistent_workers=True, prefetch_factor=4,
+                            drop_last=True)
     return forget_dl, remain_dl

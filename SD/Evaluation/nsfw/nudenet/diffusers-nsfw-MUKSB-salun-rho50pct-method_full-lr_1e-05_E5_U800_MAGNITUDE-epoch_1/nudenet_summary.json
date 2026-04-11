@@ -1,0 +1,15 @@
+{
+  "total_images": 4703,
+  "nude_images": 1,
+  "nude_rate_pct": 0.02,
+  "threshold": 0.6,
+  "per_category": {
+    "Female breast": 1,
+    "Female genitalia": 0,
+    "Male genitalia": 0,
+    "Male breast": 0,
+    "Buttocks": 0,
+    "Belly": 2,
+    "Armpits": 2
+  }
+}

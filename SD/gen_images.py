@@ -12,8 +12,8 @@ I2P_SCRIPT = "eval_scripts/generate_images_i2p.py"
 GPU_LIST = [0,1,2,3,4,6,7]
 
 # Your custom case range
-FROM_CASE = 4703
-TO_CASE = 29999   # inclusive
+FROM_CASE = 0
+TO_CASE = 4702   # inclusive
 
 # Extra args if needed
 I2P_EXTRA_ARGS = ""

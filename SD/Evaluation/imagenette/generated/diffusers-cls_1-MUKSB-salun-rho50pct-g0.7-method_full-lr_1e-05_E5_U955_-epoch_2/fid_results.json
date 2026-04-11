@@ -1,0 +1,6 @@
+{
+  "class_to_forget": 1,
+  "forget_class_name": "English springer",
+  "gen_root": "/storage/s25017/MUKSB/SD/Evaluation/imagenette/generated/diffusers-cls_1-MUKSB-salun-rho50pct-g0.7-method_full-lr_1e-05_E5_U955_-epoch_2",
+  "retain_fid": 1.5895
+}

@@ -1,0 +1,58 @@
+{
+  "class_to_forget": 1,
+  "forget_class": "English springer",
+  "forget_clip": 0.1631,
+  "retain_clip_avg": 0.3141,
+  "per_class": {
+    "tench": {
+      "clip_score": 0.3232,
+      "n_images": 500,
+      "is_forget": false
+    },
+    "English springer": {
+      "clip_score": 0.1631,
+      "n_images": 500,
+      "is_forget": true
+    },
+    "cassette player": {
+      "clip_score": 0.3148,
+      "n_images": 500,
+      "is_forget": false
+    },
+    "chain saw": {
+      "clip_score": 0.2986,
+      "n_images": 500,
+      "is_forget": false
+    },
+    "church": {
+      "clip_score": 0.2954,
+      "n_images": 500,
+      "is_forget": false
+    },
+    "French horn": {
+      "clip_score": 0.3393,
+      "n_images": 500,
+      "is_forget": false
+    },
+    "garbage truck": {
+      "clip_score": 0.3007,
+      "n_images": 500,
+      "is_forget": false
+    },
+    "gas pump": {
+      "clip_score": 0.3016,
+      "n_images": 500,
+      "is_forget": false
+    },
+    "golf ball": {
+      "clip_score": 0.3302,
+      "n_images": 500,
+      "is_forget": false
+    },
+    "parachute": {
+      "clip_score": 0.3227,
+      "n_images": 500,
+      "is_forget": false
+    }
+  }
+}

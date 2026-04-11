@@ -178,6 +178,7 @@ def GA_prune(data_loaders, model, criterion, args):
             initalization = torch.load(
                 os.path.join(args.save_dir, "0model_SA_best.pth.tar"),
                 map_location=torch.device("cuda:" + str(args.gpu)),
+                weights_only=False,
             )["state_dict"]
 
         # pruning and rewind

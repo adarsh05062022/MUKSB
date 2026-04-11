@@ -1,0 +1,13 @@
+{
+  "model_tag": "diffusers-cls_4-MUKSB-salun-rho50pct-g0.7-method_full-lr_1e-05_E3_U941_-epoch_2",
+  "model_path": "/storage/s25017/MUKSB/SD/models/compvis-cls_4-MUKSB-salun-rho50pct-g0.7-method_full-lr_1e-05_E3_U941_/diffusers-cls_4-MUKSB-salun-rho50pct-g0.7-method_full-lr_1e-05_E3_U941_-epoch_2.pt",
+  "class_to_forget": 4,
+  "forget_class": "church",
+  "gen_root": "/storage/s25017/MUKSB/SD/Evaluation/imagenette/generated/diffusers-cls_4-MUKSB-salun-rho50pct-g0.7-method_full-lr_1e-05_E3_U941_-epoch_2",
+  "retain_fid": 1.7535,
+  "ua_top1": 100.0,
+  "ua_top5": 97.0,
+  "ra": 87.11,
+  "forget_clip": 0.1957,
+  "retain_clip_avg": 0.3167
+}

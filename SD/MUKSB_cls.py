@@ -43,7 +43,6 @@ import os
 import random
 import sys
 import time
-from time import sleep
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -62,6 +61,9 @@ from train_scripts.dataset import (
     setup_model,
 )
 from mask_variants import build_mask, MASK_VARIANT_CHOICES
+
+
+EXTRA = ""
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -310,13 +312,13 @@ def MUKSB(
         name = (
             f"compvis-cls_{class_to_forget}-MUKSB-{mask_variant}"
             f"-rho{int(mask_density*100)}pct"
-            f"-method_{train_method}-lr_{lr}_E{epochs}_U{num_forget}"
+            f"-method_{train_method}-lr_{lr}_E{epochs}_U{num_forget}_{EXTRA}"
         )
     else:
         mask = None
         name = (
             f"compvis-cls_{class_to_forget}-MUKSB"
-            f"-method_{train_method}-lr_{lr}_E{epochs}_U{num_forget}"
+            f"-method_{train_method}-lr_{lr}_E{epochs}_U{num_forget}_{EXTRA}"
         )
 
     # ── training loop ─────────────────────────────────────────────────────────
@@ -332,7 +334,6 @@ def MUKSB(
         with tqdm(total=len(forget_dl)) as pbar:
             for forget_images, forget_labels in forget_dl:
                 model.train()
-                optimizer.zero_grad()
 
                 try:
                     remain_images, remain_labels = next(remain_iter)
@@ -374,9 +375,8 @@ def MUKSB(
 
                 # ── KS gradient merge ─────────────────────────────────────────
                 # Compute gradients for each task separately
-                optimizer.zero_grad()
                 grads_r = torch.autograd.grad(loss_r, parameters, retain_graph=True)
-                grads_f = torch.autograd.grad(loss_u, parameters, retain_graph=True)
+                grads_f = torch.autograd.grad(loss_u, parameters)
 
                 gr_flat = _flatten_grads(parameters, grads_r)
                 gf_flat = _flatten_grads(parameters, grads_f)
@@ -395,18 +395,19 @@ def MUKSB(
                     # Anti-parallel gradients — no Pareto-improving update, skip step
                     logger.info(f"step={step}: anti-parallel gradients, skipping update")
                     del gr_flat, gf_flat, gr_masked, gf_masked, grads_r, grads_f, g_star
-                    torch.cuda.empty_cache(); gc.collect()
                     pbar.update(1)
                     continue
+                
+                g_star_scaled = lambda_ks * g_star
 
                 del gr_masked, gf_masked, grads_r, grads_f
 
                 # Expand g_star back to the full parameter space (zeros outside mask)
                 if mask is not None:
                     update_full = torch.zeros_like(gr_flat)
-                    update_full[mask] = g_star
+                    update_full[mask] = g_star_scaled
                 else:
-                    update_full = g_star
+                    update_full = g_star_scaled
 
                 del gr_flat, gf_flat, g_star
 
@@ -430,7 +431,6 @@ def MUKSB(
                 combined_loss = loss_r + loss_u
                 losses.append(combined_loss.item() / batch_size)
                 step += 1
-                torch.cuda.empty_cache(); gc.collect()
 
                 if (step + 1) % 10 == 0:
                     logger.info(
@@ -445,7 +445,7 @@ def MUKSB(
                 pbar.set_description(f"Epoch {epoch+1}")
                 pbar.set_postfix(loss=combined_loss.item() / batch_size,
                                  lam=f"{lambda_ks.item():.3f}")
-                sleep(0.05); pbar.update(1)
+                pbar.update(1)
 
         epoch_time = time.time() - epoch_start
         epoch_times.append(epoch_time)
@@ -486,6 +486,12 @@ def MUKSB(
 # ─────────────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
+    def _mask_variant_type(value):
+        """Convert mask_variant string to None or valid variant name."""
+        if value is None or value == "None":
+            return None
+        return str(value)
+
     parser = argparse.ArgumentParser(
         description="MUKSB: Machine Unlearning via Kalai-Smorodinsky Bargaining (Stable Diffusion)"
     )
@@ -495,11 +501,11 @@ if __name__ == "__main__":
                         choices=["full", "noxattn", "xattn", "selfattn",
                                  "notime", "xlayer", "selflayer"])
     parser.add_argument("--batch_size",  type=int,   default=4)
-    parser.add_argument("--epochs",      type=int,   default=3)
+    parser.add_argument("--epochs",      type=int,   default=5)
     parser.add_argument("--lr",          type=float, default=1e-5)
     parser.add_argument("--ckpt_path",   type=str,
                         default="models/ldm/sd-v1-4-full-ema.ckpt")
-    parser.add_argument("--mask_variant", type=str, default="salun",
+    parser.add_argument("--mask_variant", type=_mask_variant_type, default=None,
                         choices=list(MASK_VARIANT_CHOICES) + [None],
                         help=(
                             "Parameter selection strategy for sparse update. "
@@ -509,7 +515,7 @@ if __name__ == "__main__":
                             "  salun         — gradient magnitude |∇L_f| (SalUn-style)\n"
                             "  dual_fisher   — dual Fisher score (proposed)"
                         ))
-    parser.add_argument("--mask_density",    type=float, default=0.05,
+    parser.add_argument("--mask_density",    type=float, default=0.1,
                         help="Fraction ρ of parameters to update when using a mask (default: 0.05)")
     parser.add_argument("--lambda_tradeoff", type=float, default=1.0,
                         help="λ in S_diff = F̂_f − λ·F̂_r  (dual_fisher only)")
@@ -517,7 +523,7 @@ if __name__ == "__main__":
                         default="configs/stable-diffusion/v1-inference_nash.yaml")
     parser.add_argument("--diffusers_config_path", type=str,
                         default="diffusers_unet_config.json")
-    parser.add_argument("--device",      type=str,   default="1",
+    parser.add_argument("--device",      type=str,   default="2",
                         help="CUDA device index (e.g. '0', '1', '2', '3')")
     parser.add_argument("--image_size",  type=int,   default=256)
     parser.add_argument("--ddim_steps",  type=int,   default=50)

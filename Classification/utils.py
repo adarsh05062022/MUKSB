@@ -145,7 +145,7 @@ def load_checkpoint(device, save_path, pruning, filename="checkpoint.pth.tar"):
     filepath = os.path.join(save_path, str(pruning) + filename)
     if os.path.exists(filepath):
         print(f"Load checkpoint from: {filepath}")
-        return torch.load(filepath, map_location=device)
+        return torch.load(filepath, map_location=device, weights_only=False)
     print(f"Checkpoint not found: {filepath}")
     return None
 

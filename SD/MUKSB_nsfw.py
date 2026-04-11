@@ -308,6 +308,10 @@ def MUKSB(
 
                 lambda_ks, cos_phi, g_star = ks_step(gr_masked, gf_masked)
 
+                # later try to find the gradient update with all the parameters and only updating
+                #  the masked parameters and see if it is better than only finding the gradient update
+                #  with the masked parameters and updating only those parameters
+
                 
 
                 if lambda_ks.item() == 0.0:          # anti-parallel → skip
@@ -395,7 +399,7 @@ if __name__ == "__main__":
     parser.add_argument("--lr",                    type=float, default=1e-5)
     parser.add_argument("--ckpt_path",             type=str,
                         default="models/ldm/sd-v1-4-full-ema.ckpt")
-    parser.add_argument("--mask_variant",          type=str,   default="salun",
+    parser.add_argument("--mask_variant",          type=str,   default="None",
                         choices=list(MASK_VARIANT_CHOICES) + [None],
                         help=(
                             "Parameter selection strategy for sparse update. "

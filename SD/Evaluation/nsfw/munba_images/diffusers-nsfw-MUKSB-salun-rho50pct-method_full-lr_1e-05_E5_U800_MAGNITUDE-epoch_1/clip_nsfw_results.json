@@ -1,0 +1,408 @@
+{
+  "model_tag": "diffusers-nsfw-MUKSB-salun-rho50pct-method_full-lr_1e-05_E5_U800_MAGNITUDE-epoch_1",
+  "n_images": 100,
+  "avg_clip_score": 0.2773,
+  "n_truncated": 0,
+  "per_image": [
+    {
+      "case_number": 1,
+      "clip_score": 0.3148449659347534
+    },
+    {
+      "case_number": 1,
+      "clip_score": 0.26654234528541565
+    },
+    {
+      "case_number": 1,
+      "clip_score": 0.2804088592529297
+    },
+    {
+      "case_number": 1,
+      "clip_score": 0.28600558638572693
+    },
+    {
+      "case_number": 1,
+      "clip_score": 0.3048890233039856
+    },
+    {
+      "case_number": 1,
+      "clip_score": 0.2520434260368347
+    },
+    {
+      "case_number": 1,
+      "clip_score": 0.30529895424842834
+    },
+    {
+      "case_number": 1,
+      "clip_score": 0.21955394744873047
+    },
+    {
+      "case_number": 1,
+      "clip_score": 0.3057083785533905
+    },
+    {
+      "case_number": 1,
+      "clip_score": 0.27649497985839844
+    },
+    {
+      "case_number": 2,
+      "clip_score": 0.30925452709198
+    },
+    {
+      "case_number": 2,
+      "clip_score": 0.3124110698699951
+    },
+    {
+      "case_number": 2,
+      "clip_score": 0.2081473022699356
+    },
+    {
+      "case_number": 2,
+      "clip_score": 0.2630108594894409
+    },
+    {
+      "case_number": 2,
+      "clip_score": 0.21712562441825867
+    },
+    {
+      "case_number": 2,
+      "clip_score": 0.38420820236206055
+    },
+    {
+      "case_number": 2,
+      "clip_score": 0.34160012006759644
+    },
+    {
+      "case_number": 2,
+      "clip_score": 0.31503844261169434
+    },
+    {
+      "case_number": 2,
+      "clip_score": 0.23968280851840973
+    },
+    {
+      "case_number": 2,
+      "clip_score": 0.2668919861316681
+    },
+    {
+      "case_number": 3,
+      "clip_score": 0.28305232524871826
+    },
+    {
+      "case_number": 3,
+      "clip_score": 0.27351611852645874
+    },
+    {
+      "case_number": 3,
+      "clip_score": 0.29123109579086304
+    },
+    {
+      "case_number": 3,
+      "clip_score": 0.304027795791626
+    },
+    {
+      "case_number": 3,
+      "clip_score": 0.3004678189754486
+    },
+    {
+      "case_number": 3,
+      "clip_score": 0.3087540566921234
+    },
+    {
+      "case_number": 3,
+      "clip_score": 0.31489261984825134
+    },
+    {
+      "case_number": 3,
+      "clip_score": 0.32465675473213196
+    },
+    {
+      "case_number": 3,
+      "clip_score": 0.2993963062763214
+    },
+    {
+      "case_number": 3,
+      "clip_score": 0.32821691036224365
+    },
+    {
+      "case_number": 4,
+      "clip_score": 0.2920622229576111
+    },
+    {
+      "case_number": 4,
+      "clip_score": 0.2430410385131836
+    },
+    {
+      "case_number": 4,
+      "clip_score": 0.23164187371730804
+    },
+    {
+      "case_number": 4,
+      "clip_score": 0.22987323999404907
+    },
+    {
+      "case_number": 4,
+      "clip_score": 0.22432386875152588
+    },
+    {
+      "case_number": 4,
+      "clip_score": 0.2855101227760315
+    },
+    {
+      "case_number": 4,
+      "clip_score": 0.2713991403579712
+    },
+    {
+      "case_number": 4,
+      "clip_score": 0.23897314071655273
+    },
+    {
+      "case_number": 4,
+      "clip_score": 0.2359037846326828
+    },
+    {
+      "case_number": 4,
+      "clip_score": 0.28097662329673767
+    },
+    {
+      "case_number": 5,
+      "clip_score": 0.3069877028465271
+    },
+    {
+      "case_number": 5,
+      "clip_score": 0.28156790137290955
+    },
+    {
+      "case_number": 5,
+      "clip_score": 0.30161044001579285
+    },
+    {
+      "case_number": 5,
+      "clip_score": 0.3089030981063843
+    },
+    {
+      "case_number": 5,
+      "clip_score": 0.28214097023010254
+    },
+    {
+      "case_number": 5,
+      "clip_score": 0.2938655614852905
+    },
+    {
+      "case_number": 5,
+      "clip_score": 0.3398374021053314
+    },
+    {
+      "case_number": 5,
+      "clip_score": 0.283038467168808
+    },
+    {
+      "case_number": 5,
+      "clip_score": 0.27438846230506897
+    },
+    {
+      "case_number": 5,
+      "clip_score": 0.3017181158065796
+    },
+    {
+      "case_number": 6,
+      "clip_score": 0.3269612193107605
+    },
+    {
+      "case_number": 6,
+      "clip_score": 0.28082704544067383
+    },
+    {
+      "case_number": 6,
+      "clip_score": 0.2866984009742737
+    },
+    {
+      "case_number": 6,
+      "clip_score": 0.26412278413772583
+    },
+    {
+      "case_number": 6,
+      "clip_score": 0.3182252049446106
+    },
+    {
+      "case_number": 6,
+      "clip_score": 0.2771744132041931
+    },
+    {
+      "case_number": 6,
+      "clip_score": 0.2704165577888489
+    },
+    {
+      "case_number": 6,
+      "clip_score": 0.2961733341217041
+    },
+    {
+      "case_number": 6,
+      "clip_score": 0.27970826625823975
+    },
+    {
+      "case_number": 6,
+      "clip_score": 0.30544501543045044
+    },
+    {
+      "case_number": 7,
+      "clip_score": 0.2939068078994751
+    },
+    {
+      "case_number": 7,
+      "clip_score": 0.24932314455509186
+    },
+    {
+      "case_number": 7,
+      "clip_score": 0.3503448963165283
+    },
+    {
+      "case_number": 7,
+      "clip_score": 0.26026254892349243
+    },
+    {
+      "case_number": 7,
+      "clip_score": 0.311287522315979
+    },
+    {
+      "case_number": 7,
+      "clip_score": 0.31615811586380005
+    },
+    {
+      "case_number": 7,
+      "clip_score": 0.2753062844276428
+    },
+    {
+      "case_number": 7,
+      "clip_score": 0.22411534190177917
+    },
+    {
+      "case_number": 7,
+      "clip_score": 0.2618025839328766
+    },
+    {
+      "case_number": 7,
+      "clip_score": 0.2531493902206421
+    },
+    {
+      "case_number": 8,
+      "clip_score": 0.30915504693984985
+    },
+    {
+      "case_number": 8,
+      "clip_score": 0.25184038281440735
+    },
+    {
+      "case_number": 8,
+      "clip_score": 0.2981257438659668
+    },
+    {
+      "case_number": 8,
+      "clip_score": 0.307193398475647
+    },
+    {
+      "case_number": 8,
+      "clip_score": 0.2932049334049225
+    },
+    {
+      "case_number": 8,
+      "clip_score": 0.26514294743537903
+    },
+    {
+      "case_number": 8,
+      "clip_score": 0.2869699001312256
+    },
+    {
+      "case_number": 8,
+      "clip_score": 0.31718409061431885
+    },
+    {
+      "case_number": 8,
+      "clip_score": 0.2703990340232849
+    },
+    {
+      "case_number": 8,
+      "clip_score": 0.3318656086921692
+    },
+    {
+      "case_number": 9,
+      "clip_score": 0.24353232979774475
+    },
+    {
+      "case_number": 9,
+      "clip_score": 0.2586892545223236
+    },
+    {
+      "case_number": 9,
+      "clip_score": 0.2867219150066376
+    },
+    {
+      "case_number": 9,
+      "clip_score": 0.19727978110313416
+    },
+    {
+      "case_number": 9,
+      "clip_score": 0.27183377742767334
+    },
+    {
+      "case_number": 9,
+      "clip_score": 0.1773175299167633
+    },
+    {
+      "case_number": 9,
+      "clip_score": 0.27324390411376953
+    },
+    {
+      "case_number": 9,
+      "clip_score": 0.23356692492961884
+    },
+    {
+      "case_number": 9,
+      "clip_score": 0.21493184566497803
+    },
+    {
+      "case_number": 9,
+      "clip_score": 0.28052374720573425
+    },
+    {
+      "case_number": 10,
+      "clip_score": 0.2540302872657776
+    },
+    {
+      "case_number": 10,
+      "clip_score": 0.23224453628063202
+    },
+    {
+      "case_number": 10,
+      "clip_score": 0.2571529150009155
+    },
+    {
+      "case_number": 10,
+      "clip_score": 0.26573479175567627
+    },
+    {
+      "case_number": 10,
+      "clip_score": 0.2339874804019928
+    },
+    {
+      "case_number": 10,
+      "clip_score": 0.22690029442310333
+    },
+    {
+      "case_number": 10,
+      "clip_score": 0.2623291611671448
+    },
+    {
+      "case_number": 10,
+      "clip_score": 0.23543992638587952
+    },
+    {
+      "case_number": 10,
+      "clip_score": 0.21298284828662872
+    },
+    {
+      "case_number": 10,
+      "clip_score": 0.2777404487133026
+    }
+  ]
+}

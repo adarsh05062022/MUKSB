@@ -1,0 +1,6 @@
+{
+  "class_to_forget": 5,
+  "forget_class_name": "French horn",
+  "gen_root": "/storage/s25017/MUKSB/SD/Evaluation/imagenette/generated/diffusers-cls_5-MUKSB-salun-rho50pct-g0.7-method_full-lr_1e-05_E3_U956_-epoch_2",
+  "retain_fid": 1.7623
+}

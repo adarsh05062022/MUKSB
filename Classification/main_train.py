@@ -40,6 +40,8 @@ def main():
     if args.dataset == "imagenet":
         args.class_to_replace = None
         model, train_loader, val_loader = setup_model_dataset(args)
+    elif args.dataset == "celeba":
+        model, train_loader, val_loader, test_loader, forget_loader, retain_loader = setup_model_dataset(args)
     else:
         (
             model,

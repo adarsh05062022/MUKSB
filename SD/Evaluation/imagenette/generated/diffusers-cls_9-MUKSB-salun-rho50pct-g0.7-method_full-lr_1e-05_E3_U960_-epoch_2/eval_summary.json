@@ -1,0 +1,13 @@
+{
+  "model_tag": "diffusers-cls_9-MUKSB-salun-rho50pct-g0.7-method_full-lr_1e-05_E3_U960_-epoch_2",
+  "model_path": "/storage/s25017/MUKSB/SD/models/compvis-cls_9-MUKSB-salun-rho50pct-g0.7-method_full-lr_1e-05_E3_U960_/diffusers-cls_9-MUKSB-salun-rho50pct-g0.7-method_full-lr_1e-05_E3_U960_-epoch_2.pt",
+  "class_to_forget": 9,
+  "forget_class": "parachute",
+  "gen_root": "/storage/s25017/MUKSB/SD/Evaluation/imagenette/generated/diffusers-cls_9-MUKSB-salun-rho50pct-g0.7-method_full-lr_1e-05_E3_U960_-epoch_2",
+  "retain_fid": 1.9716,
+  "ua_top1": 100.0,
+  "ua_top5": 100.0,
+  "ra": 87.51,
+  "forget_clip": 0.1908,
+  "retain_clip_avg": 0.3156
+}

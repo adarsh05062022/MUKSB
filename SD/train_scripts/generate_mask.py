@@ -100,8 +100,8 @@ def generate_nsfw_mask(
     config_path,
     ckpt_path,
     device,
-    forget_path="./dataFolder/NSFW",
-    remain_path="./dataFolder/NotNSFW",
+    forget_path="/storage/s25017/Datasets/NSFW_removal/nude",
+    remain_path="/storage/s25017/Datasets/NSFW_removal/with_dress",
     image_size=512,
 ):
     """Compute gradient-magnitude mask for NSFW removal."""
@@ -131,7 +131,7 @@ def generate_nsfw_mask(
 
     os.makedirs("mask", exist_ok=True)
     _save_mask(gradients, "mask/nsfw",
-               threshold_list=[0.2, 0.3, 0.7, 0.8],
+               threshold_list=[0.2, 0.3,0.5, 0.7, 0.8],
                filename_prefix="with_")
 
 
@@ -180,15 +180,15 @@ if __name__ == "__main__":
     parser.add_argument("--batch_size", type=int,   default=8)
     parser.add_argument("--lr",         type=float, default=1e-5)
     parser.add_argument("--ckpt_path",  type=str,
-                        default="models/ldm/stable-diffusion-v1/sd-v1-4-full-ema.ckpt")
+                        default="/storage/s25017/MUKSB/SD/models/ldm/sd-v1-4-full-ema.ckpt")
     parser.add_argument("--config_path", type=str,
                         default="configs/stable-diffusion/v1-inference.yaml")
-    parser.add_argument("--device",     type=str,   default="0")
-    parser.add_argument("--image_size", type=int,   default=512)
-    parser.add_argument("--nsfw",       action="store_true", default=False,
+    parser.add_argument("--device",     type=str,   default="2")
+    parser.add_argument("--image_size", type=int,   default=256)
+    parser.add_argument("--nsfw",       action="store_true", default=True,
                         help="Generate mask for NSFW removal instead of class removal")
-    parser.add_argument("--forget_path", type=str,  default="./dataFolder/NSFW")
-    parser.add_argument("--remain_path", type=str,  default="./dataFolder/NotNSFW")
+    parser.add_argument("--forget_path", type=str,  default="/storage/s25017/Datasets/NSFW_removal/nude")
+    parser.add_argument("--remain_path", type=str,  default="/storage/s25017/Datasets/NSFW_removal/with_dress")
     args = parser.parse_args()
 
     device = f"cuda:{int(args.device)}"
