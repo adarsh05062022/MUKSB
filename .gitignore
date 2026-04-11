@@ -43,7 +43,7 @@ SD/experiments/logs/
 logs/
 
 # ── CSV / evaluation results ──────────────────────────────────────────────────
-**/*.csv
+
 
 # ── Datasets & data files ─────────────────────────────────────────────────────
 datasets/
