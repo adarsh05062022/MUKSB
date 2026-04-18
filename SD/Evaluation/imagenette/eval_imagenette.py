@@ -41,10 +41,11 @@ if _SD_DIR not in sys.path:
 if _THIS_DIR not in sys.path:
     sys.path.insert(0, _THIS_DIR)
 
-from generate_imagenette    import generate_all_classes
-from compute_fid_imagenette import compute_fid
-from compute_ua_imagenette  import compute_ua_ra
-from compute_clip_imagenette import compute_clip_scores
+from generate_imagenette         import generate_all_classes
+from generate_imagenette_multigpu import launch_multigpu as generate_all_classes_multigpu
+from compute_fid_imagenette      import compute_fid
+from compute_ua_imagenette       import compute_ua_ra
+from compute_clip_imagenette     import compute_clip_scores
 
 
 IMAGENETTE_CLASSES = [
@@ -55,12 +56,13 @@ IMAGENETTE_CLASSES = [
 
 
 def run_eval(
-    model_path, output_dir, class_to_forget, device,
+    model_path, output_dir, class_to_forget, devices,
     n_per_class, guidance_scale, image_size, ddim_steps,
     skip_generate, skip_fid, skip_ua, skip_clip,
     topk=5, batch_size=250,
 ):
-    device_str = f"cuda:{device}"
+    # Primary device for FID / UA / CLIP (always single GPU)
+    device_str = f"cuda:{devices[0]}"
 
     # ── derive model tag and gen_root ─────────────────────────────────────────
     model_tag = (os.path.basename(model_path).replace(".pt", "")
@@ -77,17 +79,31 @@ def run_eval(
     # ── Step 1: Generate ─────────────────────────────────────────────────────
     if not skip_generate:
         print(f"\n{'#'*60}")
-        print(f"# Step 1/4 — Generate images ({n_per_class} per class)")
+        if len(devices) > 1:
+            print(f"# Step 1/4 — Generate images ({n_per_class}/class) on {len(devices)} GPUs: {devices}")
+        else:
+            print(f"# Step 1/4 — Generate images ({n_per_class} per class) on GPU {devices[0]}")
         print(f"{'#'*60}")
-        generate_all_classes(
-            model_path     = model_path,
-            output_dir     = output_dir,
-            device         = device_str,
-            n_per_class    = n_per_class,
-            guidance_scale = guidance_scale,
-            image_size     = image_size,
-            ddim_steps     = ddim_steps,
-        )
+        if len(devices) > 1:
+            generate_all_classes_multigpu(
+                model_path     = model_path,
+                output_dir     = output_dir,
+                n_per_class    = n_per_class,
+                gpu_ids        = devices,
+                guidance_scale = guidance_scale,
+                image_size     = image_size,
+                ddim_steps     = ddim_steps,
+            )
+        else:
+            generate_all_classes(
+                model_path     = model_path,
+                output_dir     = output_dir,
+                device         = device_str,
+                n_per_class    = n_per_class,
+                guidance_scale = guidance_scale,
+                image_size     = image_size,
+                ddim_steps     = ddim_steps,
+            )
     else:
         print(f"\n[SKIP] Image generation (--skip_generate). Using: {gen_root}")
 
@@ -164,14 +180,16 @@ if __name__ == "__main__":
         description="Full Imagenette-10 evaluation pipeline (generate → FID → UA → CLIP)"
     )
     # required-ish
-    parser.add_argument("--model_path",      type=str, default="/storage/s25017/MUKSB/SD/models/compvis-cls_7-MUKSB-salun-rho50pct-g0.7-method_full-lr_1e-05_E3_U931_/diffusers-cls_7-MUKSB-salun-rho50pct-g0.7-method_full-lr_1e-05_E3_U931_-epoch_2.pt")
-    parser.add_argument("--class_to_forget", type=int, default=9)
+    parser.add_argument("--model_path",      type=str, default="/storage/s25017/MUKSB/SD/models/compvis-cls_0-MUKSB--gated-method_full-lr_1e-05_E15_U963_/diffusers-cls_0-MUKSB--gated-method_full-lr_1e-05_E15_U963_-epoch_10.pt")
+    parser.add_argument("--class_to_forget", type=int, default=0)
     # output
     parser.add_argument("--output_dir",      type=str,
                         default="/storage/s25017/MUKSB/SD/Evaluation/imagenette/generated")
-    parser.add_argument("--device",          type=str, default="5")
+    parser.add_argument("--device",          type=int, nargs="+", default=[1],
+                        help="GPU id(s) to use. Single value → one GPU. "
+                             "Multiple values → multi-GPU generation, e.g. --device 0 1 2 3")
     # generation
-    parser.add_argument("--n_per_class",     type=int, default=500)
+    parser.add_argument("--n_per_class",     type=int, default=5)
     parser.add_argument("--guidance_scale",  type=float, default=7.5)
     parser.add_argument("--image_size",      type=int, default=512)
     parser.add_argument("--ddim_steps",      type=int, default=50)
@@ -183,7 +201,7 @@ if __name__ == "__main__":
     parser.add_argument("--skip_generate",   action="store_true", default=False)
     parser.add_argument("--skip_fid",        action="store_true", default=False)
     parser.add_argument("--skip_ua",         action="store_true", default=False)
-    parser.add_argument("--skip_clip",       action="store_true", default=False)
+    parser.add_argument("--skip_clip",       action="store_true", default=True)
 
     args = parser.parse_args()
 
@@ -191,7 +209,7 @@ if __name__ == "__main__":
         model_path      = args.model_path,
         output_dir      = args.output_dir,
         class_to_forget = args.class_to_forget,
-        device          = args.device,
+        devices         = args.device,
         n_per_class     = args.n_per_class,
         guidance_scale  = args.guidance_scale,
         image_size      = args.image_size,

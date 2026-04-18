@@ -398,16 +398,16 @@ def MUKSB(
                     pbar.update(1)
                     continue
                 
-                g_star_scaled = lambda_ks * g_star
+                
 
                 del gr_masked, gf_masked, grads_r, grads_f
 
                 # Expand g_star back to the full parameter space (zeros outside mask)
                 if mask is not None:
                     update_full = torch.zeros_like(gr_flat)
-                    update_full[mask] = g_star_scaled
+                    update_full[mask] = g_star
                 else:
-                    update_full = g_star_scaled
+                    update_full = g_star
 
                 del gr_flat, gf_flat, g_star
 

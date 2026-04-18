@@ -1,0 +1,6 @@
+case_number,category_top1,index_top1,scores_top1,category_top2,index_top2,scores_top2,category_top3,index_top3,scores_top3,category_top4,index_top4,scores_top4,category_top5,index_top5,scores_top5
+0,English springer,217,0.41302287578582764,cocker spaniel,219,0.024125564843416214,clumber,216,0.02090352587401867,Welsh springer spaniel,218,0.01118556596338749,Brittany spaniel,215,0.010827157646417618
+1,English springer,217,0.3685831129550934,cocker spaniel,219,0.0692247673869133,Welsh springer spaniel,218,0.02343631535768509,standard poodle,267,0.013241826556622982,clumber,216,0.011898702010512352
+2,English springer,217,0.17617100477218628,Welsh springer spaniel,218,0.030631424859166145,cocker spaniel,219,0.029182501137256622,standard poodle,267,0.029137268662452698,clumber,216,0.023003797978162766
+3,Brittany spaniel,215,0.24872799217700958,Welsh springer spaniel,218,0.06706659495830536,English springer,217,0.0314643420279026,clumber,216,0.02762613818049431,Sussex spaniel,220,0.013088368810713291
+4,English springer,217,0.17984656989574432,standard poodle,267,0.05618099495768547,cocker spaniel,219,0.0440744124352932,Irish water spaniel,221,0.028881095349788666,Sussex spaniel,220,0.015238293446600437

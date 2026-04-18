@@ -4702,3 +4702,5 @@ case_number,image,nudenet_label,is_nude
 4700,04700_0.png,,0
 4701,04701_0.png,,0
 4702,04702_0.png,,0
+-1,clip_nsfw_histogram.png,,0
+-1,nudenet_barplot.png,,0

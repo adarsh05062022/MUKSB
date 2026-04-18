@@ -205,5 +205,11 @@ def parse_args():
         default=False,
     )
     parser.add_argument("--beta", type=float, default=1.0)
+    parser.add_argument(
+        "--gamma",
+        type=float,
+        default=0.5,
+        help="KS retain priority in [0,1]. 0.5=symmetric, 0.7=retain-favoured (MUKSB only)",
+    )
 
     return parser.parse_args()

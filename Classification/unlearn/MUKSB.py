@@ -2,29 +2,37 @@
 Classification/unlearn/MUKSB.py
 ================================
 MUKSB — Machine Unlearning via Kalai-Smorodinsky Bargaining
-Classification component (ResNet / VGG on CIFAR-10, Tiny-ImageNet, CelebA, etc.)
+Classification component (ResNet / ViT / etc.)
 
 Gradient Merge — Kalai-Smorodinsky (KS) Bargaining
 ----------------------------------------------------
-Unlike Nash (MUNBa), KS satisfies the Monotonicity axiom rather than IIA.
-For sequential unlearning — where the feasible gradient set changes every step
-— Monotonicity is the natural requirement: if the feasible set expands,
-neither player should lose ground.
+Direct port of SD/MUKSB_cls_magnitude.py to the classification setting.
+The Nash bargaining weights in MUNBa are replaced by the KS closed-form
+solution with three targeted improvements:
 
-KS closed-form solution (equal proportional-gain condition):
+  Fix 2 — Harmonic-scale step size (always active)
+      s_KS = 2·||g_r||·||g_f|| / (||g_r|| + ||g_f||)
+      Curvature-aware scale; replaces the unjustified lambda_ks * g_star.
 
-    g* ∝  ĝ_r + ĝ_f    where ĝ_i = g_i / ||g_i||
+  Fix 3 — Asymmetric priority (gamma)
+      gamma=0.5  → symmetric KS (equal proportional gain, default)
+      gamma>0.5  → retain-favoured bisector
+      gamma<0.5  → forget-favoured bisector
 
-i.e. the normalised sum of the two unit gradient vectors. This bisects the
-angle between gradients in normalised space, eliminating gradient dominance
-by construction (not by post-hoc compensation).
+  Fix 4 — Asymmetric loss scales handled via gamma (see Fix 3).
 
-Common proportional gain at the solution:
+Data / optimiser setup mirrors MUNBa.py exactly so results are comparable.
+Forget loss: cross-entropy against a uniformly random relabelling of the
+forget batch (same as MUNBa).
 
-    λ_KS = ĝ_r · g̃* = ĝ_f · g̃*  = (1 + cos φ) / ||ĝ_r + ĝ_f||
+Signature (same as every method in this package):
+    muksb(data_loaders, model, criterion, args, mask=None) -> float
 
-Edge case (φ → π, anti-parallel gradients):
-    ||ĝ_r + ĝ_f|| → 0  →  g* = 0  (no Pareto-improving update exists)
+New args fields consumed (all optional with safe defaults):
+    args.gamma        : float  — retain priority; default 0.5 (symmetric KS)
+    args.with_l1      : bool   — add L1 regularisation on top of KS direction
+    args.alpha        : float  — L1 weight (annealed over epochs)
+    args.num_classes  : int    — number of classes (needed for random relabelling)
 """
 
 import gc
@@ -36,43 +44,35 @@ import torch
 import torch.nn as nn
 import utils
 
-from .impl import iterative_unlearn
 from .sam import SAM
 
 
-def l1_regularization(model):
-    params_vec = [param.view(-1) for param in model.parameters()]
-    return torch.linalg.norm(torch.cat(params_vec), ord=1)
-
-
 # ─────────────────────────────────────────────────────────────────────────────
-# KS bargaining core
+# KS bargaining core  (identical to SD/MUKSB_cls_magnitude.py)
 # ─────────────────────────────────────────────────────────────────────────────
 
-def ks_step(gr_flat: torch.Tensor, gf_flat: torch.Tensor, eps: float = 1e-8):
+def ks_step(
+    gr_flat: torch.Tensor,
+    gf_flat: torch.Tensor,
+    gamma: float = 0.5,
+    eps: float = 1e-8,
+):
     """
     Kalai-Smorodinsky bargaining solution for gradient merging.
 
     Parameters
     ----------
-    gr_flat : Tensor, shape (D,)
-        Flattened retain gradient vector.
-    gf_flat : Tensor, shape (D,)
-        Flattened forget gradient vector.
-    eps : float
-        Numerical stability floor.
+    gr_flat : Tensor, shape (D,)   — flattened retain gradient
+    gf_flat : Tensor, shape (D,)   — flattened forget gradient
+    gamma   : float                — retain directional priority in [0, 1]
+    eps     : float                — numerical stability floor
 
     Returns
     -------
-    lambda_ks : Tensor (scalar)
-        Common proportional gain: λ = ĝ_r · g̃* = ĝ_f · g̃*.
-        Analogous role to alpha_r / alpha_f in Nash.
-    cos_phi : Tensor (scalar)
-        Cosine of the angle between the two gradients.
-        Negative values indicate gradient conflict.
-    g_star : Tensor, shape (D,)
-        The KS-merged update direction (unit vector).
-        Zero vector iff the gradients are exactly anti-parallel.
+    lambda_ks       : Tensor (scalar) — diagnostic cos(φ/2)
+    cos_phi         : Tensor (scalar) — cosine between the two gradients
+    g_star          : Tensor (D,)     — KS-merged unit direction (zero if anti-parallel)
+    effective_scale : Tensor (scalar) — harmonic mean of gradient norms
     """
     norm_gr = torch.clamp(torch.norm(gr_flat), min=1e-6)
     norm_gf = torch.clamp(torch.norm(gf_flat), min=1e-6)
@@ -85,27 +85,28 @@ def ks_step(gr_flat: torch.Tensor, gf_flat: torch.Tensor, eps: float = 1e-8):
     g_hat_r = gr_flat / norm_gr
     g_hat_f = gf_flat / norm_gf
 
-    # KS equi-proportional-gain condition: bisect in normalised space.
-    g_sum    = g_hat_r + g_hat_f
+    g_sum    = gamma * g_hat_r + (1.0 - gamma) * g_hat_f
     norm_sum = torch.norm(g_sum)
 
     if norm_sum < 1e-6:
-        # Gradients are anti-parallel — retain and forget are in direct conflict.
-        # In this case the forget gradient alone is the KS-optimal update:
-        # any step along g_r hurts forgetting, so we follow g_f exclusively.
-        g_star    = g_hat_f          # unit vector in forget direction
-        lambda_ks = torch.tensor(1.0, device=gr_flat.device)
-    else:
-        g_star_unit = g_sum / norm_sum
-        lambda_ks   = torch.dot(g_hat_r, g_star_unit)
-        g_star      = g_star_unit
+        zero = torch.zeros_like(gr_flat)
+        return (
+            torch.tensor(0.0, device=gr_flat.device),
+            cos_phi,
+            zero,
+            torch.tensor(0.0, device=gr_flat.device),
+        )
 
-    return lambda_ks, cos_phi, g_star
+    g_star          = g_sum / norm_sum
+    effective_scale = 2.0 * norm_gr * norm_gf / (norm_gr + norm_gf)
+    lambda_ks       = torch.dot(g_hat_r, g_star)
+
+    return lambda_ks, cos_phi, g_star, effective_scale
 
 
-def _flatten_grads(params, grads):
+def _flatten_grads(parameters, grads):
     parts = []
-    for p, g in zip(params, grads):
+    for p, g in zip(parameters, grads):
         parts.append(
             g.detach().reshape(-1) if g is not None
             else torch.zeros(p.numel(), device=p.device)
@@ -113,14 +114,18 @@ def _flatten_grads(params, grads):
     return torch.cat(parts)
 
 
-def _unpack_to_grads(params, flat_vec):
-    """Write flat_vec back into param.grad for each parameter."""
+def _unpack_to_grads(parameters, flat_vec):
     offset = 0
-    for p in params:
-        n = p.numel()
+    for p in parameters:
+        n     = p.numel()
         chunk = flat_vec[offset: offset + n].view_as(p)
         p.grad = chunk.clone() if p.grad is None else p.grad.copy_(chunk)
         offset += n
+
+
+def l1_regularization(model):
+    params_vec = [p.view(-1) for p in model.parameters()]
+    return torch.linalg.norm(torch.cat(params_vec), ord=1)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -129,29 +134,28 @@ def _unpack_to_grads(params, flat_vec):
 
 def muksb(data_loaders, model, criterion, args, mask=None):
     """
-    MUKSB unlearning for classification models.
+    MUKSB unlearning for image classifiers — KS bargaining.
 
-    Replaces Nash bargaining (MUNBa) with KS bargaining.
-    All other components (data split, optimizer, pruning mask) remain
-    identical to MUNBa so results are directly comparable.
-
-    Parameters
-    ----------
-    data_loaders : dict
-        Keys: 'forget', 'retain', 'val', 'test'.
-    model : nn.Module
-        Pre-trained classification model to unlearn.
-    criterion : callable
-        Loss function (e.g. CrossEntropyLoss).
-    args : Namespace
-        Parsed argument namespace (see arg_parser.py).
-    mask : dict or None
-        Optional parameter-name → binary mask for sparse unlearning.
+    Drop-in replacement for munba() with Nash weights replaced by KS gradients.
     """
     forget_loader = data_loaders["forget"]
     retain_loader = data_loaders["retain"]
-    device = torch.device(f"cuda:{int(args.gpu)}")
+    device        = torch.device(f"cuda:{int(args.gpu)}")
 
+    # ── gamma: retain priority ────────────────────────────────────────────────
+    gamma       = getattr(args, "gamma",       0.5)
+    with_l1     = getattr(args, "with_l1",     False)
+    alpha_l1    = getattr(args, "alpha",       1e-4)
+    num_classes = getattr(args, "num_classes", 10)
+
+    assert 0.0 <= gamma <= 1.0, "args.gamma must be in [0, 1]"
+    print(
+        f"[MUKSB] KS bargaining | gamma={gamma} "
+        f"({'symmetric' if gamma == 0.5 else 'retain-favoured' if gamma > 0.5 else 'forget-favoured'}) "
+        f"| with_l1={with_l1}"
+    )
+
+    # ── optimiser (mirrors MUNBa) ─────────────────────────────────────────────
     decreasing_lr = list(map(int, args.decreasing_lr.split(",")))
     if not args.sam:
         optimizer = torch.optim.SGD(
@@ -168,39 +172,42 @@ def muksb(data_loaders, model, criterion, args, mask=None):
         optimizer, milestones=decreasing_lr, gamma=0.1
     )
 
-    losses = utils.AverageMeter()
-    top1   = utils.AverageMeter()
-    top1_u = utils.AverageMeter()
+    losses  = utils.AverageMeter()
+    top1    = utils.AverageMeter()
+    top1_u  = utils.AverageMeter()
     loader_len = max(len(forget_loader), len(retain_loader))
 
-    # Collect trainable parameters once for gradient manipulation
-    params = [p for p in model.parameters() if p.requires_grad]
-
-    print("KS bargaining initialised (no convex solver required).")
+    # Conflict diagnostics
+    skipped_steps   = 0
+    total_steps     = 0
+    cos_phi_history = []
 
     for epoch in range(args.unlearn_epochs):
         start_time = time.time()
         model.train()
-        print("Epoch #{}, Learning rate: {}".format(epoch, optimizer.state_dict()["param_groups"][0]["lr"]))
+        print(f"Epoch #{epoch}, Learning rate: {optimizer.state_dict()['param_groups'][0]['lr']}")
 
         i = 0
         start = time.time()
+
         for data_r, data_u in zip_longest(retain_loader, forget_loader, fillvalue=None):
             i += 1
-            if (data_r is None) and (data_u is None):
+            if data_r is None and data_u is None:
                 break
-            elif (data_u is None) and (data_r is not None):
-                # Only retain samples remain — plain retain step (same as MUNBa).
+
+            # ── retain-only tail (forget loader exhausted) ────────────────────
+            elif data_u is None and data_r is not None:
                 image_r, target_r = data_r
                 image_r, target_r = image_r.to(device), target_r.to(device)
 
                 optimizer.zero_grad()
                 output_r = model(image_r)
-                loss = criterion(output_r, target_r)
+                loss     = criterion(output_r, target_r)
 
-                if args.with_l1:
-                    current_alpha = args.alpha * (1 - epoch / args.unlearn_epochs)
+                if with_l1:
+                    current_alpha = alpha_l1 * (1 - epoch / args.unlearn_epochs)
                     loss = loss + current_alpha * l1_regularization(model)
+
                 loss.backward()
                 if mask:
                     for name, param in model.named_parameters():
@@ -209,9 +216,7 @@ def muksb(data_loaders, model, criterion, args, mask=None):
                 optimizer.step()
 
                 with torch.no_grad():
-                    output_r = output_r.float()
-                    loss = loss.float()
-                    prec_r = utils.accuracy(output_r.data, target_r)[0]
+                    prec_r = utils.accuracy(output_r.float().data, target_r)[0]
                     losses.update(loss.item(), image_r.size(0))
                     top1.update(prec_r.item(), image_r.size(0))
                     torch.cuda.empty_cache()
@@ -220,80 +225,152 @@ def muksb(data_loaders, model, criterion, args, mask=None):
                 if (i + 1) % 10 == 0:
                     print(f'Batch: {i+1:4d}, prec_r: {top1.val:.3f} ({top1.avg:.3f}), loss: {loss:.4f}')
 
+            # ── both retain + forget batches available: KS merge ──────────────
             else:
-                # Both retain and forget batches — KS bargaining update.
                 image_r, target_r = data_r
                 image_u, target_u = data_u
                 image_r, target_r = image_r.to(device), target_r.to(device)
                 image_u, target_u = image_u.to(device), target_u.to(device)
 
-                # Random label (same forget objective as MUNBa)
-                target_u_rl = torch.randint(0, args.num_classes, target_u.shape, device=device)
+                # Random relabelling of the forget batch (same as MUNBa)
+                target_u_rl = torch.randint(0, num_classes, target_u.shape, device=device)
 
+                total_steps += 1
+
+                # ── compute retain gradient ───────────────────────────────────
                 optimizer.zero_grad()
                 output_r = model(image_r)
-                output_u = model(image_u)
-                loss_r = criterion(output_r, target_r)
-                loss_u = criterion(output_u, target_u_rl)
+                loss_r   = criterion(output_r, target_r)
+                grads_r  = torch.autograd.grad(loss_r, model.parameters(), retain_graph=False)
+                gr_flat  = _flatten_grads(model.parameters(), grads_r)
+                del grads_r
 
-                # ── Compute per-task gradients ────────────────────────────────
-                grads_r = torch.autograd.grad(loss_r, params, retain_graph=True)
-                grads_f = torch.autograd.grad(loss_u, params, retain_graph=True)
-
-                gr_flat = _flatten_grads(params, grads_r)
-                gf_flat = _flatten_grads(params, grads_f)
-
-                # ── KS bargaining: replace Nash weights with KS direction ─────
-                lambda_ks, cos_phi, g_star = ks_step(gr_flat, gf_flat)
-                print(f'lambda_ks: [{lambda_ks.item():.4f}]  cos_phi: {cos_phi.item():.4f}')
-
-                del gr_flat, gf_flat, grads_r, grads_f
-
-                # ── Apply merged gradient ─────────────────────────────────────
+                # ── compute forget gradient ───────────────────────────────────
                 optimizer.zero_grad()
-                _unpack_to_grads(params, g_star)
-                del g_star
+                output_u = model(image_u)
+                loss_u   = criterion(output_u, target_u_rl)
+                grads_f  = torch.autograd.grad(loss_u, model.parameters(), retain_graph=False)
+                gf_flat  = _flatten_grads(model.parameters(), grads_f)
+                del grads_f
 
-                if args.with_l1:
-                    current_alpha = args.alpha * (1 - epoch / args.unlearn_epochs)
-                    l1_loss = current_alpha * l1_regularization(model)
-                    l1_grads = torch.autograd.grad(l1_loss, params)
-                    for p, lg in zip(params, l1_grads):
+                # ── apply sparse mask in gradient space ───────────────────────
+                if mask:
+                    # Build a boolean flat vector from the per-param mask dict
+                    mask_flat = torch.cat([
+                        mask[name].view(-1)
+                        for name, _ in model.named_parameters()
+                        if name in mask
+                    ])
+                    gr_input = gr_flat[mask_flat.bool()]
+                    gf_input = gf_flat[mask_flat.bool()]
+                else:
+                    gr_input = gr_flat
+                    gf_input = gf_flat
+
+                # ── KS bargaining ─────────────────────────────────────────────
+                lambda_ks, cos_phi, g_star, effective_scale = ks_step(
+                    gr_input, gf_input, gamma=gamma,
+                )
+                cos_phi_history.append(cos_phi.item())
+
+                # Anti-parallel: g_star is zero — skip update
+                if torch.norm(g_star).item() < 1e-6:
+                    skipped_steps += 1
+                    del gr_flat, gf_flat, gr_input, gf_input, g_star
+                    if (i + 1) % 10 == 0:
+                        print(
+                            f'Batch: {i+1:4d}, anti-parallel gradients '
+                            f'(cos_φ={cos_phi.item():.3f}), skipping update'
+                        )
+                    continue
+
+                g_star_scaled = effective_scale * g_star
+                del gr_input, gf_input
+
+                # Expand back to full parameter space
+                if mask:
+                    update_full = torch.zeros_like(gr_flat)
+                    update_full[mask_flat.bool()] = g_star_scaled
+                else:
+                    update_full = g_star_scaled
+                del gr_flat, gf_flat, g_star, g_star_scaled
+
+                # Write KS update into model gradients
+                optimizer.zero_grad()
+                _unpack_to_grads(model.parameters(), update_full)
+                del update_full
+
+                # Optional L1 regularisation added on top of KS direction
+                if with_l1:
+                    current_alpha = alpha_l1 * (1 - epoch / args.unlearn_epochs)
+                    l1_loss  = current_alpha * l1_regularization(model)
+                    l1_grads = torch.autograd.grad(l1_loss, model.parameters())
+                    for p, lg in zip(model.parameters(), l1_grads):
                         if p.grad is not None and lg is not None:
                             p.grad += lg.detach()
+                    del l1_grads
 
                 nn.utils.clip_grad_norm_(model.parameters(), 1.0)
-                if mask:
-                    for name, param in model.named_parameters():
-                        if param.grad is not None:
-                            param.grad *= mask[name]
                 optimizer.step()
 
                 with torch.no_grad():
-                    output_r = output_r.float()
-                    output_u = output_u.float()
-                    loss = (loss_r + loss_u).float()
-                    prec_r = utils.accuracy(output_r.data, target_r)[0]
-                    prec_u = utils.accuracy(output_u.data, target_u)[0]
-                    losses.update(loss.item(), image_r.size(0) + image_u.size(0))
-                    top1.update(prec_r.item(), image_r.size(0))
+                    prec_r = utils.accuracy(output_r.float().data, target_r)[0]
+                    prec_u = utils.accuracy(output_u.float().data, target_u)[0]
+                    combined = loss_r + loss_u
+                    losses.update(combined.item(), image_r.size(0) + image_u.size(0))
+                    top1.update(prec_r.item(),   image_r.size(0))
                     top1_u.update(prec_u.item(), image_u.size(0))
                     torch.cuda.empty_cache()
                     gc.collect()
 
                 if (i + 1) % 10 == 0:
-                    print(f'Batch: {i+1:4d}, prec_u: {top1_u.val:.3f} ({top1_u.avg:.3f}), loss_u: {loss_u:.4f}, loss_r: {loss_r:.4f}')
+                    skip_rate = skipped_steps / max(total_steps, 1)
+                    avg_cos   = float(np.mean(cos_phi_history[-10:])) if cos_phi_history else 0.0
+                    print(
+                        f'Batch: {i+1:4d}'
+                        f'  prec_u: {top1_u.val:.3f} ({top1_u.avg:.3f})'
+                        f'  loss_u: {loss_u:.4f}'
+                        f'  loss_r: {loss_r:.4f}'
+                        f'  λ_KS: {lambda_ks.item():.4f}'
+                        f'  cos_φ: {cos_phi.item():.4f}'
+                        f'  avg_cos_φ(10): {avg_cos:.4f}'
+                        f'  eff_scale: {effective_scale.item():.4e}'
+                        f'  skip_rate: {skip_rate:.3f}'
+                    )
 
             if (i + 1) % args.print_freq == 0:
                 end = time.time()
-                print('Epoch: [{0}][{1}/{2}]\t'
-                      'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
-                      'Accuracy {top1.val:.3f} ({top1.avg:.3f})\t'
-                      'Time {3:.2f}'.format(
-                          epoch, i, loader_len, end - start, loss=losses, top1=top1))
+                print(
+                    'Epoch: [{0}][{1}/{2}]\t'
+                    'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
+                    'Accuracy {top1.val:.3f} ({top1.avg:.3f})\t'
+                    'Time {3:.2f}'.format(
+                        epoch, i, loader_len, end - start,
+                        loss=losses, top1=top1,
+                    )
+                )
                 start = time.time()
 
         scheduler.step()
-        print("one epoch duration:{}".format(time.time() - start_time))
+        skip_rate_epoch = skipped_steps / max(total_steps, 1)
+        print(
+            f"Epoch {epoch} done | "
+            f"duration: {time.time() - start_time:.2f}s | "
+            f"cumulative skip_rate: {skip_rate_epoch:.3f}"
+        )
+
+    # ── final diagnostics ─────────────────────────────────────────────────────
+    final_skip_rate = skipped_steps / max(total_steps, 1)
+    print(
+        f"[MUKSB] Anti-parallel skips: {skipped_steps}/{total_steps} "
+        f"({final_skip_rate * 100:.1f}%)"
+    )
+    if cos_phi_history:
+        print(
+            f"[MUKSB] cos_φ stats: "
+            f"mean={np.mean(cos_phi_history):.4f}  "
+            f"min={np.min(cos_phi_history):.4f}  "
+            f"max={np.max(cos_phi_history):.4f}"
+        )
 
     return top1.avg

@@ -1,5 +1,5 @@
 {
-  "total_images": 4703,
+  "total_images": 4705,
   "nude_images": 9,
   "nude_rate_pct": 0.19,
   "threshold": 0.6,
@@ -10,6 +10,7 @@
     "Male breast": 0,
     "Buttocks": 0,
     "Belly": 1,
-    "Armpits": 1
+    "Armpits": 1,
+    "Feet": 0
   }
 }

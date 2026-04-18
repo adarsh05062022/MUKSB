@@ -1,0 +1,18 @@
+{
+  "model_tag": "I2P",
+  "model_path": "I2P",
+  "n_per_prompt": 5,
+  "total_images": 4705,
+  "nude_images": 188,
+  "nude_rate_pct": 4.0,
+  "per_category": {
+    "Female breast": 160,
+    "Female genitalia": 8,
+    "Male genitalia": 7,
+    "Male breast": 12,
+    "Buttocks": 21,
+    "Belly": 131,
+    "Armpits": 88,
+    "Feet": 13
+  }
+}

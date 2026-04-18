@@ -1,15 +1,15 @@
 """
 Evaluation/nsfw/generate_nsfw_multigpu.py
 ==========================================
-Multi-GPU launcher for I2P NSFW generation — edit GPU_IDS at the top, then:
+Multi-GPU launcher for I2P NSFW generation.
 
-    python Evaluation/nsfw/generate_nsfw_multigpu.py --model_path models/my.pt
+Standalone usage:
+    python generate_nsfw_multigpu.py --model_path models/my.pt --gpu_ids 0 1 2 3
 
-The script spawns one subprocess per GPU listed in GPU_IDS, each with
-CUDA_VISIBLE_DEVICES set automatically.  4703 prompts across 8 GPUs → ~588/GPU.
+Or called programmatically from eval_nsfw.py when --device receives multiple GPUs.
 
-Worker mode (internal use, called by the launcher):
-    python generate_nsfw_multigpu.py --model_path ... --worker --gpu_id 0 --total_gpus 8
+Worker mode (internal use, spawned by launcher):
+    python generate_nsfw_multigpu.py --model_path ... --worker --gpu_id 0 --total_gpus 3 --gpu_ids 0 1 2
 """
 
 import argparse
@@ -24,12 +24,6 @@ from diffusers import AutoencoderKL, LMSDiscreteScheduler, UNet2DConditionModel
 from PIL import Image
 from tqdm import tqdm
 from transformers import CLIPTextModel, CLIPTokenizer
-
-# ═══════════════════════════════════════════════════════════════════════════════
-#  ✏️  EDIT THIS — list the CUDA device indices you want to use
-# ═══════════════════════════════════════════════════════════════════════════════
-GPU_IDS = [ 1, 2, 3, 5, 6, 7]
-# ═══════════════════════════════════════════════════════════════════════════════
 
 I2P_CSV_DEFAULT = "/storage/s25017/MUKSB/SD/prompts/coco_30k.csv"
 
@@ -121,10 +115,11 @@ def generate_one(
 # ── Worker (called by subprocess) ────────────────────────────────────────────
 
 def run_worker(args, partition_idx: int, total_partitions: int):
-    """Run generation for this partition — always uses cuda:0 because
-    CUDA_VISIBLE_DEVICES is already set by the launcher."""
+    """Run generation for this partition. Always uses cuda:0 because
+    CUDA_VISIBLE_DEVICES is already set to the physical GPU by the launcher."""
     device    = "cuda:0"
-    gpu_phys  = GPU_IDS[partition_idx]
+    gpu_ids   = args.gpu_ids
+    gpu_phys  = gpu_ids[partition_idx]
     model_tag = (os.path.basename(args.model_path).replace(".pt", "")
                  if args.model_path else "sd14_baseline")
     save_dir  = os.path.join(args.output_dir, model_tag)
@@ -138,7 +133,7 @@ def run_worker(args, partition_idx: int, total_partitions: int):
     df_slice = df.iloc[row_start:row_end].reset_index(drop=True)
 
     print(f"\n{'='*65}")
-    print(f"Worker  GPU_IDS[{partition_idx}] = cuda:{gpu_phys}  (visible as cuda:0)")
+    print(f"Worker  gpu_ids[{partition_idx}] = cuda:{gpu_phys}  (visible as cuda:0)")
     print(f"Rows    [{row_start}, {row_end})  →  {len(df_slice)} prompts")
     print(f"Model   {model_tag}")
     print(f"Output  {save_dir}")
@@ -177,23 +172,27 @@ def run_worker(args, partition_idx: int, total_partitions: int):
     print(f"\n[GPU {gpu_phys}] Done — {total_saved} images written.")
 
 
-# ── Launcher (spawns one subprocess per GPU in GPU_IDS) ──────────────────────
+# ── Launcher ─────────────────────────────────────────────────────────────────
 
 def launch(args):
-    total = len(GPU_IDS)
-    df    = pd.read_csv(args.prompts_path)
-    print(f"Launching {total} workers on GPUs: {GPU_IDS}")
+    """Spawn one subprocess per GPU in args.gpu_ids, wait for all to finish."""
+    gpu_ids = args.gpu_ids
+    total   = len(gpu_ids)
+    df      = pd.read_csv(args.prompts_path)
+    print(f"Launching {total} workers on GPUs: {gpu_ids}")
     print(f"Total prompts: {len(df)}  →  ~{len(df) // total} per GPU\n")
 
-    os.makedirs("workers_logs", exist_ok=True)
+    log_dir = os.path.join(args.output_dir, "worker_logs")
+    os.makedirs(log_dir, exist_ok=True)
 
     procs = []
-    for partition_idx, gpu_phys in enumerate(GPU_IDS):
+    for partition_idx, gpu_phys in enumerate(gpu_ids):
         cmd = [
             sys.executable, __file__,
             "--worker",
             "--gpu_id",        str(partition_idx),
             "--total_gpus",    str(total),
+            "--gpu_ids",       *[str(g) for g in gpu_ids],
             "--model_path",    args.model_path,
             "--output_dir",    args.output_dir,
             "--prompts_path",  args.prompts_path,
@@ -205,35 +204,71 @@ def launch(args):
         env = os.environ.copy()
         env["CUDA_VISIBLE_DEVICES"] = str(gpu_phys)
 
-        log_path = os.path.join("workers_logs", f"worker_gpu{gpu_phys}.log")
+        log_path = os.path.join(log_dir, f"worker_gpu{gpu_phys}.log")
         log_file = open(log_path, "w")
         proc = subprocess.Popen(cmd, env=env, stdout=log_file, stderr=log_file)
         procs.append((proc, gpu_phys, log_path, log_file))
         print(f"  [launched] GPU {gpu_phys}  PID {proc.pid}  log → {log_path}")
 
     print("\nWaiting for all workers to finish …")
+    failed = []
     for proc, gpu_phys, log_path, log_file in procs:
         proc.wait()
         log_file.close()
-        status = "OK" if proc.returncode == 0 else f"FAILED (code {proc.returncode})"
-        print(f"  GPU {gpu_phys}  [{status}]  log: {log_path}")
+        if proc.returncode == 0:
+            print(f"  GPU {gpu_phys}  [OK]  log: {log_path}")
+        else:
+            print(f"  GPU {gpu_phys}  [FAILED code={proc.returncode}]  log: {log_path}")
+            failed.append(gpu_phys)
 
+    if failed:
+        raise RuntimeError(f"Workers failed on GPUs: {failed}")
     print("\nAll workers done.")
+
+
+def launch_multigpu(
+    model_path: str,
+    output_dir: str,
+    prompts_path: str,
+    n_per_prompt: int,
+    gpu_ids: list,
+    guidance_scale: float = 7.5,
+    image_size: int = 512,
+    ddim_steps: int = 50,
+):
+    """
+    Callable entry-point for eval_nsfw.py.
+    Blocks until all GPU workers finish.
+    """
+    import types
+    args = types.SimpleNamespace(
+        model_path    = model_path,
+        output_dir    = output_dir,
+        prompts_path  = prompts_path,
+        n_per_prompt  = n_per_prompt,
+        gpu_ids       = gpu_ids,
+        guidance_scale= guidance_scale,
+        image_size    = image_size,
+        ddim_steps    = ddim_steps,
+    )
+    launch(args)
 
 
 # ── CLI ───────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Multi-GPU I2P NSFW generation launcher — edit GPU_IDS at the top of the file"
+        description="Multi-GPU I2P NSFW generation launcher"
     )
-    parser.add_argument("--model_path",     type=str, default="/storage/s25017/MUKSB/SD/models/compvis-nsfw-SalUn-mask-method_full-lr_1e-05/diffusers-nsfw-SalUn-mask-method_full-lr_1e-05.pt",
+    parser.add_argument("--model_path",     type=str, default="SD_baseline",
                         help="SSU .pt checkpoint (empty = SD v1.4 baseline)")
     parser.add_argument("--output_dir",     type=str,
-                        default="Evaluation/nsfw/coco_30k",)
+                        default="Evaluation/nsfw/coco_30k")
     parser.add_argument("--prompts_path",   type=str, default=I2P_CSV_DEFAULT)
     parser.add_argument("--n_per_prompt",   type=int, default=1,
                         help="Number of images per prompt (default: 1)")
+    parser.add_argument("--gpu_ids",        type=int, nargs="+", default=[0, 1, 2, 3, 5, 6, 7],
+                        help="Physical GPU indices to use, e.g. --gpu_ids 0 1 2 3")
     parser.add_argument("--guidance_scale", type=float, default=7.5)
     parser.add_argument("--image_size",     type=int, default=512)
     parser.add_argument("--ddim_steps",     type=int, default=50)

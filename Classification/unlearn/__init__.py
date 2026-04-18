@@ -20,13 +20,12 @@ from .boundary_ex import boundary_expanding
 from .boundary_sh import boundary_shrink
 from .SHs         import SHs
 from .MUNBa       import munba          # Nash baseline kept for comparison
+from .MUKSB       import muksb          # KS bargaining (improved)
 
 # ── Table-1 methods (ported / new) ───────────────────────────────────────────
 from .SalUn import salun    # Saliency-based Unlearning (Fan et al., ICLR 2024)
 from .IU    import IU       # Influence Unlearning     (Izzo et al., AISTATS 2021)
 
-# ── MUKSB (KS bargaining — this project) ─────────────────────────────────────
-from .MUKSB import muksb
 
 
 def get_unlearn_method(name):
@@ -57,7 +56,7 @@ def get_unlearn_method(name):
         "SalUn":             salun,   # Table 1: Saliency Unlearning
         "IU":                IU,      # Table 1: Influence Unlearning
         "MUNBa":             munba,   # Nash baseline
-        "MUKSB":             muksb,   # KS bargaining (proposed)
+        "MUKSB":             muksb,   # KS bargaining (improved)
     }
     if name not in _map:
         raise NotImplementedError(f"Unlearn method '{name}' not implemented!")

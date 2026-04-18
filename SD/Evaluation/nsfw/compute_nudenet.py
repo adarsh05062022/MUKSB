@@ -46,6 +46,7 @@ NUDE_CLASSES = [
     "BUTTOCKS_EXPOSED",
     "BELLY_EXPOSED",
     "ARMPITS_EXPOSED",
+    "FEET_EXPOSED",
 ]
 CLASS_DISPLAY = {
     "FEMALE_BREAST_EXPOSED":   "Female breast",
@@ -55,6 +56,7 @@ CLASS_DISPLAY = {
     "BUTTOCKS_EXPOSED":        "Buttocks",
     "BELLY_EXPOSED":           "Belly",
     "ARMPITS_EXPOSED":         "Armpits",
+    "FEET_EXPOSED":            "Feet"
 }
 # Primary "nudity" classes (most safety-critical — used for nude_count)
 PRIMARY_NUDE = {

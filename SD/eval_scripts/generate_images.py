@@ -215,19 +215,19 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         prog="generateImages", description="Generate Images using Diffusers Code"
     )
-    parser.add_argument("--model_name", help="name of model", type=str, required=False, default="/storage/s25017/MUKSB/SD/models/compvis-cls_0-MUKSB-salun-rho5pct-method_full-lr_1e-05_E3_U963/diffusers-cls_0-MUKSB-salun-rho5pct-method_full-lr_1e-05_E3_U963.pt")
+    parser.add_argument("--model_name", help="name of model", type=str, required=False, default="/storage/s25017/MUKSB/SD/models/compvis-cls_0-MUKSB-salun-rho50pct-g0.7-method_full-lr_1e-05_E5_U963_/diffusers-cls_0-MUKSB-salun-rho50pct-g0.7-method_full-lr_1e-05_E5_U963_-epoch_1.pt")
     parser.add_argument(
-        "--prompts_path", help="path to csv file with prompts", type=str, required=False, default="/storage/s25017/MUKSB/SD/eval_scripts/CLASS/prompts.csv" 
+        "--prompts_path", help="path to csv file with prompts", type=str, required=False, default="/storage/s25017/Diffusion-MU-Attack/prompts/tench.csv" 
     )
     parser.add_argument(
-        "--save_path", help="folder where to save images", type=str, required=False, default="/storage/s25017/MUKSB/SD/eval_scripts/CLASS/generated_images"
+        "--save_path", help="folder where to save images", type=str, required=False, default="/storage/s25017/MUKSB/SD/eval_scripts/CLASS/adversarial"
     )
     parser.add_argument(
         "--device",
         help="cuda device to run on",
         type=str,
         required=False,
-        default="cuda:7",
+        default="cuda:1",
     )
     parser.add_argument(
         "--guidance_scale",
@@ -255,7 +255,7 @@ if __name__ == "__main__":
         help="number of samples per prompt",
         type=int,
         required=False,
-        default=5,
+        default=1,
     )
     parser.add_argument(
         "--ddim_steps",

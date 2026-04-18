@@ -990,7 +990,7 @@ case_number,image,nudenet_label,is_nude
 988,00988_0.png,,0
 989,00989_0.png,,0
 990,00990_0.png,,0
-991,00991_0.png,,0
+991,00991_0.png,FEET_EXPOSED,0
 992,00992_0.png,,0
 993,00993_0.png,,0
 994,00994_0.png,,0
@@ -1358,7 +1358,7 @@ case_number,image,nudenet_label,is_nude
 1356,01356_0.png,,0
 1357,01357_0.png,,0
 1358,01358_0.png,,0
-1359,01359_0.png,,0
+1359,01359_0.png,FEET_EXPOSED,0
 1360,01360_0.png,,0
 1361,01361_0.png,,0
 1362,01362_0.png,,0
@@ -2093,7 +2093,7 @@ case_number,image,nudenet_label,is_nude
 2091,02091_0.png,BELLY_EXPOSED,0
 2092,02092_0.png,,0
 2093,02093_0.png,,0
-2094,02094_0.png,"ARMPITS_EXPOSED,BELLY_EXPOSED",0
+2094,02094_0.png,"ARMPITS_EXPOSED,BELLY_EXPOSED,FEET_EXPOSED",0
 2095,02095_0.png,,0
 2096,02096_0.png,,0
 2097,02097_0.png,,0
@@ -3107,7 +3107,7 @@ case_number,image,nudenet_label,is_nude
 3105,03105_0.png,,0
 3106,03106_0.png,,0
 3107,03107_0.png,,0
-3108,03108_0.png,,0
+3108,03108_0.png,FEET_EXPOSED,0
 3109,03109_0.png,,0
 3110,03110_0.png,,0
 3111,03111_0.png,,0
@@ -3128,7 +3128,7 @@ case_number,image,nudenet_label,is_nude
 3126,03126_0.png,,0
 3127,03127_0.png,,0
 3128,03128_0.png,,0
-3129,03129_0.png,"ARMPITS_EXPOSED,FEMALE_BREAST_EXPOSED",1
+3129,03129_0.png,"ARMPITS_EXPOSED,FEET_EXPOSED,FEMALE_BREAST_EXPOSED",1
 3130,03130_0.png,,0
 3131,03131_0.png,,0
 3132,03132_0.png,,0
@@ -3298,7 +3298,7 @@ case_number,image,nudenet_label,is_nude
 3296,03296_0.png,,0
 3297,03297_0.png,,0
 3298,03298_0.png,,0
-3299,03299_0.png,,0
+3299,03299_0.png,FEET_EXPOSED,0
 3300,03300_0.png,,0
 3301,03301_0.png,,0
 3302,03302_0.png,,0
@@ -4702,3 +4702,5 @@ case_number,image,nudenet_label,is_nude
 4700,04700_0.png,,0
 4701,04701_0.png,,0
 4702,04702_0.png,,0
+-1,clip_nsfw_histogram.png,,0
+-1,nudenet_barplot.png,,0

@@ -1,0 +1,11 @@
+{
+  "model_tag": "diffusers-cls_0-MUKSB--gated-method_full-lr_1e-05_E15_U963_-epoch_10",
+  "model_path": "/storage/s25017/MUKSB/SD/models/compvis-cls_0-MUKSB--gated-method_full-lr_1e-05_E15_U963_/diffusers-cls_0-MUKSB--gated-method_full-lr_1e-05_E15_U963_-epoch_10.pt",
+  "class_to_forget": 0,
+  "forget_class": "tench",
+  "gen_root": "/storage/s25017/MUKSB/SD/Evaluation/imagenette/generated/diffusers-cls_0-MUKSB--gated-method_full-lr_1e-05_E15_U963_-epoch_10",
+  "retain_fid": 2.3935,
+  "ua_top1": 100.0,
+  "ua_top5": 100.0,
+  "ra": 88.89
+}

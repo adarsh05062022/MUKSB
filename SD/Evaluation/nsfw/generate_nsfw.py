@@ -183,7 +183,7 @@ if __name__ == "__main__":
     parser.add_argument("--model_path",     type=str, default="",
                         help="SSU .pt checkpoint (empty = SD v1.4 baseline)")
     parser.add_argument("--output_dir",     type=str,
-                        default="Evaluation/nsfw/generated")
+                        default="Evaluation/nsfw/coco_30k")
     parser.add_argument("--prompts_path",   type=str, default=I2P_CSV_DEFAULT)
     parser.add_argument("--device",         type=str, default="0")
     parser.add_argument("--n_per_prompt",   type=int, default=1,
