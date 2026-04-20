@@ -318,7 +318,8 @@ def replace_class(dataset, class_to_replace, num_indexes_to_replace=None, seed=0
 def celeba_dataloaders(batch_size=128, data_dir="/home/jing/dataset/CelebAMaskHQ/CelebA_HQ_facial_identity_dataset",
                        num_workers=2, random_to_replace=None, class_to_replace=None,
                        num_indexes_to_replace=None, indexes_to_replace=None,
-                       seed=1, only_mark=False, shuffle=True, no_aug=False):
+                       seed=1, only_mark=False, shuffle=True, no_aug=False,
+                       forget_fraction=0.1):
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     train_transform = (transforms.Compose([transforms.Resize((256, 256)), transforms.CenterCrop(224),
                                            transforms.ToTensor(), normalize]) if no_aug else
@@ -333,7 +334,7 @@ def celeba_dataloaders(batch_size=128, data_dir="/home/jing/dataset/CelebAMaskHQ
     test_set.targets  = np.array(test_set.targets)
 
     unl_ids = np.random.choice(np.unique(train_set.targets),
-                                int(0.1 * len(np.unique(train_set.targets))), replace=False)
+                                int(forget_fraction * len(np.unique(train_set.targets))), replace=False)
     rem_ids  = np.setdiff1d(np.unique(train_set.targets), unl_ids)
     forget_set  = Subset(train_set, np.where(np.isin(train_set.targets, unl_ids))[0])
     remain_set  = Subset(train_set, np.where(np.isin(train_set.targets, rem_ids))[0])

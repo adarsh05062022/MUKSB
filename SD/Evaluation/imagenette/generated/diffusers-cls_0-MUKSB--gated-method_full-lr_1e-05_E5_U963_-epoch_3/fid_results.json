@@ -1,6 +1,0 @@
-{
-  "class_to_forget": 1,
-  "forget_class_name": "English springer",
-  "gen_root": "/storage/s25017/MUKSB/SD/Evaluation/imagenette/generated/diffusers-cls_0-MUKSB--gated-method_full-lr_1e-05_E5_U963_-epoch_3",
-  "retain_fid": 2.4237
-}

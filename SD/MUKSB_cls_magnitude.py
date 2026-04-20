@@ -78,6 +78,18 @@ from train_scripts.dataset import (
 )
 from mask_variants import build_mask, MASK_VARIANT_CHOICES
 
+FORGET_TO_PSEUDO_PROMPT = {
+    0: "a photo of a cat",         # tench        → cat
+    1: "a photo of a sports car",        # springer     → car
+    2: "a photo of a pizza",             # cassette     → pizza
+    3: "a photo of a daisy",             # chain saw    → flower
+    4: "a photo of a banana",            # church       → banana
+    5: "a photo of a grand piano",       # french horn  → piano
+    6: "a photo of a volcano",           # garbage truck→ volcano
+    7: "a photo of a hot air balloon",   # gas pump     → balloon
+    8: "a photo of a mushroom",          # golf ball    → mushroom
+    9: "a photo of a coral reef",        # parachute    → coral reef
+}
 
 EXTRA = ""
 
@@ -340,6 +352,7 @@ def MUKSB(
     )
     num_forget = len(forget_dl.dataset)
     logger.info(f"Forget set: {num_forget} samples | class: {class_to_forget}")
+    
 
     # ── parameter selection ───────────────────────────────────────────────────
     parameters = select_parameters(model, train_method)
@@ -392,6 +405,8 @@ def MUKSB(
     skipped_steps   = 0
     total_steps     = 0
     cos_phi_history = []
+    # pseudo_prompt_text = FORGET_TO_PSEUDO_PROMPT[int(class_to_forget)]
+    # logger.info(f"Pseudo class (OOD): '{pseudo_prompt_text}'  ←  forget class: {class_to_forget}")
 
     for epoch in range(epochs):
         epoch_start = time.time()
@@ -411,10 +426,13 @@ def MUKSB(
 
                 remain_prompts = [descriptions[label] for label in remain_labels]
                 forget_prompts = [descriptions[label] for label in forget_labels]
+                
                 pseudo_prompts = [
                     descriptions[(int(class_to_forget) + 1) % 10]
                     for _ in forget_labels
                 ]
+
+                # pseudo_prompts = [pseudo_prompt_text for _ in forget_labels]
 
                 # ── retain loss ───────────────────────────────────────────────
                 remain_batch = {
@@ -607,7 +625,7 @@ if __name__ == "__main__":
     )
 
     # ── original arguments (unchanged) ───────────────────────────────────────
-    parser.add_argument("--class_to_forget", type=str,   default="9",
+    parser.add_argument("--class_to_forget", type=str,   default="4",
                         help="Imagenette class index to erase (0–9)")
     parser.add_argument("--train_method",    type=str,   default="full",
                         choices=["full", "noxattn", "xattn", "selfattn",
@@ -633,7 +651,7 @@ if __name__ == "__main__":
                         default="configs/stable-diffusion/v1-inference_nash.yaml")
     parser.add_argument("--diffusers_config_path", type=str,
                         default="diffusers_unet_config.json")
-    parser.add_argument("--device",      type=str,   default="5")
+    parser.add_argument("--device",      type=str,   default="3")
     parser.add_argument("--image_size",  type=int,   default=256)
     parser.add_argument("--ddim_steps",  type=int,   default=50)
     parser.add_argument("--with_l1",     action="store_true", default=False)
@@ -642,7 +660,7 @@ if __name__ == "__main__":
 
     # ── new KS improvement arguments ─────────────────────────────────────────
     parser.add_argument(
-        "--gamma", type=float, default=0.7,
+        "--gamma", type=float, default=0.5,
         help=(
             "[Fix 3/5] Retain priority weight in [0, 1]. "
             "0.5 = symmetric KS (default, original behaviour). "
@@ -655,7 +673,7 @@ if __name__ == "__main__":
     # ── validate new arguments ────────────────────────────────────────────────
     assert 0.0 <= args.gamma <= 1.0, "--gamma must be in [0, 1]"
 
-    logger, log_file = setup_logger(name=f"MUKSB_cls{args.class_to_forget}")
+    logger, log_file = setup_logger(name=f"MUKSB_cls{args.class_to_forget}_{EXTRA}")
     logger.info("======== MUKSB STARTED ========")
     logger.info(f"Log: {log_file}")
     logger.info(f"Args: {vars(args)}")

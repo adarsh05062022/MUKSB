@@ -1,3 +1,4 @@
+import json
 import os
 import time
 
@@ -103,6 +104,9 @@ def _iterative_unlearn_impl(unlearn_iter_func):
             # learning rate rewinding
             for _ in range(args.rewind_epoch):
                 scheduler.step()
+        epoch_metrics_path = os.path.join(args.save_dir, "epoch_metrics.json")
+        epoch_metrics = []
+
         for epoch in range(0, args.unlearn_epochs):
             start_time = time.time()
 
@@ -117,7 +121,25 @@ def _iterative_unlearn_impl(unlearn_iter_func):
             )
             scheduler.step()
 
-            print("one epoch duration:{}".format(time.time() - start_time))
+            epoch_duration = time.time() - start_time
+            print("one epoch duration:{}".format(epoch_duration))
+
+            # evaluate on all splits after each epoch
+            from trainer import validate
+            acc_per_split = {}
+            model.eval()
+            for split_name, loader in data_loaders.items():
+                acc_per_split[split_name] = validate(loader, model, criterion, args)
+                print(f"  Epoch {epoch} | {split_name} acc: {acc_per_split[split_name]:.3f}")
+
+            epoch_metrics.append({
+                "epoch": epoch,
+                "train_acc": train_acc if train_acc is not None else None,
+                "accuracy": acc_per_split,
+                "duration": epoch_duration,
+            })
+            with open(epoch_metrics_path, "w") as f:
+                json.dump(epoch_metrics, f, indent=2)
 
     return _wrapped
 

@@ -237,7 +237,8 @@ def setup_model_dataset(args):
             class_to_replace=args.class_to_replace,
             num_indexes_to_replace=args.num_indexes_to_replace,
             indexes_to_replace=args.indexes_to_replace,
-            seed=args.seed, only_mark=True, shuffle=True)
+            seed=args.seed, only_mark=True, shuffle=True,
+            forget_fraction=getattr(args, "forget_fraction", 0.1))
         setup_seed(args.train_seed or args.seed)
         model = resnet34(pretrained=True)
         model.fc = torch.nn.Linear(model.fc.in_features, classes)

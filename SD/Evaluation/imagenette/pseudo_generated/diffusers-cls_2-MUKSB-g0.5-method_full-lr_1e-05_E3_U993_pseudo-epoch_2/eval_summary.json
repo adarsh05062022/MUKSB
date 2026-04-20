@@ -1,0 +1,13 @@
+{
+  "model_tag": "diffusers-cls_2-MUKSB-g0.5-method_full-lr_1e-05_E3_U993_pseudo-epoch_2",
+  "model_path": "/storage/s25017/MUKSB/SD/models/compvis-cls_2-MUKSB-g0.5-method_full-lr_1e-05_E3_U993_pseudo/diffusers-cls_2-MUKSB-g0.5-method_full-lr_1e-05_E3_U993_pseudo-epoch_2.pt",
+  "class_to_forget": 2,
+  "forget_class": "cassette player",
+  "gen_root": "/storage/s25017/MUKSB/SD/Evaluation/imagenette/pseudo_generated/diffusers-cls_2-MUKSB-g0.5-method_full-lr_1e-05_E3_U993_pseudo-epoch_2",
+  "retain_fid": 2.7271,
+  "ua_top1": 100.0,
+  "ua_top5": 100.0,
+  "ra": 91.29,
+  "forget_clip": 0.1402,
+  "retain_clip_avg": 0.3111
+}

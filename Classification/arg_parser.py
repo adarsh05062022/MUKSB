@@ -147,6 +147,12 @@ def parse_args():
     parser.add_argument("--alpha", default=0.2, type=float, help="unlearn noise")
 
     parser.add_argument("--path", default=None, type=str, help="mask matrix")
+    parser.add_argument(
+        "--forget_fraction",
+        type=float,
+        default=0.1,
+        help="Fraction of CelebA identity classes to forget (default: 0.1 = 10%%)",
+    )
 
     ##################################### Attack setting #################################################
     parser.add_argument(

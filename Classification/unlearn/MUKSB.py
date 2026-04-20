@@ -36,6 +36,8 @@ New args fields consumed (all optional with safe defaults):
 """
 
 import gc
+import json
+import os
 import time
 from itertools import zip_longest
 
@@ -43,6 +45,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import utils
+from trainer import validate
 
 from .sam import SAM
 
@@ -181,6 +184,9 @@ def muksb(data_loaders, model, criterion, args, mask=None):
     skipped_steps   = 0
     total_steps     = 0
     cos_phi_history = []
+
+    epoch_metrics      = []
+    epoch_metrics_path = os.path.join(args.save_dir, "epoch_metrics.json")
 
     for epoch in range(args.unlearn_epochs):
         start_time = time.time()
@@ -352,12 +358,41 @@ def muksb(data_loaders, model, criterion, args, mask=None):
                 start = time.time()
 
         scheduler.step()
+        epoch_duration  = time.time() - start_time
         skip_rate_epoch = skipped_steps / max(total_steps, 1)
         print(
             f"Epoch {epoch} done | "
-            f"duration: {time.time() - start_time:.2f}s | "
+            f"duration: {epoch_duration:.2f}s | "
             f"cumulative skip_rate: {skip_rate_epoch:.3f}"
         )
+
+        # Evaluate with test transforms (no augmentation), then restore training transforms
+        saved_transforms = {}
+        for split_name, loader in data_loaders.items():
+            ds = loader.dataset
+            while hasattr(ds, "dataset"):
+                ds = ds.dataset
+            saved_transforms[split_name] = (ds, ds.transform, getattr(ds, "train", None))
+            utils.dataset_convert_to_test(loader.dataset, args)
+
+        acc_per_split = {}
+        for split_name, loader in data_loaders.items():
+            acc_per_split[split_name] = validate(loader, model, criterion, args)
+            print(f"  Epoch {epoch} | {split_name} acc: {acc_per_split[split_name]:.3f}")
+
+        for split_name, (ds, orig_transform, orig_train) in saved_transforms.items():
+            ds.transform = orig_transform
+            if orig_train is not None:
+                ds.train = orig_train
+
+        epoch_metrics.append({
+            "epoch": epoch,
+            "accuracy": acc_per_split,
+            "skip_rate": skip_rate_epoch,
+            "duration": epoch_duration,
+        })
+        with open(epoch_metrics_path, "w") as f:
+            json.dump(epoch_metrics, f, indent=2)
 
     # ── final diagnostics ─────────────────────────────────────────────────────
     final_skip_rate = skipped_steps / max(total_steps, 1)

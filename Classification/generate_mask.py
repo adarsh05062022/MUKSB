@@ -126,7 +126,7 @@ def main():
         retain=retain_loader, forget=forget_loader, val=val_loader, test=test_loader)
     criterion = nn.CrossEntropyLoss()
 
-    ckpt = torch.load(args.mask, map_location=device)
+    ckpt = torch.load(args.mask, map_location=device, weights_only=False)
     if "state_dict" in ckpt:
         ckpt = ckpt["state_dict"]
     if args.unlearn != "retrain":

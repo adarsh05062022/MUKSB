@@ -1,6 +1,0 @@
-{
-  "class_to_forget": 0,
-  "forget_class_name": "tench",
-  "gen_root": "/storage/s25017/MUKSB/SD/Evaluation/imagenette/generated/diffusers-cls_0-MUKSB--gated-method_full-lr_1e-05_E15_U963_-epoch_10",
-  "retain_fid": 2.3935
-}

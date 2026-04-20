@@ -1,0 +1,13 @@
+{
+  "model_tag": "diffusers-cls_6-MUKSB-g0.5-method_full-lr_1e-05_E5_U961_pseudo-epoch_1",
+  "model_path": "/storage/s25017/MUKSB/SD/models/compvis-cls_6-MUKSB-g0.5-method_full-lr_1e-05_E5_U961_pseudo/diffusers-cls_6-MUKSB-g0.5-method_full-lr_1e-05_E5_U961_pseudo-epoch_1.pt",
+  "class_to_forget": 6,
+  "forget_class": "garbage truck",
+  "gen_root": "/storage/s25017/MUKSB/SD/Evaluation/imagenette/pseudo_generated/diffusers-cls_6-MUKSB-g0.5-method_full-lr_1e-05_E5_U961_pseudo-epoch_1",
+  "retain_fid": 1.9852,
+  "ua_top1": 100.0,
+  "ua_top5": 100.0,
+  "ra": 81.96,
+  "forget_clip": 0.2012,
+  "retain_clip_avg": 0.3184
+}

@@ -1,0 +1,6 @@
+{
+  "class_to_forget": 4,
+  "forget_class_name": "church",
+  "gen_root": "/storage/s25017/MUKSB/SD/Evaluation/imagenette/pseudo_generated/diffusers-cls_4-MUKSB-g0.5-method_full-lr_1e-05_E3_U941_pseudo-epoch_1",
+  "retain_fid": 2.8114
+}

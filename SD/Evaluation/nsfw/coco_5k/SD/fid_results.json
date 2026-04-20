@@ -1,0 +1,6 @@
+{
+  "gen_dir": "Evaluation/nsfw/coco_5k/SD",
+  "real_path": "/storage/s25017/Datasets/COCO/coco_5k_val_2014_images",
+  "image_size": 512,
+  "fid": 48.7906
+}

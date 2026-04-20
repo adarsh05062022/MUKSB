@@ -1,0 +1,6 @@
+{
+  "class_to_forget": 2,
+  "forget_class_name": "cassette player",
+  "gen_root": "/storage/s25017/MUKSB/SD/Evaluation/imagenette/pseudo_generated/diffusers-cls_2-MUKSB-g0.5-method_full-lr_1e-05_E3_U993_pseudo-epoch_2",
+  "retain_fid": 2.7271
+}

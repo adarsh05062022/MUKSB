@@ -1,0 +1,13 @@
+{
+  "model_tag": "diffusers-cls_9-MUKSB-g0.5-method_full-lr_1e-05_E3_U960_pseudo-epoch_1",
+  "model_path": "/storage/s25017/MUKSB/SD/models/compvis-cls_9-MUKSB-g0.5-method_full-lr_1e-05_E3_U960_pseudo/diffusers-cls_9-MUKSB-g0.5-method_full-lr_1e-05_E3_U960_pseudo-epoch_1.pt",
+  "class_to_forget": 9,
+  "forget_class": "parachute",
+  "gen_root": "/storage/s25017/MUKSB/SD/Evaluation/imagenette/pseudo_generated/diffusers-cls_9-MUKSB-g0.5-method_full-lr_1e-05_E3_U960_pseudo-epoch_1",
+  "retain_fid": 1.8381,
+  "ua_top1": 100.0,
+  "ua_top5": 100.0,
+  "ra": 83.84,
+  "forget_clip": 0.2509,
+  "retain_clip_avg": 0.3129
+}

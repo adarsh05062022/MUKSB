@@ -470,7 +470,7 @@ if __name__ == "__main__":
     parser.add_argument("--lr",                    type=float, default=1e-5)
     parser.add_argument("--ckpt_path",             type=str,
                         default="models/ldm/sd-v1-4-full-ema.ckpt")
-    parser.add_argument("--mask_variant",          type=str,   default="salun",
+    parser.add_argument("--mask_variant",          type=str,   default="None",
                         choices=list(MASK_VARIANT_CHOICES) + [None],
                         help=(
                             "Parameter selection strategy for sparse update. "
@@ -488,8 +488,8 @@ if __name__ == "__main__":
                         default="configs/stable-diffusion/v1-inference.yaml")
     parser.add_argument("--diffusers_config_path", type=str,
                         default="diffusers_unet_config.json")
-    parser.add_argument("--device",                type=str,   default="1")
-    parser.add_argument("--image_size",            type=int,   default=256)
+    parser.add_argument("--device",                type=str,   default="2")
+    parser.add_argument("--image_size",            type=int,   default=512)
     parser.add_argument("--ddim_steps",            type=int,   default=50)
     parser.add_argument("--with_l1",               action="store_true", default=False)
     parser.add_argument("--alpha",                 type=float, default=1e-4,
@@ -497,11 +497,11 @@ if __name__ == "__main__":
     parser.add_argument("--beta",                  type=float, default=100.0,
                         help="Scale factor for forget loss")
     parser.add_argument("--forget_path",           type=str,
-                        default="/storage/s25017/Datasets/NSFW_removal/NSFW/nude")
+                        default="/storage/s25017/Datasets/NSFW_removal/nude")
     parser.add_argument("--remain_path",           type=str,
                         default="/storage/s25017/Datasets/NSFW_removal/with_dress")
     parser.add_argument(
-        "--gamma", type=float, default=0.9,
+        "--gamma", type=float, default=0.5,
         help=(
             "[Fix 3] Retain priority weight in [0, 1]. "
             "0.5 = symmetric KS (original behaviour). "

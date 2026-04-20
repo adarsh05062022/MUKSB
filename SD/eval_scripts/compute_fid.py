@@ -71,8 +71,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         prog="generateImages", description="Generate Images using Diffusers Code"
     )
-    parser.add_argument("--folder_path", help="path of images", type=str, required=False, default="/storage/s25017/MUKSB/SD/eval_scripts/Imagenette/cls4")
-    parser.add_argument("--class_to_forget", type=int, nargs="+", required=False, default=[4],
+    parser.add_argument("--folder_path", help="path of images", type=str, required=False, default="/storage/s25017/MUKSB/SD/eval_scripts/Imagenette/cls9")
+    parser.add_argument("--class_to_forget", type=int, nargs="+", required=False, default=[9],
                         help="One or more class indices to exclude (e.g. --class_to_forget 0 7)")
     parser.add_argument(
         "--image_size",
@@ -81,7 +81,7 @@ if __name__ == "__main__":
         required=False,
         default=512,
     )
-    parser.add_argument("--real_path", help="path of images", type=str, required=False,default="/storage/s25017/Datasets/COCO/coco_30_val_2014_images")
+    parser.add_argument("--real_path", help="path of images", type=str, required=False,default="/storage/s25017/Datasets/COCO/coco_5k_val_2014_images")
     args = parser.parse_args()
 
     # image_size = args.image_size

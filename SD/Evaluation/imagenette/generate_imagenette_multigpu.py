@@ -270,13 +270,13 @@ if __name__ == "__main__":
         description="Multi-GPU Imagenette image generation launcher"
     )
     parser.add_argument("--model_path",     type=str,
-                        default="",
+                        default="/storage/s25017/MUKSB/SD/models/compvis-cls_0-MUKSB-g0.5-method_full-lr_1e-05_E3_U963_pseudo/diffusers-cls_0-MUKSB-g0.5-method_full-lr_1e-05_E3_U963_pseudo-epoch_1.pt",
                         help="SSU .pt checkpoint. Empty → SD v1.4 baseline.")
     parser.add_argument("--output_dir",     type=str,
                         default="Evaluation/imagenette/generated")
     parser.add_argument("--n_images",       type=int, default=500,
                         help="Total images per class (split across GPUs).")
-    parser.add_argument("--gpu_ids",        type=int, nargs="+", default=[0, 1, 2, 3, 4, 5, 6, 7],
+    parser.add_argument("--gpu_ids",        type=int, nargs="+", default=[0],
                         help="Physical GPU indices to use, e.g. --gpu_ids 0 1 2 3")
     parser.add_argument("--guidance_scale", type=float, default=7.5)
     parser.add_argument("--image_size",     type=int, default=512)

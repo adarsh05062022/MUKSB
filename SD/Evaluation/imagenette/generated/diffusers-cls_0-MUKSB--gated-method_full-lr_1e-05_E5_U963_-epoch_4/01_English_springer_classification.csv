@@ -1,6 +1,0 @@
-case_number,category_top1,index_top1,scores_top1,category_top2,index_top2,scores_top2,category_top3,index_top3,scores_top3,category_top4,index_top4,scores_top4,category_top5,index_top5,scores_top5
-0,English springer,217,0.4890590012073517,cocker spaniel,219,0.02391982451081276,standard poodle,267,0.010745992884039879,Brittany spaniel,215,0.010467978194355965,English setter,212,0.009308448061347008
-1,English springer,217,0.2624490261077881,cocker spaniel,219,0.023888161405920982,standard poodle,267,0.01441690418869257,Saint Bernard,247,0.008186309598386288,Irish water spaniel,221,0.006199008785188198
-2,English springer,217,0.2530215382575989,Welsh springer spaniel,218,0.02565867267549038,Brittany spaniel,215,0.02236311323940754,clumber,216,0.013677707873284817,EntleBucher,241,0.011614884249866009
-3,English springer,217,0.21263156831264496,Brittany spaniel,215,0.08113688975572586,Welsh springer spaniel,218,0.022727563977241516,clumber,216,0.009875024668872356,Irish setter,213,0.004763734061270952
-4,standard poodle,267,0.16556812822818756,English springer,217,0.05467595160007477,Welsh springer spaniel,218,0.014872018247842789,cocker spaniel,219,0.011640211567282677,Irish water spaniel,221,0.007764769252389669

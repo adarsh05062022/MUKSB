@@ -180,16 +180,16 @@ if __name__ == "__main__":
         description="Full Imagenette-10 evaluation pipeline (generate → FID → UA → CLIP)"
     )
     # required-ish
-    parser.add_argument("--model_path",      type=str, default="/storage/s25017/MUKSB/SD/models/compvis-cls_0-MUKSB--gated-method_full-lr_1e-05_E15_U963_/diffusers-cls_0-MUKSB--gated-method_full-lr_1e-05_E15_U963_-epoch_10.pt")
-    parser.add_argument("--class_to_forget", type=int, default=0)
+    parser.add_argument("--model_path",      type=str, default="/storage/s25017/MUKSB/SD/models/compvis-cls_4-MUKSB-salun-rho50pct-g0.5-method_full-lr_1e-05_E3_U941_/diffusers-cls_4-MUKSB-salun-rho50pct-g0.5-method_full-lr_1e-05_E3_U941_-epoch_2.pt")
+    parser.add_argument("--class_to_forget", type=int, default=4)
     # output
     parser.add_argument("--output_dir",      type=str,
-                        default="/storage/s25017/MUKSB/SD/Evaluation/imagenette/generated")
-    parser.add_argument("--device",          type=int, nargs="+", default=[1],
+                        default="/storage/s25017/MUKSB/SD/Evaluation/imagenette/no_mask")
+    parser.add_argument("--device",          type=int, nargs="+", default=[0,1,2,4,5,6,7],
                         help="GPU id(s) to use. Single value → one GPU. "
                              "Multiple values → multi-GPU generation, e.g. --device 0 1 2 3")
     # generation
-    parser.add_argument("--n_per_class",     type=int, default=5)
+    parser.add_argument("--n_per_class",     type=int, default=10)
     parser.add_argument("--guidance_scale",  type=float, default=7.5)
     parser.add_argument("--image_size",      type=int, default=512)
     parser.add_argument("--ddim_steps",      type=int, default=50)
@@ -201,7 +201,7 @@ if __name__ == "__main__":
     parser.add_argument("--skip_generate",   action="store_true", default=False)
     parser.add_argument("--skip_fid",        action="store_true", default=False)
     parser.add_argument("--skip_ua",         action="store_true", default=False)
-    parser.add_argument("--skip_clip",       action="store_true", default=True)
+    parser.add_argument("--skip_clip",       action="store_true", default=False)
 
     args = parser.parse_args()
 
