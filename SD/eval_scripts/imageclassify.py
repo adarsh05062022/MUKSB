@@ -17,7 +17,7 @@ if __name__ == "__main__":
         help="path to prompts",
         type=str,
         required=False,
-        default="/storage/s25017/MUKSB/SD/eval_scripts/CLASS/prompts.csv",
+        default="/storage/s25017/MUKSB/SD/prompts/imagenette.csv",
     )
 
     parser.add_argument(
@@ -25,10 +25,10 @@ if __name__ == "__main__":
         help="base path to save results",
         type=str,
         required=False,
-        default="CLASS/UA/multiclass",
+        default="CLASS/UA/Imagenatte",
     )
 
-    parser.add_argument("--device", type=str, required=False, default="cuda:0")
+    parser.add_argument("--device", type=str, required=False, default="cuda:2")
     parser.add_argument("--topk", type=int, required=False, default=5)
     parser.add_argument("--batch_size", type=int, required=False, default=250)
 
@@ -42,10 +42,10 @@ if __name__ == "__main__":
 
     # -------- LIST OF IMAGE FOLDERS --------
     folders = [
-      "/storage/s25017/MUKSB/SD/eval_scripts/CLASS/gen/diffusers-cls_0_4-MUNBa-method_full-lr_1e-05_E8_U1904_multi_topk10_an_image.pt",
-      "/storage/s25017/MUKSB/SD/eval_scripts/CLASS/gen/diffusers-cls_0_7_4-MUNBa-method_full-lr_1e-05_E8_U2835_multi_topk10_an_image.pt",
-      "/storage/s25017/MUKSB/SD/eval_scripts/CLASS/gen/diffusers-cls_0_7-MUNBa-method_full-lr_1e-05_E8_U1894_multi_topk10_an_image.pt",
-      "/storage/s25017/MUKSB/SD/eval_scripts/CLASS/gen/diffusers-cls_7_4-MUNBa-method_full-lr_1e-05_E8_U1872_multi_topk10_an_image.pt"
+      "/storage/s25017/MUKSB/SD/eval_scripts/CLASS/generated/diffusers-cls_4-MUKSB-g0.5-method_full-lr_5e-06_E5_U941_-epoch_4.pt",
+      "/storage/s25017/MUKSB/SD/eval_scripts/CLASS/generated/diffusers-cls_6-MUKSB-g0.5-method_full-lr_5e-06_E5_U961_-epoch_4.pt",
+      "/storage/s25017/MUKSB/SD/eval_scripts/CLASS/generated/diffusers-cls_7-MUKSB-g0.5-method_full-lr_5e-06_E5_U931_-epoch_4.pt"
+      
 
 
     ]

@@ -180,12 +180,12 @@ if __name__ == "__main__":
         description="Full Imagenette-10 evaluation pipeline (generate → FID → UA → CLIP)"
     )
     # required-ish
-    parser.add_argument("--model_path",      type=str, default="/storage/s25017/MUKSB/SD/models/compvis-cls_4-MUKSB-salun-rho50pct-g0.5-method_full-lr_1e-05_E3_U941_/diffusers-cls_4-MUKSB-salun-rho50pct-g0.5-method_full-lr_1e-05_E3_U941_-epoch_2.pt")
-    parser.add_argument("--class_to_forget", type=int, default=4)
+    parser.add_argument("--model_path",      type=str, default="/storage/s25017/MUKSB/SD/models/compvis-cls_0-MUKSB-g0.5-method_full-lr_5e-06_E10_U963_/diffusers-cls_0-MUKSB-g0.5-method_full-lr_5e-06_E10_U963_-epoch_2.pt")
+    parser.add_argument("--class_to_forget", type=int, default=0)
     # output
     parser.add_argument("--output_dir",      type=str,
-                        default="/storage/s25017/MUKSB/SD/Evaluation/imagenette/no_mask")
-    parser.add_argument("--device",          type=int, nargs="+", default=[0,1,2,4,5,6,7],
+                        default="/storage/s25017/MUKSB/SD/Evaluation/imagenette/different_l2")
+    parser.add_argument("--device",          type=int, nargs="+", default=[4,5,6],
                         help="GPU id(s) to use. Single value → one GPU. "
                              "Multiple values → multi-GPU generation, e.g. --device 0 1 2 3")
     # generation
@@ -201,7 +201,7 @@ if __name__ == "__main__":
     parser.add_argument("--skip_generate",   action="store_true", default=False)
     parser.add_argument("--skip_fid",        action="store_true", default=False)
     parser.add_argument("--skip_ua",         action="store_true", default=False)
-    parser.add_argument("--skip_clip",       action="store_true", default=False)
+    parser.add_argument("--skip_clip",       action="store_true", default=True)
 
     args = parser.parse_args()
 

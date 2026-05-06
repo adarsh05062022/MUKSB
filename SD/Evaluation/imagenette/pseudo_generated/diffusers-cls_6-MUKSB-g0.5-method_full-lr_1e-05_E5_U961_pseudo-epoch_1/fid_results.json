@@ -1,6 +1,0 @@
-{
-  "class_to_forget": 6,
-  "forget_class_name": "garbage truck",
-  "gen_root": "/storage/s25017/MUKSB/SD/Evaluation/imagenette/pseudo_generated/diffusers-cls_6-MUKSB-g0.5-method_full-lr_1e-05_E5_U961_pseudo-epoch_1",
-  "retain_fid": 1.9852
-}

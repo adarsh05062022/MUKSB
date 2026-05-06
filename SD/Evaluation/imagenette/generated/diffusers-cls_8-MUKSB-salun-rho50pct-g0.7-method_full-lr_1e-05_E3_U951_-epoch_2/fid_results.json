@@ -1,6 +1,0 @@
-{
-  "class_to_forget": 8,
-  "forget_class_name": "golf ball",
-  "gen_root": "/storage/s25017/MUKSB/SD/Evaluation/imagenette/generated/diffusers-cls_8-MUKSB-salun-rho50pct-g0.7-method_full-lr_1e-05_E3_U951_-epoch_2",
-  "retain_fid": 1.3118
-}

@@ -92,6 +92,20 @@ Thumbs.db
 *.swp
 *.swo
 
+# ── Additional ignored directories ────────────────────────────────────────────
+Classification/conflict_analysis/
+Classification/logss/
+Classification/masks/
+Classification/results/
+SD/eval_scripts/CLASS/
+SD/Evaluation/
+SD/experiments/
+SD/logs/
+SD/logss/
+SD/mask/
+SD/models/
+SD/workers_logs/
+
 # ── AI assistants & code-review tooling ───────────────────────────────────────
 CLAUDE.md
 AGENTS.md

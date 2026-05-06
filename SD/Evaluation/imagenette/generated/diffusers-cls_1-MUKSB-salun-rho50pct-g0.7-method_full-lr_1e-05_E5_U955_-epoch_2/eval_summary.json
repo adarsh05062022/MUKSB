@@ -1,8 +1,0 @@
-{
-  "model_tag": "diffusers-cls_1-MUKSB-salun-rho50pct-g0.7-method_full-lr_1e-05_E5_U955_-epoch_2",
-  "model_path": "/storage/s25017/MUKSB/SD/models/compvis-cls_1-MUKSB-salun-rho50pct-g0.7-method_full-lr_1e-05_E5_U955_/diffusers-cls_1-MUKSB-salun-rho50pct-g0.7-method_full-lr_1e-05_E5_U955_-epoch_2.pt",
-  "class_to_forget": 1,
-  "forget_class": "English springer",
-  "gen_root": "/storage/s25017/MUKSB/SD/Evaluation/imagenette/generated/diffusers-cls_1-MUKSB-salun-rho50pct-g0.7-method_full-lr_1e-05_E5_U955_-epoch_2",
-  "retain_fid": 1.5895
-}

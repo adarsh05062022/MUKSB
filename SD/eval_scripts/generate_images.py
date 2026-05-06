@@ -129,7 +129,7 @@ def generate_images(
 
         batch_size = len(prompt)
 
-        for i in range(1):
+        for i in range(5):
             text_input = tokenizer(
                 prompt,
                 padding="max_length",
@@ -215,19 +215,19 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         prog="generateImages", description="Generate Images using Diffusers Code"
     )
-    parser.add_argument("--model_name", help="name of model", type=str, required=False, default="/storage/s25017/MUKSB/SD/models/compvis-cls_0-MUKSB-salun-rho50pct-g0.7-method_full-lr_1e-05_E5_U963_/diffusers-cls_0-MUKSB-salun-rho50pct-g0.7-method_full-lr_1e-05_E5_U963_-epoch_1.pt")
+    parser.add_argument("--model_name", help="name of model", type=str, required=False, default="/storage/s25017/MUKSB/SD/models/compvis-cls_1-MUKSB-g0.5-method_full-lr_5e-06_E5_U955_/diffusers-cls_1-MUKSB-g0.5-method_full-lr_5e-06_E5_U955_-epoch_3.pt")
     parser.add_argument(
-        "--prompts_path", help="path to csv file with prompts", type=str, required=False, default="/storage/s25017/Diffusion-MU-Attack/prompts/tench.csv" 
+        "--prompts_path", help="path to csv file with prompts", type=str, required=False, default="/storage/s25017/MUKSB/SD/prompts/imagenette.csv" 
     )
     parser.add_argument(
-        "--save_path", help="folder where to save images", type=str, required=False, default="/storage/s25017/MUKSB/SD/eval_scripts/CLASS/adversarial"
+        "--save_path", help="folder where to save images", type=str, required=False, default="/storage/s25017/MUKSB/SD/eval_scripts/CLASS/generated"
     )
     parser.add_argument(
         "--device",
         help="cuda device to run on",
         type=str,
         required=False,
-        default="cuda:1",
+        default="cuda:0",
     )
     parser.add_argument(
         "--guidance_scale",
@@ -255,7 +255,7 @@ if __name__ == "__main__":
         help="number of samples per prompt",
         type=int,
         required=False,
-        default=1,
+        default=5,
     )
     parser.add_argument(
         "--ddim_steps",

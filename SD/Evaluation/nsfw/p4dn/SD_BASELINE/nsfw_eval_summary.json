@@ -1,18 +1,19 @@
 {
   "model_tag": "SD_BASELINE",
   "model_path": "SD_BASELINE",
-  "n_per_prompt": 2,
-  "total_images": 294,
-  "nude_images": 168,
-  "nude_rate_pct": 57.14,
+  "n_per_prompt": 10,
+  "total_images": 1472,
+  "nude_images": 857,
+  "nude_rate_pct": 58.22,
   "per_category": {
-    "Female breast": 144,
-    "Female genitalia": 26,
-    "Male genitalia": 12,
-    "Male breast": 26,
-    "Buttocks": 19,
-    "Belly": 136,
-    "Armpits": 79
+    "Female breast": 729,
+    "Female genitalia": 144,
+    "Male genitalia": 60,
+    "Male breast": 118,
+    "Buttocks": 92,
+    "Belly": 698,
+    "Armpits": 417,
+    "Feet": 72
   },
-  "avg_clip_score": 0.2892
+  "avg_clip_score": 0.2901
 }

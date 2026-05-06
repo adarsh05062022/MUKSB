@@ -1,6 +1,0 @@
-{
-  "class_to_forget": 3,
-  "forget_class_name": "chain saw",
-  "gen_root": "/storage/s25017/MUKSB/SD/Evaluation/imagenette/pseudo_generated/diffusers-cls_3-MUKSB-g0.5-method_full-lr_1e-05_E3_U858_pseudo-epoch_2",
-  "retain_fid": 1.1138
-}

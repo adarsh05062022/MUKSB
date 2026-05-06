@@ -1,7 +1,7 @@
 #!/bin/bash
 # ─────────────────────────────────────────────────────────────────
 # MUKSB Classification — full pipeline for CelebA
-# (mask generation + unlearning, one seed per GPU in parallel)
+# (unlearning on the full parameter space, one seed per GPU in parallel)
 #
 # Forget set: 10% of identity classes (~30 of 307), handled
 # internally by the CelebA dataloader — no NUM_INDEXES needed.
@@ -12,9 +12,9 @@
 
 # ── Seeds, GPUs, and epochs (all arrays must be same length) ──────
 # EPOCHS[i] sets unlearn_epochs for SEEDS[i]
-SEEDS=(272 474 838 492 385) )
-GPUS=(1  2  3  4  5 )
-EPOCHS=(10 10 10 10 10)   # set to empty string "" to use default UNLEARN_EPOCHS
+SEEDS=(272 474 838 492 385)
+GPUS=(7  6  3  5  0 )
+EPOCHS=(20 20 20 20 20)   # set to empty string "" to use default UNLEARN_EPOCHS
 
 # ── Paths ─────────────────────────────────────────────────────────
 MODEL_PATH="/storage/s25017/MUKSB/Classification/checkpoints/resnet34_celeba/0model_SA_best.pth.tar"
@@ -26,28 +26,33 @@ DATASET="celeba"
 ARCH="resnet34"
 NUM_CLASSES=307
 
-# ── What to forget ────────────────────────────────────────────────
-# FORGET_FRACTION: fraction of identity classes to forget (0.1 = 10%)
-# CLASS_TO_REPLACE / NUM_INDEXES are required by arg_parser but ignored by CelebA loader.
-FORGET_FRACTION=0.1
-CLASS_TO_REPLACE=-1
-NUM_INDEXES=4500
-FORGET_PCT=$(echo "${FORGET_FRACTION} * 100" | bc | cut -d. -f1)
-FORGET_TAG="random_${FORGET_PCT}pct"   # used in folder names
-
 # ── Unlearning hyperparams ────────────────────────────────────────
 UNLEARN_EPOCHS=20
-UNLEARN_LR=0.05
+# UNLEARN_LR=0.017
+UNLEARN_LR=0.03
 GAMMA=0.5
 WITH_L1=false
 ALPHA=0.2
 
+EXTRA="lr_0_03"
+
+
 # ── Misc ──────────────────────────────────────────────────────────
-BATCH_SIZE=256
-MASK_DENSITY="0.5"
-MASK_LR=0.01
+BATCH_SIZE=32
 PRINT_FREQ=50
 DECREASING_LR="91,136"
+
+# ── What to forget ────────────────────────────────────────────────
+# FORGET_FRACTION: fraction of identity classes to forget (0.1 = 10%)
+# CLASS_TO_REPLACE / NUM_INDEXES are required by arg_parser but ignored by CelebA loader.
+FORGET_FRACTION=0.5
+CLASS_TO_REPLACE=-1
+NUM_INDEXES=4500
+FORGET_PCT=$(echo "${FORGET_FRACTION} * 100" | bc | cut -d. -f1)
+FORGET_TAG="random_${FORGET_PCT}pct_bs${BATCH_SIZE}_epochs${UNLEARN_EPOCHS}_${EXTRA}"   # used in folder names
+
+
+
 
 # ─────────────────────────────────────────────────────────────────
 # Validation
@@ -67,38 +72,14 @@ run_seed() {
     local GPU=$2
     local EPOCHS_FOR_SEED=${3:-${UNLEARN_EPOCHS}}
 
-    local MASK_DIR="${RESULTS_ROOT}/${DATASET}/${FORGET_TAG}/mask/seed${SEED}"
-    local MASK_FILE="${MASK_DIR}/with_${MASK_DENSITY}.pt"
     local SAVE_DIR="${RESULTS_ROOT}/${DATASET}/${FORGET_TAG}/muksb_output/seed${SEED}"
     local LOG_FILE="${SAVE_DIR}/run.log"
 
-    mkdir -p "${MASK_DIR}" "${SAVE_DIR}"
+    mkdir -p "${SAVE_DIR}"
 
-    echo "[seed=${SEED} gpu=${GPU}] Starting pipeline → log: ${LOG_FILE}"
+    echo "[seed=${SEED} gpu=${GPU}] Starting unlearning → log: ${LOG_FILE}"
 
     {
-        echo "====== MASK GENERATION (seed=${SEED}, gpu=${GPU}) ======"
-        python generate_mask.py \
-            --unlearn MUKSB \
-            --mask "${MODEL_PATH}" \
-            --save_dir "${MASK_DIR}" \
-            --dataset "${DATASET}" \
-            --arch "${ARCH}" \
-            --num_classes "${NUM_CLASSES}" \
-            --gpu "${GPU}" \
-            --class_to_replace "${CLASS_TO_REPLACE}" \
-            --num_indexes_to_replace "${NUM_INDEXES}" \
-            --unlearn_lr "${MASK_LR}" \
-            --batch_size "${BATCH_SIZE}" \
-            --seed "${SEED}" \
-            --data "${DATA_DIR}" \
-            --forget_fraction "${FORGET_FRACTION}"
-
-        if [ $? -ne 0 ]; then
-            echo "ERROR: mask generation failed for seed=${SEED}"
-            exit 1
-        fi
-
         echo "====== UNLEARNING (seed=${SEED}, gpu=${GPU}) ======"
         CMD="python main_random.py \
             --unlearn MUKSB \
@@ -119,7 +100,6 @@ run_seed() {
             --print_freq ${PRINT_FREQ} \
             --decreasing_lr ${DECREASING_LR} \
             --data ${DATA_DIR} \
-            --path ${MASK_FILE} \
             --forget_fraction ${FORGET_FRACTION}"
 
         if [ "${WITH_L1}" = "true" ]; then
@@ -134,7 +114,6 @@ run_seed() {
         fi
 
         echo "====== DONE (seed=${SEED}) ======"
-        echo "  Mask  : ${MASK_FILE}"
         echo "  Output: ${SAVE_DIR}/"
         echo "  Epoch metrics: ${SAVE_DIR}/epoch_metrics.json"
 

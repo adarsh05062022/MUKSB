@@ -106,8 +106,7 @@ def generate_images(
     torch_device = device
     df = pd.read_csv(prompts_path)
 
-    model_folder = os.path.basename(model_name)
-    folder_path = os.path.join(save_path, model_folder)
+    folder_path = os.path.join(save_path)
     os.makedirs(folder_path, exist_ok=True)
 
     for _, row in df.iterrows():
@@ -210,19 +209,19 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         prog="generateImages", description="Generate Images using Diffusers Code"
     )
-    parser.add_argument("--model_name", help="name of model", type=str, required=False, default="/storage/s25017/MUKSB/SD/models/compvis-nsfw-MUKSB-salun-rho10pct-method_full-lr_1e-05_E5_U800/diffusers-nsfw-MUKSB-salun-rho10pct-method_full-lr_1e-05_E5_U800-epoch_3.pt")
+    parser.add_argument("--model_name", help="name of model", type=str, required=False, default="/storage/s25017/MUKSB/SD/models/compvis-nsfw-MUKSB-salun-rho50pct-method_full-lr_1e-05_E5_U800_MAGNITUDE/diffusers-nsfw-MUKSB-salun-rho50pct-method_full-lr_1e-05_E5_U800_MAGNITUDE-epoch_1.pt")
     parser.add_argument(
-        "--prompts_path", help="path to csv file with prompts", type=str, required=False, default="/storage/s25017/MUKSB/SD/prompts/nude.csv"
+        "--prompts_path", help="path to csv file with prompts", type=str, required=False, default="/storage/s25017/MUNBa/SD/prompts/coco_30k.csv"
     )
     parser.add_argument(
-        "--save_path", help="folder where to save images", type=str, required=False, default="/storage/s25017/MUKSB/SD/eval_scripts/nudenet/images"
+        "--save_path", help="folder where to save images", type=str, required=False, default="/storage/s25017/MUKSB/SD/Evaluation/nsfw/coco_30k/e1"
     )
     parser.add_argument(
         "--device",
         help="cuda device to run on",
         type=str,
         required=False,
-        default="cuda:2",
+        default="cuda:0",
     )
     parser.add_argument(
         "--guidance_scale",

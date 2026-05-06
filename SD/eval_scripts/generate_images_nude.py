@@ -1,4 +1,3 @@
-#generate-images.py
 import argparse
 import os
 
@@ -13,7 +12,15 @@ from diffusers import (
 from PIL import Image
 from transformers import CLIPTextModel, CLIPTokenizer
 
-import gc
+# import clip
+# import os
+# def load_checkpoint(device, save_path, pruning, filename="checkpoint.pth.tar"):
+#     filepath = os.path.join(save_path, str(pruning) + filename)
+#     if os.path.exists(filepath):
+#         print("Load checkpoint from:{}".format(filepath))
+#         return torch.load(filepath, device)
+#     print("Checkpoint not found! path:{}".format(filepath))
+#     return None
 
 
 def generate_images(
@@ -71,6 +78,17 @@ def generate_images(
         "CompVis/stable-diffusion-v1-4", subfolder="tokenizer"
     )
     text_encoder = CLIPTextModel.from_pretrained("openai/clip-vit-large-patch14")
+
+    # # [1] Load original model
+    # model, preprocess = clip.load('ViT-L/14', device=device)  # need to change clip model, return x where x.shape = [batch_size, n_ctx, transformer.width] in the encode_text function
+    # model.eval()
+    # # [2] Load unlearned model
+    # checkpoint = load_checkpoint(device, './models', 'Nash', filename="checkpoint.pth.tar")
+    # model.load_state_dict(checkpoint, strict=False)
+    # model.eval()
+    # model.to(device)
+    # text_encoder = model.encode_text
+
     # 3. The UNet model for generating the latents.
     unet = UNet2DConditionModel.from_pretrained(
         "CompVis/stable-diffusion-v1-4", subfolder="unet"
@@ -104,8 +122,8 @@ def generate_images(
     torch_device = device
     df = pd.read_csv(prompts_path)
 
-    model_folder = os.path.basename(model_name)
-    folder_path = os.path.join(save_path, model_folder)
+    folder_path = os.path.join("CLASS/NSFW/",save_path, os.path.basename(model_name))
+
     os.makedirs(folder_path, exist_ok=True)
 
     for _, row in df.iterrows():
@@ -129,7 +147,7 @@ def generate_images(
 
         batch_size = len(prompt)
 
-        for i in range(1):
+        for i in range(2):
             text_input = tokenizer(
                 prompt,
                 padding="max_length",
@@ -138,7 +156,10 @@ def generate_images(
                 return_tensors="pt",
             )
 
-            text_embeddings = text_encoder(text_input.input_ids.to(torch_device))[0]
+            text_embeddings = text_encoder(text_input.input_ids.to(torch_device))[0]  # [bs, 77, 768], 77 is the max length of the prompt, 768 is the embedding size
+            # text_embeddings_add = torch.randn((batch_size, 77, 768-512), generator=generator).to(device)
+            # text_embeddings = torch.cat([text_embeddings, text_embeddings_add], dim=-1)
+            # print(text_embeddings.shape)
 
             max_length = text_input.input_ids.shape[-1]
             uncond_input = tokenizer(
@@ -147,9 +168,13 @@ def generate_images(
                 max_length=max_length,
                 return_tensors="pt",
             )
-            uncond_embeddings = text_encoder(uncond_input.input_ids.to(torch_device))[0]
+            uncond_embeddings = text_encoder(uncond_input.input_ids.to(torch_device))[0]  # [bs, 77, 768]
+            # uncond_embeddings_add = torch.randn((batch_size, 77, 768-512), generator=generator).to(device)
+            # uncond_embeddings = torch.cat([uncond_embeddings, uncond_embeddings_add], dim=-1)
+            # print(uncond_embeddings.shape)
 
-            text_embeddings = torch.cat([uncond_embeddings, text_embeddings])
+            text_embeddings = torch.cat([uncond_embeddings, text_embeddings])  # [2xbs, 77, 768]
+            # print(text_embeddings.shape)
 
             latents = torch.randn(
                 (batch_size, unet.in_channels, height // 8, width // 8),
@@ -198,36 +223,27 @@ def generate_images(
             images = (image * 255).round().astype("uint8")
             pil_images = [Image.fromarray(image) for image in images]
             for num, im in enumerate(pil_images):
-                im.save(f"{folder_path}/{case_number}_{i * 10 + num}.png")
+                im.save(f"{folder_path}/{case_number}_{i * 25 + num}.png")
                 # im.save(f"{folder_path}/{case_number}_{num}.png")
-    
-    del vae
-    del text_encoder
-    del tokenizer
-    del unet
-    del scheduler  
-
-    gc.collect()
-    torch.cuda.empty_cache()
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         prog="generateImages", description="Generate Images using Diffusers Code"
     )
-    parser.add_argument("--model_name", help="name of model", type=str, required=False, default="/storage/s25017/MUKSB/SD/models/compvis-nsfw-MUKSB-salun-rho10pct-method_full-lr_1e-05_E5_U800/diffusers-nsfw-MUKSB-salun-rho10pct-method_full-lr_1e-05_E5_U800-epoch_1.pt")
+    parser.add_argument("--model_name", help="name of model", type=str, required=False, default="/storage/s25017/MUNBa/SD/models/compvis-nsfw-MUNBa-method_xattn-lr_1e-05_E40_U1000_beta_100/diffusers-nsfw-MUNBa-method_xattn-lr_1e-05_E40_U1000_beta_100-epoch_24.pt")
     parser.add_argument(
-        "--prompts_path", help="path to csv file with prompts", type=str, required=False, default="/storage/s25017/MUKSB/SD/prompts/limitedi2p.csv" 
+        "--prompts_path", help="path to csv file with prompts", type=str, required=False, default="/storage/s25017/MUNBa/SD/prompts/unsafe-prompts4703copy.csv"
     )
     parser.add_argument(
-        "--save_path", help="folder where to save images", type=str, required=False, default="/storage/s25017/MUKSB/SD/eval_scripts/LIMITED"
+        "--save_path", help="folder where to save images", type=str, required=False, default=""
     )
     parser.add_argument(
         "--device",
         help="cuda device to run on",
         type=str,
         required=False,
-        default="cuda:3",
+        default="cuda:0",
     )
     parser.add_argument(
         "--guidance_scale",
@@ -255,7 +271,7 @@ if __name__ == "__main__":
         help="number of samples per prompt",
         type=int,
         required=False,
-        default=5,
+        default=10,
     )
     parser.add_argument(
         "--ddim_steps",

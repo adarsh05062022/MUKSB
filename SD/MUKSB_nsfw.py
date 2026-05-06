@@ -1,31 +1,3 @@
-"""
-SD/MUKSB_nsfw.py — MUKSB
-Kalai-Smorodinsky bargaining unlearning for NSFW concept removal in Stable Diffusion.
-
-The KS merge rule:
-    g* ∝ ĝ_r + ĝ_f   (unit-vector sum, satisfies Monotonicity axiom)
-    λ_KS = ĝ_r · g̃*  (common proportional gain)
-
-Steps are skipped when the retain and forget gradients are anti-parallel
-(||ĝ_r + ĝ_f|| < 1e-6), i.e. no beneficial compromise exists.
-
-If --mask_variant is given, a sparse parameter mask is built at runtime
-before training using build_mask_nsfw() from mask_variants.py.  The KS
-update is then restricted to the masked subspace (parameters outside the
-mask receive a zero update).  If --mask_variant is omitted, all selected
-parameters are updated.
-
-Usage (run from MUKSB/SD/)
------
-  # No mask — all selected parameters updated:
-  python /storage/s25017/MUKSB/SD/MUKSB_nsfw.py \\
-      --train_method full --epochs 5 --device 0
-
-  # With mask — built at runtime:
-  python /storage/s25017/MUKSB/SD/MUKSB_nsfw.py \\
-      --train_method full --epochs 5 --device 0 \\
-      --mask_variant dual_fisher --mask_density 0.1
-"""
 import argparse
 import gc
 import os
@@ -49,33 +21,50 @@ from logger.logger import setup_logger
 from mask_variants import build_mask_nsfw, MASK_VARIANT_CHOICES
 
 
+EXTRA = "MAGNITUDE"
+
+
 # ─────────────────────────────────────────────────────────────────────────────
-# KS bargaining core
+# KS bargaining core  (magnitude-aware)
 # ─────────────────────────────────────────────────────────────────────────────
 
-def ks_step(gr_flat: torch.Tensor, gf_flat: torch.Tensor, eps: float = 1e-8):
-    """
-    Kalai-Smorodinsky gradient merge.
+def ks_step(
+    gr_flat: torch.Tensor,
+    gf_flat: torch.Tensor,
+    eps: float = 1e-8,
+):
+    norm_gr = torch.clamp(torch.norm(gr_flat), min=1e-6)
+    norm_gf = torch.clamp(torch.norm(gf_flat), min=1e-6)
 
-    Returns
-    -------
-    lambda_ks : scalar gain  (0.0 signals anti-parallel → skip step)
-    cos_phi   : cosine between gr and gf
-    g_star    : merged direction (unit vector), zero tensor if anti-parallel
-    """
-    norm_r = torch.clamp(torch.norm(gr_flat), min=1e-6)
-    norm_f = torch.clamp(torch.norm(gf_flat), min=1e-6)
-    cos_phi = torch.clamp(torch.dot(gr_flat, gf_flat) / (norm_r * norm_f),
-                          -1 + eps, 1 - eps)
-    g_hat_r = gr_flat / norm_r
-    g_hat_f = gf_flat / norm_f
-    g_sum   = g_hat_r + g_hat_f
+    cos_phi = torch.clamp(
+        torch.dot(gr_flat, gf_flat) / (norm_gr * norm_gf),
+        -1.0 + eps, 1.0 - eps,
+    )
+
+    g_hat_r = gr_flat / norm_gr
+    g_hat_f = gf_flat / norm_gf
+
+    g_sum    = g_hat_r + g_hat_f
     norm_sum = torch.norm(g_sum)
-    if norm_sum < 1e-6:                          # anti-parallel → skip
-        return torch.tensor(0.0, device=gr_flat.device), cos_phi, torch.zeros_like(gr_flat)
-    g_star    = g_sum / norm_sum
+
+    if norm_sum < 1e-6:
+        zero = torch.zeros_like(gr_flat)
+        return (
+            torch.tensor(0.0, device=gr_flat.device),
+            cos_phi,
+            zero,
+            torch.tensor(0.0, device=gr_flat.device),
+        )
+
+    g_star = g_sum / norm_sum
+
+    # ── SCALE: harmonic mean of gradient norms ────────────────────────────────
+    effective_scale = 2.0 * norm_gr * norm_gf / (norm_gr + norm_gf)
+
+    # ── diagnostic: common proportional gain ──────────────────────────────────
     lambda_ks = torch.dot(g_hat_r, g_star)
-    return lambda_ks, cos_phi, g_star
+
+    return lambda_ks, cos_phi, g_star, effective_scale
 
 
 def _flatten_grads(params, grads):
@@ -173,7 +162,8 @@ def MUKSB(
     logger,
 ):
     total_start = time.time()
-    logger.info("MUKSB NSFW training started")
+    logger.info("======== MUKSB NSFW (Magnitude-Aware KS Bargaining) TRAINING STARTED ========")
+    logger.info(f"EXTRA = {EXTRA}")
 
     model = setup_model(config_path, ckpt_path, device)
     criteria = torch.nn.MSELoss()
@@ -211,6 +201,8 @@ def MUKSB(
             if "attn1" in name and ("input_blocks.4." in name or "input_blocks.7." in name):
                 parameters.append(param)
 
+    logger.info(f"Trainable params: {sum(p.numel() for p in parameters):,}")
+
     # ── build importance mask (if requested) ─────────────────────────────────
     if mask_variant is not None:
         logger.info(f"Building mask: variant={mask_variant}  density={mask_density}")
@@ -234,11 +226,14 @@ def MUKSB(
         run_tag = (
             f"compvis-nsfw-MUKSB-{mask_variant}"
             f"-rho{int(mask_density*100)}pct"
-            f"-method_{train_method}-lr_{lr}_E{epochs}_U{num_forget}"
+            f"-method_{train_method}-lr_{lr}_E{epochs}_U{num_forget}_{EXTRA}"
         )
     else:
         mask = None
-        run_tag = f"compvis-nsfw-MUKSB-method_{train_method}-lr_{lr}_E{epochs}_U{num_forget}"
+        run_tag = (
+            f"compvis-nsfw-MUKSB"
+            f"-method_{train_method}-lr_{lr}_E{epochs}_U{num_forget}_{EXTRA}"
+        )
 
     model.train()
     optimizer = torch.optim.Adam(parameters, lr=lr)
@@ -249,14 +244,13 @@ def MUKSB(
 
     for epoch in range(epochs):
         epoch_start = time.time()
-        logger.info(f"Epoch {epoch + 1}/{epochs}")
+        logger.info(f"Epoch {epoch + 1}/{epochs} started")
 
         remain_iter = iter(remain_dl)
 
         with tqdm(total=len(forget_dl), desc=f"Epoch {epoch + 1}") as pbar:
             for forget_batch in forget_dl:
                 model.train()
-                optimizer.zero_grad()
 
                 # ── retain batch ────────────────────────────────────────────
                 try:
@@ -288,11 +282,10 @@ def MUKSB(
 
                 loss_u = criteria(forget_out, pseudo_out) * beta
 
-                # ── KS gradient merge ───────────────────────────────────────
-                optimizer.zero_grad()
+                # ── magnitude-aware KS gradient merge ──────────────────────
                 grads_r = torch.autograd.grad(loss_r, parameters, retain_graph=True,
                                                allow_unused=True)
-                grads_f = torch.autograd.grad(loss_u, parameters, retain_graph=True,
+                grads_f = torch.autograd.grad(loss_u, parameters,
                                                allow_unused=True)
 
                 gr_flat = _flatten_grads(parameters, grads_r)
@@ -306,30 +299,30 @@ def MUKSB(
                     gr_masked = gr_flat
                     gf_masked = gf_flat
 
-                lambda_ks, cos_phi, g_star = ks_step(gr_masked, gf_masked)
+                lambda_ks, cos_phi, g_star, effective_scale = ks_step(
+                    gr_masked, gf_masked
+                )
 
-                # later try to find the gradient update with all the parameters and only updating
-                #  the masked parameters and see if it is better than only finding the gradient update
-                #  with the masked parameters and updating only those parameters
-
-                
-
-                if lambda_ks.item() == 0.0:          # anti-parallel → skip
+                if torch.norm(g_star).item() < 1e-6:  # anti-parallel → skip
+                    logger.info(
+                        f"step={step}: anti-parallel gradients "
+                        f"(cos_φ={cos_phi.item():.3f}), skipping update"
+                    )
                     del gr_flat, gf_flat, gr_masked, gf_masked, grads_r, grads_f, g_star
-                    torch.cuda.empty_cache(); gc.collect()
                     pbar.update(1)
                     continue
 
+                g_star_scaled = effective_scale * g_star
                 del gr_masked, gf_masked, grads_r, grads_f
 
-                # Expand g_star back to the full parameter space (zeros outside mask)
+                # Expand back to the full parameter space (zeros outside mask)
                 if mask is not None:
                     update_full = torch.zeros_like(gr_flat)
-                    update_full[mask] = g_star
+                    update_full[mask] = g_star_scaled
                 else:
-                    update_full = g_star
+                    update_full = g_star_scaled
 
-                del gr_flat, gf_flat, g_star
+                del gr_flat, gf_flat, g_star, g_star_scaled
 
                 # Write update into model gradients
                 optimizer.zero_grad()
@@ -344,16 +337,18 @@ def MUKSB(
                             p.grad += lg.detach()
 
                 nn.utils.clip_grad_norm_(parameters, 1.0)
-                losses.append((loss_r + loss_u).item() / batch_size)
                 optimizer.step()
+
+                losses.append((loss_r + loss_u).item() / batch_size)
                 step += 1
-                torch.cuda.empty_cache()
-                gc.collect()
 
                 if step % 10 == 0:
                     logger.info(
-                        f"step {step} | loss_r={loss_r:.4f} | loss_u={loss_u:.4f} "
-                        f"| λ_KS={lambda_ks.item():.4f} | cos_φ={cos_phi.item():.4f}"
+                        f"step={step}"
+                        f"  λ_KS={lambda_ks.item():.4f}"
+                        f"  cos_φ={cos_phi.item():.4f}"
+                        f"  loss_r={loss_r.item():.4f}"
+                        f"  loss_u={loss_u.item():.4f}"
                     )
                     save_history(losses, run_tag, "nsfw")
 
@@ -369,11 +364,12 @@ def MUKSB(
                        compvis_config_file=config_path,
                        diffusers_config_file=diffusers_config_path,
                        save_compvis=False, save_diffusers=True, logger=logger)
+        torch.cuda.empty_cache(); gc.collect()
 
     total_time = time.time() - total_start
+    logger.info("======== MUKSB NSFW TRAINING FINISHED ========")
     logger.info(
-        f"======== TRAINING FINISHED ========"
-        f"\nTotal: {total_time:.1f}s ({total_time/60:.2f} min)"
+        f"Total: {total_time:.1f}s ({total_time/60:.2f} min | {total_time/3600:.2f} hrs)"
     )
     model.eval()
     save_model(model, run_tag, epochs,
@@ -381,6 +377,7 @@ def MUKSB(
                diffusers_config_file=diffusers_config_path,
                save_compvis=False, save_diffusers=True, logger=logger)
     save_history(losses, run_tag, "nsfw")
+    logger.info(f"Model and loss history saved under: models/{run_tag}/")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -388,10 +385,10 @@ def MUKSB(
 # ─────────────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    logger, log_file = setup_logger(name="MUKSB_nsfw")
+    logger, log_file = setup_logger(name="MUKSB_nsfw_magnitude")
 
     parser = argparse.ArgumentParser(
-        description="MUKSB: KS-Bargaining NSFW concept unlearning for Stable Diffusion"
+        description="MUKSB Magnitude-Aware: KS-Bargaining NSFW concept unlearning for Stable Diffusion"
     )
     parser.add_argument("--train_method",         type=str,   default="full")
     parser.add_argument("--batch_size",            type=int,   default=8)
@@ -409,7 +406,7 @@ if __name__ == "__main__":
                             "  salun         — gradient magnitude |∇L_f| (SalUn-style)\n"
                             "  dual_fisher   — dual Fisher score (proposed)"
                         ))
-    parser.add_argument("--mask_density",          type=float, default=0.1,
+    parser.add_argument("--mask_density",          type=float, default=0.5,
                         help="Fraction ρ of parameters to update when using a mask (default: 0.1)")
     parser.add_argument("--lambda_tradeoff",       type=float, default=1.0,
                         help="λ in S_diff = F̂_f − λ·F̂_r  (dual_fisher only)")
@@ -418,7 +415,7 @@ if __name__ == "__main__":
     parser.add_argument("--diffusers_config_path", type=str,
                         default="diffusers_unet_config.json")
     parser.add_argument("--device",                type=str,   default="2")
-    parser.add_argument("--image_size",            type=int,   default=256)
+    parser.add_argument("--image_size",            type=int,   default=512)
     parser.add_argument("--ddim_steps",            type=int,   default=50)
     parser.add_argument("--with_l1",               action="store_true", default=False)
     parser.add_argument("--alpha",                 type=float, default=1e-4,
@@ -426,12 +423,12 @@ if __name__ == "__main__":
     parser.add_argument("--beta",                  type=float, default=100.0,
                         help="Scale factor for forget loss")
     parser.add_argument("--forget_path",           type=str,
-                        default="/storage/s25017/Datasets/NSFW_removal/NSFW/nude")
+                        default="/storage/s25017/Datasets/NSFW_removal/nude")
     parser.add_argument("--remain_path",           type=str,
                         default="/storage/s25017/Datasets/NSFW_removal/with_dress")
     args = parser.parse_args()
 
-    logger.info("======== MUKSB NSFW TRAINING STARTED ========")
+    logger.info("======== MUKSB NSFW MAGNITUDE TRAINING STARTED ========")
     logger.info(f"Log file : {log_file}")
     logger.info(f"Args     : {vars(args)}")
 
@@ -449,7 +446,7 @@ if __name__ == "__main__":
         lr                   = args.lr,
         config_path          = args.config_path,
         ckpt_path            = args.ckpt_path,
-        mask_variant         = args.mask_variant,
+        mask_variant         = args.mask_variant if args.mask_variant != "None" else None,
         mask_density         = args.mask_density,
         lambda_tradeoff      = args.lambda_tradeoff,
         diffusers_config_path= args.diffusers_config_path,

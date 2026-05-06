@@ -56,5 +56,5 @@ def find_missing_ranges(folder_path, extension=".png"):
 
 
 # 🔧 Usage
-folder_path = "/storage/s25017/MUKSB/SD/eval_scripts/CLASS/COCO_30k_NSFW_E3_512"
+folder_path = "/storage/s25017/MUNBa/SD/eval_scripts/CLASS/COCO_30k_NSFW_E3_512"
 find_missing_ranges(folder_path)

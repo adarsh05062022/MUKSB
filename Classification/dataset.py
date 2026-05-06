@@ -341,7 +341,8 @@ def celeba_dataloaders(batch_size=128, data_dir="/home/jing/dataset/CelebAMaskHQ
     test_remain = Subset(test_set,  np.where(np.isin(test_set.targets,  rem_ids))[0])
 
     def _init_fn(w): np.random.seed(int(seed))
-    kw = dict(num_workers=num_workers, pin_memory=True, worker_init_fn=_init_fn if seed is not None else None)
+    kw = dict(num_workers=8, pin_memory=True, persistent_workers=True, prefetch_factor=4,
+              worker_init_fn=_init_fn if seed is not None else None)
     print(f"Train: {len(train_set)}, Test: {len(test_set)}")
     return (DataLoader(train_set,   batch_size, shuffle=True,  **kw),
             DataLoader(remain_set,  batch_size, shuffle=False, **kw),

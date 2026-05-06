@@ -1,40 +1,3 @@
-"""
-Classification/unlearn/MUKSB.py
-================================
-MUKSB — Machine Unlearning via Kalai-Smorodinsky Bargaining
-Classification component (ResNet / ViT / etc.)
-
-Gradient Merge — Kalai-Smorodinsky (KS) Bargaining
-----------------------------------------------------
-Direct port of SD/MUKSB_cls_magnitude.py to the classification setting.
-The Nash bargaining weights in MUNBa are replaced by the KS closed-form
-solution with three targeted improvements:
-
-  Fix 2 — Harmonic-scale step size (always active)
-      s_KS = 2·||g_r||·||g_f|| / (||g_r|| + ||g_f||)
-      Curvature-aware scale; replaces the unjustified lambda_ks * g_star.
-
-  Fix 3 — Asymmetric priority (gamma)
-      gamma=0.5  → symmetric KS (equal proportional gain, default)
-      gamma>0.5  → retain-favoured bisector
-      gamma<0.5  → forget-favoured bisector
-
-  Fix 4 — Asymmetric loss scales handled via gamma (see Fix 3).
-
-Data / optimiser setup mirrors MUNBa.py exactly so results are comparable.
-Forget loss: cross-entropy against a uniformly random relabelling of the
-forget batch (same as MUNBa).
-
-Signature (same as every method in this package):
-    muksb(data_loaders, model, criterion, args, mask=None) -> float
-
-New args fields consumed (all optional with safe defaults):
-    args.gamma        : float  — retain priority; default 0.5 (symmetric KS)
-    args.with_l1      : bool   — add L1 regularisation on top of KS direction
-    args.alpha        : float  — L1 weight (annealed over epochs)
-    args.num_classes  : int    — number of classes (needed for random relabelling)
-"""
-
 import gc
 import json
 import os
@@ -57,26 +20,8 @@ from .sam import SAM
 def ks_step(
     gr_flat: torch.Tensor,
     gf_flat: torch.Tensor,
-    gamma: float = 0.5,
     eps: float = 1e-8,
 ):
-    """
-    Kalai-Smorodinsky bargaining solution for gradient merging.
-
-    Parameters
-    ----------
-    gr_flat : Tensor, shape (D,)   — flattened retain gradient
-    gf_flat : Tensor, shape (D,)   — flattened forget gradient
-    gamma   : float                — retain directional priority in [0, 1]
-    eps     : float                — numerical stability floor
-
-    Returns
-    -------
-    lambda_ks       : Tensor (scalar) — diagnostic cos(φ/2)
-    cos_phi         : Tensor (scalar) — cosine between the two gradients
-    g_star          : Tensor (D,)     — KS-merged unit direction (zero if anti-parallel)
-    effective_scale : Tensor (scalar) — harmonic mean of gradient norms
-    """
     norm_gr = torch.clamp(torch.norm(gr_flat), min=1e-6)
     norm_gf = torch.clamp(torch.norm(gf_flat), min=1e-6)
 
@@ -88,7 +33,7 @@ def ks_step(
     g_hat_r = gr_flat / norm_gr
     g_hat_f = gf_flat / norm_gf
 
-    g_sum    = gamma * g_hat_r + (1.0 - gamma) * g_hat_f
+    g_sum    = g_hat_r + g_hat_f
     norm_sum = torch.norm(g_sum)
 
     if norm_sum < 1e-6:
@@ -136,27 +81,15 @@ def l1_regularization(model):
 # ─────────────────────────────────────────────────────────────────────────────
 
 def muksb(data_loaders, model, criterion, args, mask=None):
-    """
-    MUKSB unlearning for image classifiers — KS bargaining.
-
-    Drop-in replacement for munba() with Nash weights replaced by KS gradients.
-    """
     forget_loader = data_loaders["forget"]
     retain_loader = data_loaders["retain"]
     device        = torch.device(f"cuda:{int(args.gpu)}")
 
-    # ── gamma: retain priority ────────────────────────────────────────────────
-    gamma       = getattr(args, "gamma",       0.5)
     with_l1     = getattr(args, "with_l1",     False)
     alpha_l1    = getattr(args, "alpha",       1e-4)
     num_classes = getattr(args, "num_classes", 10)
 
-    assert 0.0 <= gamma <= 1.0, "args.gamma must be in [0, 1]"
-    print(
-        f"[MUKSB] KS bargaining | gamma={gamma} "
-        f"({'symmetric' if gamma == 0.5 else 'retain-favoured' if gamma > 0.5 else 'forget-favoured'}) "
-        f"| with_l1={with_l1}"
-    )
+    print(f"[MUKSB] KS bargaining | with_l1={with_l1}")
 
     # ── optimiser (mirrors MUNBa) ─────────────────────────────────────────────
     decreasing_lr = list(map(int, args.decreasing_lr.split(",")))
@@ -184,6 +117,7 @@ def muksb(data_loaders, model, criterion, args, mask=None):
     skipped_steps   = 0
     total_steps     = 0
     cos_phi_history = []
+    conflict_log    = []   # per-step gradient-cosine log for plot_conflict.py
 
     epoch_metrics      = []
     epoch_metrics_path = os.path.join(args.save_dir, "epoch_metrics.json")
@@ -275,9 +209,27 @@ def muksb(data_loaders, model, criterion, args, mask=None):
 
                 # ── KS bargaining ─────────────────────────────────────────────
                 lambda_ks, cos_phi, g_star, effective_scale = ks_step(
-                    gr_input, gf_input, gamma=gamma,
+                    gr_input, gf_input,
                 )
                 cos_phi_history.append(cos_phi.item())
+
+                # Gradient-conflict log: g_r vs g_f, and each vs MUKSB / MOO-sum updates
+                with torch.no_grad():
+                    _g_muksb = effective_scale * g_star
+                    _g_naive = gr_input + gf_input
+                    def _cos(a, b, _eps=1e-8):
+                        n = a.norm().clamp_min(_eps) * b.norm().clamp_min(_eps)
+                        return (a @ b / n).item()
+                    conflict_log.append({
+                        "epoch": epoch,
+                        "step":  total_steps,
+                        "cos_rf":      cos_phi.item(),
+                        "cos_f_muksb": _cos(gf_input, _g_muksb),
+                        "cos_r_muksb": _cos(gr_input, _g_muksb),
+                        "cos_f_naive": _cos(gf_input, _g_naive),
+                        "cos_r_naive": _cos(gr_input, _g_naive),
+                    })
+                    del _g_muksb, _g_naive
 
                 # Anti-parallel: g_star is zero — skip update
                 if torch.norm(g_star).item() < 1e-6:
@@ -393,6 +345,10 @@ def muksb(data_loaders, model, criterion, args, mask=None):
         })
         with open(epoch_metrics_path, "w") as f:
             json.dump(epoch_metrics, f, indent=2)
+
+    # Dump gradient-conflict log for the plotting script
+    with open(os.path.join(args.save_dir, "conflict_log.json"), "w") as f:
+        json.dump(conflict_log, f)
 
     # ── final diagnostics ─────────────────────────────────────────────────────
     final_skip_rate = skipped_steps / max(total_steps, 1)
