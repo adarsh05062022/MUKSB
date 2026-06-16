@@ -17,7 +17,7 @@ GPUS=(7  6  3  5  0 )
 EPOCHS=(20 20 20 20 20)   # set to empty string "" to use default UNLEARN_EPOCHS
 
 # ── Paths ─────────────────────────────────────────────────────────
-MODEL_PATH="/storage/s25017/MUKSB/Classification/checkpoints/resnet34_celeba/0model_SA_best.pth.tar"
+MODEL_PATH="/scratch/s25017/MUKSB/Classification/checkpoints/resnet34_celeba/0model_SA_best.pth.tar"
 DATA_DIR="/storage/s25017/Datasets/CELEB_HQ_307"
 RESULTS_ROOT="results"
 

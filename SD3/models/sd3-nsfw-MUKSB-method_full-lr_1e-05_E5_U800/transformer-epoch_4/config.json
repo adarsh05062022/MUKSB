@@ -1,0 +1,18 @@
+{
+  "_class_name": "SD3Transformer2DModel",
+  "_diffusers_version": "0.38.0",
+  "_name_or_path": "/home/s25017/.cache/huggingface/hub/models--stabilityai--stable-diffusion-3-medium-diffusers/snapshots/ea42f8cef0f178587cf766dc8129abd379c90671/transformer",
+  "attention_head_dim": 64,
+  "caption_projection_dim": 1536,
+  "dual_attention_layers": [],
+  "in_channels": 16,
+  "joint_attention_dim": 4096,
+  "num_attention_heads": 24,
+  "num_layers": 24,
+  "out_channels": 16,
+  "patch_size": 2,
+  "pooled_projection_dim": 2048,
+  "pos_embed_max_size": 192,
+  "qk_norm": null,
+  "sample_size": 128
+}

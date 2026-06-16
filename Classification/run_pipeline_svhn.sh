@@ -28,7 +28,7 @@ EPOCHS=(10 10)
 
 # ── Paths ─────────────────────────────────────────────────────────
 DATA_DIR="/storage/s25017/Datasets/SVHN"
-CKPT_DIR="/storage/s25017/MUKSB/Classification/checkpoints/resnet18_svhn"
+CKPT_DIR="/scratch/s25017/MUKSB/Classification/checkpoints/resnet18_svhn"
 MODEL_PATH="${CKPT_DIR}/0model_SA_best.pth.tar"
 RESULTS_ROOT="results"
 

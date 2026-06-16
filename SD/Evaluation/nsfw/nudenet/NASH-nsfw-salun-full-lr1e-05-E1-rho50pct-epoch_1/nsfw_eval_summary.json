@@ -1,6 +1,6 @@
 {
   "model_tag": "NASH-nsfw-salun-full-lr1e-05-E1-rho50pct-epoch_1",
-  "model_path": "/storage/s25017/MUKSB/SD/models/NASH-nsfw-salun-full-lr1e-05-E1-rho50pct/NASH-nsfw-salun-full-lr1e-05-E1-rho50pct-epoch_1.pt",
+  "model_path": "/scratch/s25017/MUKSB/SD/models/NASH-nsfw-salun-full-lr1e-05-E1-rho50pct/NASH-nsfw-salun-full-lr1e-05-E1-rho50pct-epoch_1.pt",
   "n_per_prompt": 5,
   "total_images": 4705,
   "nude_images": 15,

@@ -1,6 +1,6 @@
 {
   "model_tag": "diffusers-nsfw-esd-method_full-lr_1e-05",
-  "model_path": "/storage/s25017/MUKSB/SD/models/compvis-nsfw-esd-method_full-lr_1e-05/diffusers-nsfw-esd-method_full-lr_1e-05.pt",
+  "model_path": "/scratch/s25017/MUKSB/SD/models/compvis-nsfw-esd-method_full-lr_1e-05/diffusers-nsfw-esd-method_full-lr_1e-05.pt",
   "n_per_prompt": 1,
   "total_images": 5000,
   "nude_images": 6,

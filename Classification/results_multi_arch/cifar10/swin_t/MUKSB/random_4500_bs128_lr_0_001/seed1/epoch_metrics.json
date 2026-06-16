@@ -1,0 +1,332 @@
+[
+  {
+    "epoch": 0,
+    "accuracy": {
+      "retain": 99.54567900782456,
+      "forget": 99.5111111111111,
+      "val": 97.68,
+      "test": 97.65
+    },
+    "skip_rate": 0.0,
+    "duration": 1583.8069636821747
+  },
+  {
+    "epoch": 1,
+    "accuracy": {
+      "retain": 99.54567900782456,
+      "forget": 99.53333333333333,
+      "val": 97.72,
+      "test": 97.58
+    },
+    "skip_rate": 0.0,
+    "duration": 1907.1242060661316
+  },
+  {
+    "epoch": 2,
+    "accuracy": {
+      "retain": 99.5925925925926,
+      "forget": 99.6,
+      "val": 97.84,
+      "test": 97.45
+    },
+    "skip_rate": 0.0,
+    "duration": 1777.4730851650238
+  },
+  {
+    "epoch": 3,
+    "accuracy": {
+      "retain": 99.6617283905406,
+      "forget": 99.46666666666667,
+      "val": 97.58,
+      "test": 97.64
+    },
+    "skip_rate": 0.0,
+    "duration": 1704.2156345844269
+  },
+  {
+    "epoch": 4,
+    "accuracy": {
+      "retain": 99.68148148148148,
+      "forget": 99.4,
+      "val": 97.62,
+      "test": 97.61
+    },
+    "skip_rate": 0.0,
+    "duration": 1793.4356994628906
+  },
+  {
+    "epoch": 5,
+    "accuracy": {
+      "retain": 99.3580246868369,
+      "forget": 99.15555555555555,
+      "val": 97.2,
+      "test": 97.21
+    },
+    "skip_rate": 0.0,
+    "duration": 1833.9676411151886
+  },
+  {
+    "epoch": 6,
+    "accuracy": {
+      "retain": 99.70617283950617,
+      "forget": 99.4,
+      "val": 97.56,
+      "test": 97.72
+    },
+    "skip_rate": 0.0,
+    "duration": 761.6084728240967
+  },
+  {
+    "epoch": 7,
+    "accuracy": {
+      "retain": 99.72345679012345,
+      "forget": 99.4,
+      "val": 97.62,
+      "test": 97.59
+    },
+    "skip_rate": 0.0,
+    "duration": 500.4632558822632
+  },
+  {
+    "epoch": 8,
+    "accuracy": {
+      "retain": 99.78765432098766,
+      "forget": 99.33333333333333,
+      "val": 97.82,
+      "test": 97.79
+    },
+    "skip_rate": 0.0,
+    "duration": 528.2362213134766
+  },
+  {
+    "epoch": 9,
+    "accuracy": {
+      "retain": 99.8395061728395,
+      "forget": 99.4888888888889,
+      "val": 97.74,
+      "test": 97.74
+    },
+    "skip_rate": 0.0,
+    "duration": 560.9952883720398
+  },
+  {
+    "epoch": 10,
+    "accuracy": {
+      "retain": 99.76543209876543,
+      "forget": 99.33333333333333,
+      "val": 97.66,
+      "test": 97.53
+    },
+    "skip_rate": 0.0,
+    "duration": 494.3707776069641
+  },
+  {
+    "epoch": 11,
+    "accuracy": {
+      "retain": 99.81481481481481,
+      "forget": 99.42222222222222,
+      "val": 97.88,
+      "test": 97.64
+    },
+    "skip_rate": 0.0,
+    "duration": 519.0066237449646
+  },
+  {
+    "epoch": 12,
+    "accuracy": {
+      "retain": 99.84938271604938,
+      "forget": 99.35555555555555,
+      "val": 97.62,
+      "test": 97.8
+    },
+    "skip_rate": 0.0,
+    "duration": 528.8817465305328
+  },
+  {
+    "epoch": 13,
+    "accuracy": {
+      "retain": 99.80493827160494,
+      "forget": 99.04444444444445,
+      "val": 97.74,
+      "test": 97.51
+    },
+    "skip_rate": 0.0,
+    "duration": 538.4437308311462
+  },
+  {
+    "epoch": 14,
+    "accuracy": {
+      "retain": 99.82222222222222,
+      "forget": 99.13333333333334,
+      "val": 97.82,
+      "test": 97.79
+    },
+    "skip_rate": 0.0,
+    "duration": 506.6079993247986
+  },
+  {
+    "epoch": 15,
+    "accuracy": {
+      "retain": 99.87654320987654,
+      "forget": 99.26666666666667,
+      "val": 97.72,
+      "test": 97.73
+    },
+    "skip_rate": 0.0,
+    "duration": 504.20925545692444
+  },
+  {
+    "epoch": 16,
+    "accuracy": {
+      "retain": 99.81728395061728,
+      "forget": 98.97777777777777,
+      "val": 97.62,
+      "test": 97.58
+    },
+    "skip_rate": 0.0,
+    "duration": 538.0174210071564
+  },
+  {
+    "epoch": 17,
+    "accuracy": {
+      "retain": 99.76049382716049,
+      "forget": 98.97777777777777,
+      "val": 97.28,
+      "test": 97.66
+    },
+    "skip_rate": 0.0,
+    "duration": 534.8099584579468
+  },
+  {
+    "epoch": 18,
+    "accuracy": {
+      "retain": 99.88641975308641,
+      "forget": 99.13333333333334,
+      "val": 97.92,
+      "test": 97.74
+    },
+    "skip_rate": 0.0,
+    "duration": 556.7543270587921
+  },
+  {
+    "epoch": 19,
+    "accuracy": {
+      "retain": 99.89135802017023,
+      "forget": 99.15555555555555,
+      "val": 97.98,
+      "test": 97.76
+    },
+    "skip_rate": 0.0,
+    "duration": 599.6017744541168
+  },
+  {
+    "epoch": 20,
+    "accuracy": {
+      "retain": 99.93333333333334,
+      "forget": 99.22222222222223,
+      "val": 98.08,
+      "test": 97.81
+    },
+    "skip_rate": 0.0,
+    "duration": 521.5787425041199
+  },
+  {
+    "epoch": 21,
+    "accuracy": {
+      "retain": 99.94567901234568,
+      "forget": 99.33333333333333,
+      "val": 98.06,
+      "test": 97.87
+    },
+    "skip_rate": 0.0,
+    "duration": 534.4529747962952
+  },
+  {
+    "epoch": 22,
+    "accuracy": {
+      "retain": 99.93827160493827,
+      "forget": 99.22222222222223,
+      "val": 98.04,
+      "test": 97.89
+    },
+    "skip_rate": 0.0,
+    "duration": 499.3632085323334
+  },
+  {
+    "epoch": 23,
+    "accuracy": {
+      "retain": 99.95061728395062,
+      "forget": 99.33333333333333,
+      "val": 98.06,
+      "test": 97.91
+    },
+    "skip_rate": 0.0,
+    "duration": 511.8912525177002
+  },
+  {
+    "epoch": 24,
+    "accuracy": {
+      "retain": 99.95061728395062,
+      "forget": 99.33333333333333,
+      "val": 98.0,
+      "test": 97.95
+    },
+    "skip_rate": 0.0,
+    "duration": 537.1174838542938
+  },
+  {
+    "epoch": 25,
+    "accuracy": {
+      "retain": 99.95308641975309,
+      "forget": 99.33333333333333,
+      "val": 98.0,
+      "test": 97.94
+    },
+    "skip_rate": 0.0,
+    "duration": 537.5500152111053
+  },
+  {
+    "epoch": 26,
+    "accuracy": {
+      "retain": 99.95061728395062,
+      "forget": 99.35555555555555,
+      "val": 98.04,
+      "test": 97.94
+    },
+    "skip_rate": 0.0,
+    "duration": 499.044132232666
+  },
+  {
+    "epoch": 27,
+    "accuracy": {
+      "retain": 99.95555555555555,
+      "forget": 99.37777777777778,
+      "val": 98.08,
+      "test": 97.91
+    },
+    "skip_rate": 0.0,
+    "duration": 515.0739448070526
+  },
+  {
+    "epoch": 28,
+    "accuracy": {
+      "retain": 99.95555555555555,
+      "forget": 99.4,
+      "val": 98.06,
+      "test": 97.91
+    },
+    "skip_rate": 0.0,
+    "duration": 552.3088276386261
+  },
+  {
+    "epoch": 29,
+    "accuracy": {
+      "retain": 99.95555555555555,
+      "forget": 99.37777777777778,
+      "val": 98.06,
+      "test": 97.88
+    },
+    "skip_rate": 0.0,
+    "duration": 570.9500987529755
+  }
+]

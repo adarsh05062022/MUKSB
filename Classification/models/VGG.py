@@ -54,7 +54,7 @@ class NormalizeByChannelMeanStd(torch.nn.Module):
 
 
 class VGG(nn.Module):
-    def __init__(self, features, num_classes=10, init_weights=True):
+    def __init__(self, features, num_classes=10, init_weights=True, **kwargs):
         super(VGG, self).__init__()
         self.features = features
         self.avgpool = nn.AdaptiveAvgPool2d((2, 2))
@@ -73,12 +73,15 @@ class VGG(nn.Module):
         if init_weights:
             self._initialize_weights()
 
-    def forward(self, x):
+    def forward(self, x, is_feature=0):
         x = self.normalize(x)
         x = self.features(x)
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
+        feat = x
         x = self.classifier(x)
+        if is_feature == 1:
+            return feat, x
         return x
 
     def _initialize_weights(self):

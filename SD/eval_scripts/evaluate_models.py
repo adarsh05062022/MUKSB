@@ -122,11 +122,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Evaluate unlearned checkpoints via FID")
 
     parser.add_argument("--checkpoints_txt", type=str, required=False,
-                        default="/storage/s25017/MUKSB/SD/eval_scripts/CLASS/checkpoints_to_evaluate.txt")
+                        default="/scratch/s25017/MUKSB/SD/eval_scripts/CLASS/checkpoints_to_evaluate.txt")
     parser.add_argument("--prompts_path", type=str, required=False,
-                        default="/storage/s25017/MUKSB/SD/prompts/imagenette.csv")
+                        default="/scratch/s25017/MUKSB/SD/prompts/imagenette.csv")
     parser.add_argument("--save_path", type=str, required=False,
-                        default="/storage/s25017/MUKSB/SD/eval_scripts/CLASS/generated")
+                        default="/scratch/s25017/MUKSB/SD/eval_scripts/CLASS/generated")
     parser.add_argument("--output_json", type=str, default="CLASS/results.json")
 
     # Multi-class: --class_to_forget 0 7   OR   --class_to_forget 0

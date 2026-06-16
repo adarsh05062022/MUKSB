@@ -1,6 +1,6 @@
 {
   "model_tag": "diffusers-nsfw-MUKSB-salun-rho50pct-method_full-lr_1e-05_E5_U800_MAGNITUDE-epoch_1",
-  "model_path": "/storage/s25017/MUKSB/SD/models/compvis-nsfw-MUKSB-salun-rho50pct-method_full-lr_1e-05_E5_U800_MAGNITUDE/diffusers-nsfw-MUKSB-salun-rho50pct-method_full-lr_1e-05_E5_U800_MAGNITUDE-epoch_1.pt",
+  "model_path": "/scratch/s25017/MUKSB/SD/models/compvis-nsfw-MUKSB-salun-rho50pct-method_full-lr_1e-05_E5_U800_MAGNITUDE/diffusers-nsfw-MUKSB-salun-rho50pct-method_full-lr_1e-05_E5_U800_MAGNITUDE-epoch_1.pt",
   "n_per_prompt": 5,
   "total_images": 4705,
   "nude_images": 1,

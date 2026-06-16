@@ -215,12 +215,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         prog="generateImages", description="Generate Images using Diffusers Code"
     )
-    parser.add_argument("--model_name", help="name of model", type=str, required=False, default="/storage/s25017/MUKSB/SD/models/compvis-cls_1-MUKSB-g0.5-method_full-lr_5e-06_E5_U955_/diffusers-cls_1-MUKSB-g0.5-method_full-lr_5e-06_E5_U955_-epoch_3.pt")
+    parser.add_argument("--model_name", help="name of model", type=str, required=False, default="/scratch/s25017/MUKSB/SD/models/compvis-cls_1-MUKSB-g0.5-method_full-lr_5e-06_E5_U955_/diffusers-cls_1-MUKSB-g0.5-method_full-lr_5e-06_E5_U955_-epoch_3.pt")
     parser.add_argument(
-        "--prompts_path", help="path to csv file with prompts", type=str, required=False, default="/storage/s25017/MUKSB/SD/prompts/imagenette.csv" 
+        "--prompts_path", help="path to csv file with prompts", type=str, required=False, default="/scratch/s25017/MUKSB/SD/prompts/imagenette.csv" 
     )
     parser.add_argument(
-        "--save_path", help="folder where to save images", type=str, required=False, default="/storage/s25017/MUKSB/SD/eval_scripts/CLASS/generated"
+        "--save_path", help="folder where to save images", type=str, required=False, default="/scratch/s25017/MUKSB/SD/eval_scripts/CLASS/generated"
     )
     parser.add_argument(
         "--device",

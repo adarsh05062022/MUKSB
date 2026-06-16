@@ -1003,13 +1003,13 @@ def convert_open_clip_checkpoint(checkpoint):
     return text_model
 
 
-def savemodelDiffusers(name, compvis_config_file, diffusers_config_file, device="cpu", num=None):
+def savemodelDiffusers(name, compvis_config_file, diffusers_config_file, device="cpu", num=None, models_root="models"):
     if num is not None:
-        checkpoint_path = f"models/{name}/{name}-epoch_{num}.pt"
-        dump_path = f"models/{name}/{name.replace('compvis','diffusers')}-epoch_{num}.pt"
+        checkpoint_path = f"{models_root}/{name}/{name}-epoch_{num}.pt"
+        dump_path = f"{models_root}/{name}/{name.replace('compvis','diffusers')}-epoch_{num}.pt"
     else:
-        checkpoint_path = f"models/{name}/{name}.pt"
-        dump_path = f"models/{name}/{name.replace('compvis','diffusers')}.pt"
+        checkpoint_path = f"{models_root}/{name}/{name}.pt"
+        dump_path = f"{models_root}/{name}/{name.replace('compvis','diffusers')}.pt"
 
     original_config_file = compvis_config_file
     config_file = diffusers_config_file

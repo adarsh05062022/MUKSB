@@ -1,0 +1,13 @@
+{
+  "method": "IU",
+  "label": "IU",
+  "seed": "1",
+  "final_metrics": {
+    "acc_forget": 9.159999996185302,
+    "acc_retain": 10.105,
+    "acc_val": 10.0,
+    "acc_test": 10.0,
+    "MIA": 50.14000000000001
+  },
+  "epochs": []
+}

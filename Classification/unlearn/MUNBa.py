@@ -1,4 +1,6 @@
 #MUNBa.py: Multi-Task Unlearning via Nash Bargaining for Classification
+import json
+import os
 import time
 import copy
 from copy import deepcopy
@@ -15,6 +17,7 @@ from itertools import zip_longest
 
 from .impl import iterative_unlearn
 from .sam import SAM
+from trainer import validate
 
 
 def l1_regularization(model):
@@ -129,6 +132,9 @@ def munba(data_loaders, model, criterion, args, mask=None):
     top1 = utils.AverageMeter()
     top1_u = utils.AverageMeter()
     loader_len = max(len(forget_loader), len(retain_loader))
+
+    epoch_metrics      = []
+    epoch_metrics_path = os.path.join(args.save_dir, "epoch_metrics.json")
 
     for epoch in range(0, args.unlearn_epochs):
         start_time = time.time()
@@ -251,6 +257,34 @@ def munba(data_loaders, model, criterion, args, mask=None):
                start = time.time()
 
         scheduler.step()
-        print("one epoch duration:{}".format(time.time() - start_time))
+        epoch_duration = time.time() - start_time
+        print("one epoch duration:{}".format(epoch_duration))
+
+        # ── per-epoch evaluation (all splits) ────────────────────────────────
+        saved_transforms = {}
+        for split_name, loader in data_loaders.items():
+            ds = loader.dataset
+            while hasattr(ds, "dataset"):
+                ds = ds.dataset
+            saved_transforms[split_name] = (ds, ds.transform, getattr(ds, "train", None))
+            utils.dataset_convert_to_test(loader.dataset, args)
+
+        acc_per_split = {}
+        for split_name, loader in data_loaders.items():
+            acc_per_split[split_name] = validate(loader, model, criterion, args)
+            print(f"  Epoch {epoch} | {split_name} acc: {acc_per_split[split_name]:.3f}")
+
+        for split_name, (ds, orig_transform, orig_train) in saved_transforms.items():
+            ds.transform = orig_transform
+            if orig_train is not None:
+                ds.train = orig_train
+
+        epoch_metrics.append({
+            "epoch": epoch,
+            "accuracy": acc_per_split,
+            "duration": epoch_duration,
+        })
+        with open(epoch_metrics_path, "w") as f:
+            json.dump(epoch_metrics, f, indent=2)
 
     return top1.avg

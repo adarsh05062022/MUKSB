@@ -13,6 +13,40 @@ from PIL import Image
 from transformers import CLIPTextModel, CLIPTokenizer
 
 
+def _get_text_embeddings(tokenizer, text_encoder, prompts, device):
+    """Encode prompts with chunking to bypass the 77-token CLIP limit.
+
+    Long prompts are split into overlapping 75-token chunks (+ BOS/EOS).
+    Each chunk is encoded independently and the embeddings are averaged,
+    preserving the [batch, 77, 768] shape the UNet cross-attention expects.
+    """
+    max_len = tokenizer.model_max_length  # 77
+    chunk_size = max_len - 2             # 75 content tokens per chunk
+    bos = tokenizer.bos_token_id
+    eos = tokenizer.eos_token_id
+    pad = tokenizer.pad_token_id
+
+    raw = tokenizer(prompts, truncation=False, padding=False)
+
+    all_embeddings = []
+    for ids in raw.input_ids:
+        core = [t for t in ids if t not in (bos, eos, pad)]
+        chunks = [core[i: i + chunk_size] for i in range(0, max(len(core), 1), chunk_size)]
+
+        chunk_embs = []
+        for chunk in chunks:
+            padded = [bos] + chunk + [eos] + [pad] * (chunk_size - len(chunk))
+            tensor = torch.tensor([padded], dtype=torch.long).to(device)
+            with torch.no_grad():
+                emb = text_encoder(tensor)[0]  # [1, 77, 768]
+            chunk_embs.append(emb)
+
+        avg = torch.stack(chunk_embs).mean(dim=0)  # [1, 77, 768]
+        all_embeddings.append(avg)
+
+    return torch.cat(all_embeddings, dim=0)  # [batch, 77, 768]
+
+
 def generate_images(
     model_name,
     prompts_path,
@@ -133,24 +167,9 @@ def generate_images(
         batch_size = len(prompt)
 
         for i in range(1):
-            text_input = tokenizer(
-                prompt,
-                padding="max_length",
-                max_length=tokenizer.model_max_length,
-                truncation=True,
-                return_tensors="pt",
-            )
+            text_embeddings = _get_text_embeddings(tokenizer, text_encoder, prompt, torch_device)
 
-            text_embeddings = text_encoder(text_input.input_ids.to(torch_device))[0]
-
-            max_length = text_input.input_ids.shape[-1]
-            uncond_input = tokenizer(
-                [""] * batch_size,
-                padding="max_length",
-                max_length=max_length,
-                return_tensors="pt",
-            )
-            uncond_embeddings = text_encoder(uncond_input.input_ids.to(torch_device))[0]
+            uncond_embeddings = _get_text_embeddings(tokenizer, text_encoder, [""] * batch_size, torch_device)
 
             text_embeddings = torch.cat([uncond_embeddings, text_embeddings])
 
@@ -209,12 +228,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         prog="generateImages", description="Generate Images using Diffusers Code"
     )
-    parser.add_argument("--model_name", help="name of model", type=str, required=False, default="/storage/s25017/MUKSB/SD/models/compvis-nsfw-MUKSB-salun-rho50pct-method_full-lr_1e-05_E5_U800_MAGNITUDE/diffusers-nsfw-MUKSB-salun-rho50pct-method_full-lr_1e-05_E5_U800_MAGNITUDE-epoch_1.pt")
+    parser.add_argument("--model_name", help="name of model", type=str, required=False, default="/scratch/s25017/MUKSB/SD/models/compvis-nsfw-MUKSB-salun-rho50pct-method_full-lr_1e-05_E5_U800_MAGNITUDE/diffusers-nsfw-MUKSB-salun-rho50pct-method_full-lr_1e-05_E5_U800_MAGNITUDE-epoch_1.pt")
     parser.add_argument(
         "--prompts_path", help="path to csv file with prompts", type=str, required=False, default="/storage/s25017/MUNBa/SD/prompts/coco_30k.csv"
     )
     parser.add_argument(
-        "--save_path", help="folder where to save images", type=str, required=False, default="/storage/s25017/MUKSB/SD/Evaluation/nsfw/coco_30k/e1"
+        "--save_path", help="folder where to save images", type=str, required=False, default="/scratch/s25017/MUKSB/SD/Evaluation/nsfw/coco_30k/e1"
     )
     parser.add_argument(
         "--device",

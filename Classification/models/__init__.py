@@ -3,6 +3,7 @@ from .ResNet import *
 from .ResNets import *
 from .VGG import *
 from .VGG_LTH import *
+from .SwinT import swin_t
 
 model_dict = {
     "resnet18": resnet18,
@@ -12,4 +13,5 @@ model_dict = {
     "resnet56s": resnet56s,
     "vgg16_bn": vgg16_bn,
     "vgg16_bn_lth": vgg16_bn_lth,
+    "swin_t": swin_t,
 }

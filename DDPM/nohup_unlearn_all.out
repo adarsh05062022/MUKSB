@@ -1,0 +1,37 @@
+nohup: ignoring input
+
+================================================================
+ Forgetting class 0 (airplane)
+================================================================
+/scratch/s25017/MUKSB/DDPM/runners/diffusion.py:700: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  states = torch.load(
+INFO - diffusion.py - 2026-05-14 14:43:24,439 - [MUKSB] KS bargaining | gamma=0.5 (symmetric) | method=rl | mask=no | n_gpus=1
+
+>>> Log file: /scratch/s25017/MUKSB/DDPM/results/cifar10/forget/rl/0.001_no_mask/2026_05_14_144304/logs/stdout.txt
+>>> Monitor with: tail -f /scratch/s25017/MUKSB/DDPM/results/cifar10/forget/rl/0.001_no_mask/2026_05_14_144304/logs/stdout.txt
+
+Files already downloaded and verified
+45000 5000
+Loading checkpoints results/cifar10/2026_05_13_232008
+INFO - diffusion.py - 2026-05-14 14:44:40,141 - step: 99, loss_r: 106.5587, loss_u: 0.0003, lambda_KS: 0.5302, cos_phi: -0.4378, avg_cos_phi: -0.4783, eff_scale: 2.0376e-03, skip_rate: 0.000, time: 75.70
+Generating image samples for visualization.:   0%|          | 0/1 [00:00<?, ?it/s]Generating image samples for visualization.: 100%|██████████| 1/1 [01:20<00:00, 80.76s/it]Generating image samples for visualization.: 100%|██████████| 1/1 [01:20<00:00, 80.76s/it]
+INFO - diffusion.py - 2026-05-14 14:46:41,755 - step: 199, loss_r: 74.0628, loss_u: 0.0006, lambda_KS: 0.6844, cos_phi: -0.0632, avg_cos_phi: -0.2394, eff_scale: 1.0183e-02, skip_rate: 0.000, time: 121.61
+Generating image samples for visualization.:   0%|          | 0/1 [00:00<?, ?it/s]Generating image samples for visualization.: 100%|██████████| 1/1 [01:13<00:00, 73.46s/it]Generating image samples for visualization.: 100%|██████████| 1/1 [01:13<00:00, 73.46s/it]
+INFO - diffusion.py - 2026-05-14 14:48:31,373 - step: 299, loss_r: 88.9452, loss_u: 0.0002, lambda_KS: 0.7172, cos_phi: 0.0287, avg_cos_phi: -0.0414, eff_scale: 1.6010e-03, skip_rate: 0.000, time: 109.62
+Generating image samples for visualization.:   0%|          | 0/1 [00:00<?, ?it/s]Generating image samples for visualization.: 100%|██████████| 1/1 [01:13<00:00, 73.24s/it]Generating image samples for visualization.: 100%|██████████| 1/1 [01:13<00:00, 73.25s/it]
+INFO - diffusion.py - 2026-05-14 14:50:19,937 - step: 399, loss_r: 67.9015, loss_u: 0.0004, lambda_KS: 0.6820, cos_phi: -0.0699, avg_cos_phi: -0.0249, eff_scale: 8.0197e-03, skip_rate: 0.000, time: 108.56
+Generating image samples for visualization.:   0%|          | 0/1 [00:00<?, ?it/s]Generating image samples for visualization.: 100%|██████████| 1/1 [01:12<00:00, 72.79s/it]Generating image samples for visualization.: 100%|██████████| 1/1 [01:12<00:00, 72.79s/it]
+INFO - diffusion.py - 2026-05-14 14:52:07,907 - step: 499, loss_r: 89.1349, loss_u: 0.0001, lambda_KS: 0.8605, cos_phi: 0.4808, avg_cos_phi: -0.0532, eff_scale: 1.4740e-03, skip_rate: 0.000, time: 107.97
+Generating image samples for visualization.:   0%|          | 0/1 [00:00<?, ?it/s]Generating image samples for visualization.: 100%|██████████| 1/1 [01:12<00:00, 72.84s/it]Generating image samples for visualization.: 100%|██████████| 1/1 [01:12<00:00, 72.84s/it]
+INFO - diffusion.py - 2026-05-14 14:53:56,025 - step: 599, loss_r: 98.0471, loss_u: 0.0003, lambda_KS: 0.7052, cos_phi: -0.0053, avg_cos_phi: -0.0374, eff_scale: 6.1628e-03, skip_rate: 0.000, time: 108.12
+Generating image samples for visualization.:   0%|          | 0/1 [00:00<?, ?it/s]Generating image samples for visualization.: 100%|██████████| 1/1 [01:12<00:00, 72.78s/it]Generating image samples for visualization.: 100%|██████████| 1/1 [01:12<00:00, 72.78s/it]
+INFO - diffusion.py - 2026-05-14 14:55:44,112 - step: 699, loss_r: 82.4668, loss_u: 0.0002, lambda_KS: 0.4917, cos_phi: -0.5164, avg_cos_phi: -0.0042, eff_scale: 1.5100e-03, skip_rate: 0.000, time: 108.09
+Generating image samples for visualization.:   0%|          | 0/1 [00:00<?, ?it/s]Generating image samples for visualization.: 100%|██████████| 1/1 [01:43<00:00, 103.42s/it]Generating image samples for visualization.: 100%|██████████| 1/1 [01:43<00:00, 103.42s/it]
+INFO - diffusion.py - 2026-05-14 14:58:14,351 - step: 799, loss_r: 73.7944, loss_u: 0.0001, lambda_KS: 0.7197, cos_phi: 0.0358, avg_cos_phi: -0.0541, eff_scale: 3.2299e-03, skip_rate: 0.000, time: 150.24
+Generating image samples for visualization.:   0%|          | 0/1 [00:00<?, ?it/s]Generating image samples for visualization.: 100%|██████████| 1/1 [01:44<00:00, 104.24s/it]Generating image samples for visualization.: 100%|██████████| 1/1 [01:44<00:00, 104.24s/it]
+INFO - diffusion.py - 2026-05-14 15:00:45,189 - step: 899, loss_r: 84.2559, loss_u: 0.0003, lambda_KS: 0.6725, cos_phi: -0.0955, avg_cos_phi: -0.0504, eff_scale: 1.6169e-03, skip_rate: 0.000, time: 150.83
+Generating image samples for visualization.:   0%|          | 0/1 [00:00<?, ?it/s]Generating image samples for visualization.: 100%|██████████| 1/1 [01:42<00:00, 102.44s/it]Generating image samples for visualization.: 100%|██████████| 1/1 [01:42<00:00, 102.44s/it]
+INFO - diffusion.py - 2026-05-14 15:03:14,150 - step: 999, loss_r: 79.8112, loss_u: 0.0003, lambda_KS: 0.6825, cos_phi: -0.0684, avg_cos_phi: -0.0728, eff_scale: 5.5583e-03, skip_rate: 0.000, time: 148.96
+Generating image samples for visualization.:   0%|          | 0/1 [00:00<?, ?it/s]Generating image samples for visualization.: 100%|██████████| 1/1 [01:35<00:00, 95.15s/it]Generating image samples for visualization.: 100%|██████████| 1/1 [01:35<00:00, 95.16s/it]
+INFO - diffusion.py - 2026-05-14 15:04:53,635 - [MUKSB] Anti-parallel skips: 0/1000 (0.0%) — high skip_rate indicates severe gradient conflict; consider increasing gamma
+INFO - diffusion.py - 2026-05-14 15:04:53,636 - [MUKSB] cos_phi stats: mean=-0.1056  min=-0.9102  max=0.7067

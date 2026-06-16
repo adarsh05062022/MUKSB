@@ -14,7 +14,7 @@ Paper setup (CIFAR-10):
 Run command
 -----------
     python run_sweep.py \\
-        --mask /storage/s25017/MUKSB/Classification/checkpoints/resnet18_cifar10/0checkpoint.pth.tar \\
+        --mask /scratch/s25017/MUKSB/Classification/checkpoints/resnet18_cifar10/0checkpoint.pth.tar \\
         --dataset cifar10 --arch resnet18 \\
         --num_indexes_to_replace 5000 \\
         --unlearn_epochs 10 --unlearn_lr 0.01 \\

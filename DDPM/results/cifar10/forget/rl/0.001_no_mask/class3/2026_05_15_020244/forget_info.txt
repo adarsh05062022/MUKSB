@@ -1,0 +1,8 @@
+label_to_forget: 3
+class_name:      cat
+mode:            muksb_unlearn
+method:          rl
+gamma:           0.5
+alpha:           0.001
+base_ckpt:       results/cifar10/2026_05_13_232008
+seed:            1234

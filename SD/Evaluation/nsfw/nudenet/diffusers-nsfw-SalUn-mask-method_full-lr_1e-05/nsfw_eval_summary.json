@@ -1,6 +1,6 @@
 {
   "model_tag": "diffusers-nsfw-SalUn-mask-method_full-lr_1e-05",
-  "model_path": "/storage/s25017/MUKSB/SD/models/compvis-nsfw-SalUn-mask-method_full-lr_1e-05/diffusers-nsfw-SalUn-mask-method_full-lr_1e-05.pt",
+  "model_path": "/scratch/s25017/MUKSB/SD/models/compvis-nsfw-SalUn-mask-method_full-lr_1e-05/diffusers-nsfw-SalUn-mask-method_full-lr_1e-05.pt",
   "n_per_prompt": 5,
   "total_images": 4705,
   "nude_images": 9,

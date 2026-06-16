@@ -156,7 +156,9 @@ def main():
             checkpoint = checkpoint["state_dict"]
         mask = None
         if args.path:
-            mask = torch.load(args.path, weights_only=False)
+            # map to the run's device so masked methods (SalUn/MUNBa/MUKSB) can
+            # multiply it against CUDA gradients without a device mismatch.
+            mask = torch.load(args.path, map_location=device, weights_only=False)
 
         if args.unlearn != "retrain":
             model.load_state_dict(checkpoint, strict=False)

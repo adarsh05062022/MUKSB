@@ -11,7 +11,7 @@ import sys
 PYTHON_BIN = "/storage/s25017/miniconda3/envs/munba3/bin/python"
 
 # Folder where your COCO images are being generated
-IMAGE_FOLDER = "/storage/s25017/MUKSB/SD/eval_scripts/CLASS/COCO_30K_SD"
+IMAGE_FOLDER = "/scratch/s25017/MUKSB/SD/eval_scripts/CLASS/COCO_30K_SD"
 
 # Minimum image count before pipeline kicks off
 IMAGE_THRESHOLD = 29000

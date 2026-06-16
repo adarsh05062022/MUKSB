@@ -264,7 +264,7 @@ if __name__ == "__main__":
         help="mask path for stable diffusion v1-4",
         type=str,
         required=False,
-        default="/storage/s25017/MUKSB/SD/mask/nsfw/with_0.5.pt",
+        default="/scratch/s25017/MUKSB/SD/mask/nsfw/with_0.5.pt",
     )
     parser.add_argument(
         "--diffusers_config_path",

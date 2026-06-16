@@ -9,10 +9,10 @@ Two modes
 
 Usage (run from MUNBa/SD/ so ldm resolves correctly)
 -----
-  python /storage/s25017/MUKSB/SD/train_scripts/generate_mask.py \\
+  python /scratch/s25017/MUKSB/SD/train_scripts/generate_mask.py \\
       --classes 4 --device 0
 
-  python /storage/s25017/MUKSB/SD/train_scripts/generate_mask.py \\
+  python /scratch/s25017/MUKSB/SD/train_scripts/generate_mask.py \\
       --nsfw --device 0
 """
 import argparse
@@ -180,7 +180,7 @@ if __name__ == "__main__":
     parser.add_argument("--batch_size", type=int,   default=8)
     parser.add_argument("--lr",         type=float, default=1e-5)
     parser.add_argument("--ckpt_path",  type=str,
-                        default="/storage/s25017/MUKSB/SD/models/ldm/sd-v1-4-full-ema.ckpt")
+                        default="/scratch/s25017/MUKSB/SD/models/ldm/sd-v1-4-full-ema.ckpt")
     parser.add_argument("--config_path", type=str,
                         default="configs/stable-diffusion/v1-inference.yaml")
     parser.add_argument("--device",     type=str,   default="2")

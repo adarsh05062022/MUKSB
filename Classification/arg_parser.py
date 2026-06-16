@@ -218,4 +218,24 @@ def parse_args():
         help="KS retain priority in [0,1]. 0.5=symmetric, 0.7=retain-favoured (MUKSB only)",
     )
 
+    ##################################### Method-specific settings ########################
+    parser.add_argument(
+        "--salun_density",
+        type=float,
+        default=0.5,
+        help="SalUn saliency-mask density (fraction of params updated). SalUn only.",
+    )
+    parser.add_argument(
+        "--iu_damping",
+        type=float,
+        default=1e-3,
+        help="IU Tikhonov damping lambda on the diagonal Fisher. IU only.",
+    )
+    parser.add_argument(
+        "--iu_scale",
+        type=float,
+        default=1.0,
+        help="IU scale on the one-shot Newton step. IU only.",
+    )
+
     return parser.parse_args()

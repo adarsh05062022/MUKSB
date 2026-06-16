@@ -14,7 +14,7 @@ GPUS=(1  2  3  4  5 )
 EPOCHS=(30  30  30  30  30 )   # can set specific epochs per seed if desired
 
 # ── Paths ─────────────────────────────────────────────────────────
-MODEL_PATH="/storage/s25017/MUKSB/Classification/checkpoints/resnet18_cifar10/0model_SA_best.pth.tar"
+MODEL_PATH="/scratch/s25017/MUKSB/Classification/checkpoints/resnet18_cifar10/0model_SA_best.pth.tar"
 DATA_DIR="/storage/s25017/Datasets/CIFAR10"
 RESULTS_ROOT="results"
 

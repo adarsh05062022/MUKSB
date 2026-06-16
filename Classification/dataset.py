@@ -89,7 +89,10 @@ def svhn_dataloaders(batch_size=128, data_dir="datasets/svhn", num_workers=2,
         replace_indexes(train_set, indexes_to_replace, seed - 1, only_mark)
 
     def _init_fn(worker_id): np.random.seed(int(seed))
-    kw = dict(num_workers=0, pin_memory=False, worker_init_fn=_init_fn if seed is not None else None)
+    kw = dict(num_workers=num_workers, pin_memory=True,
+              worker_init_fn=_init_fn if seed is not None else None)
+    if num_workers > 0:
+        kw.update(persistent_workers=True, prefetch_factor=2)
     return (DataLoader(train_set, batch_size, shuffle=True,  **kw),
             DataLoader(valid_set, batch_size, shuffle=False, **kw),
             DataLoader(test_set,  batch_size, shuffle=False, **kw))
@@ -134,7 +137,10 @@ def cifar100_dataloaders(batch_size=128, data_dir="/datasets/CIFAR100", num_work
         replace_indexes(train_set, indexes_to_replace, seed - 1, only_mark)
 
     def _init_fn(worker_id): np.random.seed(int(seed))
-    kw = dict(num_workers=0, pin_memory=False, worker_init_fn=_init_fn if seed is not None else None)
+    kw = dict(num_workers=num_workers, pin_memory=True,
+              worker_init_fn=_init_fn if seed is not None else None)
+    if num_workers > 0:
+        kw.update(persistent_workers=True, prefetch_factor=2)
     return (DataLoader(train_set, batch_size, shuffle=True,  **kw),
             DataLoader(valid_set, batch_size, shuffle=False, **kw),
             DataLoader(test_set,  batch_size, shuffle=False, **kw))
@@ -225,7 +231,10 @@ class TinyImageNet:
             replace_indexes(train_set, indexes_to_replace, seed - 1, only_mark)
 
         def _init_fn(worker_id): np.random.seed(int(seed))
-        kw = dict(num_workers=0, pin_memory=False, worker_init_fn=_init_fn if seed is not None else None)
+        kw = dict(num_workers=num_workers, pin_memory=True,
+                  worker_init_fn=_init_fn if seed is not None else None)
+        if num_workers > 0:
+            kw.update(persistent_workers=True, prefetch_factor=2)
         print(f"Train: {len(train_set)}, Test: {len(test_set)}")
         return (DataLoader(train_set, batch_size, shuffle=True,  **kw),
                 DataLoader(test_set,  batch_size, shuffle=False, **kw),
@@ -273,7 +282,10 @@ def cifar10_dataloaders(batch_size=128, data_dir="/datasets/CIFAR10", num_worker
         replace_indexes(train_set, indexes_to_replace, seed - 1, only_mark)
 
     def _init_fn(worker_id): np.random.seed(int(seed))
-    kw = dict(num_workers=0, pin_memory=False, worker_init_fn=_init_fn if seed is not None else None)
+    kw = dict(num_workers=num_workers, pin_memory=True,
+              worker_init_fn=_init_fn if seed is not None else None)
+    if num_workers > 0:
+        kw.update(persistent_workers=True, prefetch_factor=2)
     return (DataLoader(train_set, batch_size, shuffle=True,  **kw),
             DataLoader(valid_set, batch_size, shuffle=False, **kw),
             DataLoader(test_set,  batch_size, shuffle=False, **kw))
@@ -341,7 +353,7 @@ def celeba_dataloaders(batch_size=128, data_dir="/home/jing/dataset/CelebAMaskHQ
     test_remain = Subset(test_set,  np.where(np.isin(test_set.targets,  rem_ids))[0])
 
     def _init_fn(w): np.random.seed(int(seed))
-    kw = dict(num_workers=8, pin_memory=True, persistent_workers=True, prefetch_factor=4,
+    kw = dict(num_workers=num_workers, pin_memory=True, persistent_workers=True, prefetch_factor=2,
               worker_init_fn=_init_fn if seed is not None else None)
     print(f"Train: {len(train_set)}, Test: {len(test_set)}")
     return (DataLoader(train_set,   batch_size, shuffle=True,  **kw),

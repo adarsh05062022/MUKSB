@@ -15,11 +15,14 @@ Algorithm
 """
 
 import gc
+import json
+import os
 import time
 
 import torch
 import torch.nn as nn
 import utils
+from trainer import validate
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -84,7 +87,9 @@ def salun(data_loaders, model, criterion, args, mask=None):
         Uses: gpu, unlearn_lr, momentum, weight_decay, decreasing_lr,
               unlearn_epochs, num_classes, print_freq,
               salun_density (default 0.5).
-    mask         : ignored — SalUn generates its own saliency mask.
+    mask         : optional externally-provided saliency mask (via --path).
+                   If given, SalUn uses it directly instead of building its own,
+                   so SalUn/MUNBa/MUKSB can share one mask for a fair comparison.
     """
     forget_loader = data_loaders["forget"]
     retain_loader = data_loaders["retain"]
@@ -92,11 +97,20 @@ def salun(data_loaders, model, criterion, args, mask=None):
     density       = getattr(args, "salun_density", 0.5)
     decreasing_lr = list(map(int, args.decreasing_lr.split(",")))
 
-    # ── Step 1: build saliency mask ───────────────────────────────────────────
-    print("[SalUn] Building saliency mask from forget set …")
-    saliency_mask = _build_saliency_mask(
-        model, forget_loader, criterion, device, density
-    )
+    # ── Step 1: build (or reuse) saliency mask ────────────────────────────────
+    if mask is not None:
+        print("[SalUn] Using externally-provided saliency mask (--path) "
+              "— shared across SalUn/MUNBa/MUKSB for a like-for-like comparison.")
+        saliency_mask = {n: m.float().to(device) for n, m in mask.items()}
+        kept  = sum(m.sum().item() for m in saliency_mask.values())
+        total = sum(m.numel()      for m in saliency_mask.values())
+        print(f"[SalUn] Shared mask: kept {kept:.0f}/{total} params "
+              f"({100 * kept / total:.1f}%)")
+    else:
+        print("[SalUn] Building saliency mask from forget set …")
+        saliency_mask = _build_saliency_mask(
+            model, forget_loader, criterion, device, density
+        )
 
     # ── Optimizer ─────────────────────────────────────────────────────────────
     optimizer = torch.optim.SGD(
@@ -110,6 +124,9 @@ def salun(data_loaders, model, criterion, args, mask=None):
     losses = utils.AverageMeter()
     top1   = utils.AverageMeter()
     loader_len = len(retain_loader)
+
+    epoch_metrics      = []
+    epoch_metrics_path = os.path.join(args.save_dir, "epoch_metrics.json")
 
     for epoch in range(args.unlearn_epochs):
         start_time = time.time()
@@ -173,7 +190,35 @@ def salun(data_loaders, model, criterion, args, mask=None):
                 start = time.time()
 
         scheduler.step()
+        epoch_duration = time.time() - start_time
         print(f"[SalUn] Epoch {epoch} done: retain_acc={top1.avg:.3f}  "
-              f"({time.time() - start_time:.1f}s)")
+              f"({epoch_duration:.1f}s)")
+
+        # ── per-epoch evaluation (all splits) ────────────────────────────────
+        saved_transforms = {}
+        for split_name, loader in data_loaders.items():
+            ds = loader.dataset
+            while hasattr(ds, "dataset"):
+                ds = ds.dataset
+            saved_transforms[split_name] = (ds, ds.transform, getattr(ds, "train", None))
+            utils.dataset_convert_to_test(loader.dataset, args)
+
+        acc_per_split = {}
+        for split_name, loader in data_loaders.items():
+            acc_per_split[split_name] = validate(loader, model, criterion, args)
+            print(f"  Epoch {epoch} | {split_name} acc: {acc_per_split[split_name]:.3f}")
+
+        for split_name, (ds, orig_transform, orig_train) in saved_transforms.items():
+            ds.transform = orig_transform
+            if orig_train is not None:
+                ds.train = orig_train
+
+        epoch_metrics.append({
+            "epoch": epoch,
+            "accuracy": acc_per_split,
+            "duration": epoch_duration,
+        })
+        with open(epoch_metrics_path, "w") as f:
+            json.dump(epoch_metrics, f, indent=2)
 
     return top1.avg

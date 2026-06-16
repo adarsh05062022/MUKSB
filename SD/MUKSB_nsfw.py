@@ -21,7 +21,7 @@ from logger.logger import setup_logger
 from mask_variants import build_mask_nsfw, MASK_VARIANT_CHOICES
 
 
-EXTRA = "MAGNITUDE"
+EXTRA = "updated_new_lr"
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -393,7 +393,7 @@ if __name__ == "__main__":
     parser.add_argument("--train_method",         type=str,   default="full")
     parser.add_argument("--batch_size",            type=int,   default=8)
     parser.add_argument("--epochs",                type=int,   default=5)
-    parser.add_argument("--lr",                    type=float, default=1e-5)
+    parser.add_argument("--lr",                    type=float, default=5e-6)
     parser.add_argument("--ckpt_path",             type=str,
                         default="models/ldm/sd-v1-4-full-ema.ckpt")
     parser.add_argument("--mask_variant",          type=str,   default="None",
@@ -414,7 +414,7 @@ if __name__ == "__main__":
                         default="configs/stable-diffusion/v1-inference.yaml")
     parser.add_argument("--diffusers_config_path", type=str,
                         default="diffusers_unet_config.json")
-    parser.add_argument("--device",                type=str,   default="2")
+    parser.add_argument("--device",                type=str,   default="4")
     parser.add_argument("--image_size",            type=int,   default=512)
     parser.add_argument("--ddim_steps",            type=int,   default=50)
     parser.add_argument("--with_l1",               action="store_true", default=False)

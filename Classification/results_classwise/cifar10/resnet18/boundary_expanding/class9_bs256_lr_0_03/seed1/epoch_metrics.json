@@ -1,0 +1,24 @@
+[
+  {
+    "epoch": 0,
+    "train_acc": 3.311111111111111,
+    "accuracy": {
+      "retain": 0.0,
+      "forget": 0.0,
+      "val": 0.0,
+      "test": 0.0
+    },
+    "duration": 18.933400869369507
+  },
+  {
+    "epoch": 1,
+    "train_acc": 0.0,
+    "accuracy": {
+      "retain": 0.0,
+      "forget": 0.0,
+      "val": 0.0,
+      "test": 0.0
+    },
+    "duration": 4.495977401733398
+  }
+]

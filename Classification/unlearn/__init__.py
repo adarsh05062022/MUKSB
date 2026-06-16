@@ -21,6 +21,15 @@ from .boundary_sh import boundary_shrink
 from .SHs         import SHs
 from .MUNBa       import munba          # Nash baseline kept for comparison
 from .MUKSB       import muksb          # KS bargaining (improved)
+from .MUKSB_direction_ablation import (
+    muksb_rawsum,    # Variant A: raw sum gr+gf
+    muksb_meanunit,  # Variant B: arithmetic mean of unit gradients
+)
+from .MUKSB_scale_ablation import (
+    muksb_arith,    # Variant C: KS direction + arithmetic mean of norms
+    muksb_min,      # Variant D: KS direction + minimum of the two norms
+    muksb_fixed,    # Variant E: KS direction + fixed scalar α=1
+)
 
 # ── Table-1 methods (ported / new) ───────────────────────────────────────────
 from .SalUn import salun    # Saliency-based Unlearning (Fan et al., ICLR 2024)
@@ -55,8 +64,14 @@ def get_unlearn_method(name):
         "SHs":               SHs,
         "SalUn":             salun,   # Table 1: Saliency Unlearning
         "IU":                IU,      # Table 1: Influence Unlearning
-        "MUNBa":             munba,   # Nash baseline
-        "MUKSB":             muksb,   # KS bargaining (improved)
+        "MUNBa":             munba,        # Nash baseline
+        "MUKSB":             muksb,        # KS bargaining (full method)
+        "MUKSB_RawSum":      muksb_rawsum,   # Ablation A: raw sum gr+gf
+        "MUKSB_MeanUnit":    muksb_meanunit, # Ablation B: mean of unit grads
+        # ── Scale ablation (fix KS direction, vary magnitude) ─────────────
+        "MUKSB_ArithMean":   muksb_arith,    # Ablation C: arithmetic mean of norms
+        "MUKSB_MinNorm":     muksb_min,      # Ablation D: minimum of the two norms
+        "MUKSB_Fixed":       muksb_fixed,    # Ablation E: fixed scalar α=1
     }
     if name not in _map:
         raise NotImplementedError(f"Unlearn method '{name}' not implemented!")

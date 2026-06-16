@@ -17,7 +17,7 @@ if __name__ == "__main__":
         help="path to prompts",
         type=str,
         required=False,
-        default="/storage/s25017/MUKSB/SD/prompts/imagenette.csv",
+        default="/scratch/s25017/MUKSB/SD/prompts/imagenette.csv",
     )
 
     parser.add_argument(
@@ -42,9 +42,9 @@ if __name__ == "__main__":
 
     # -------- LIST OF IMAGE FOLDERS --------
     folders = [
-      "/storage/s25017/MUKSB/SD/eval_scripts/CLASS/generated/diffusers-cls_4-MUKSB-g0.5-method_full-lr_5e-06_E5_U941_-epoch_4.pt",
-      "/storage/s25017/MUKSB/SD/eval_scripts/CLASS/generated/diffusers-cls_6-MUKSB-g0.5-method_full-lr_5e-06_E5_U961_-epoch_4.pt",
-      "/storage/s25017/MUKSB/SD/eval_scripts/CLASS/generated/diffusers-cls_7-MUKSB-g0.5-method_full-lr_5e-06_E5_U931_-epoch_4.pt"
+      "/scratch/s25017/MUKSB/SD/eval_scripts/CLASS/generated/diffusers-cls_4-MUKSB-g0.5-method_full-lr_5e-06_E5_U941_-epoch_4.pt",
+      "/scratch/s25017/MUKSB/SD/eval_scripts/CLASS/generated/diffusers-cls_6-MUKSB-g0.5-method_full-lr_5e-06_E5_U961_-epoch_4.pt",
+      "/scratch/s25017/MUKSB/SD/eval_scripts/CLASS/generated/diffusers-cls_7-MUKSB-g0.5-method_full-lr_5e-06_E5_U931_-epoch_4.pt"
       
 
 

@@ -1,0 +1,1538 @@
+==========================================
+MUKSB vs MUNBa — CIFAR-100 | lr=0.07 | epochs=30
+  Forget : random 4500 samples (seed 1, class -1)
+  GPU=7  batch=512  gamma=0.5
+==========================================
+[MUNBa] Starting → results/cifar100/random_4500_bs512_lr_0_07/munba/seed1
+[MUKSB] Starting → results/cifar100/random_4500_bs512_lr_0_07/muksb/seed1
+====== MUNBa (seed=1, gpu=7, lr=0.07) ======
+====== MUKSB (seed=1, gpu=7, lr=0.07) ======
+Setup random seed = 1
+Dataset: CIFAR-100
+Dataset: CIFAR-100
+The normalize layer is contained in the network
+Setup random seed = 1
+4500
+Setup random seed = 1
+40500
+number of retain dataset 40500
+number of forget dataset 4500
+Convex optimization problem initialized.
+Epoch #0, Learning rate: 0.07
+prvs_alpha: [4.953583   0.17753558]
+prvs_alpha: [8.02446   0.1709519]
+prvs_alpha: [4.616525  0.1800102]
+prvs_alpha: [5.004466   0.17346177]
+prvs_alpha: [3.0224786  0.16792363]
+prvs_alpha: [3.6807032  0.16502182]
+prvs_alpha: [2.7480576  0.15876952]
+prvs_alpha: [1.2174505  0.15718122]
+prvs_alpha: [1.1630181  0.14617942]
+Batch:   10, prec_u: 100.000 (99.911), loss_u: 1.0008, loss_r: 0.0793
+Batch:   20, prec_r: 99.414 (99.630),loss: 0.0582
+Batch:   30, prec_r: 99.609 (99.603),loss: 0.0604
+Batch:   40, prec_r: 99.609 (99.569),loss: 0.0518
+Batch:   50, prec_r: 99.609 (99.554),loss: 0.0474
+Epoch: [0][49/80]	Loss 0.0474 (0.6707)	Accuracy 99.609 (99.554)	Time 50.71
+Batch:   60, prec_r: 99.609 (99.513),loss: 0.0411
+Batch:   70, prec_r: 99.609 (99.502),loss: 0.0490
+Batch:   80, prec_r: 99.609 (99.491),loss: 0.0476
+one epoch duration:72.67219591140747
+Test: [0/80]	Loss 0.0470 (0.0470)	Accuracy 99.219 (99.219)
+Test: [50/80]	Loss 0.0654 (0.0479)	Accuracy 99.023 (99.200)
+  Epoch 0 | retain acc: 99.222
+Test: [0/9]	Loss 0.0527 (0.0527)	Accuracy 99.609 (99.609)
+  Epoch 0 | forget acc: 98.889
+Test: [0/10]	Loss 1.0853 (1.0853)	Accuracy 74.023 (74.023)
+  Epoch 0 | val acc: 72.840
+Setup random seed = 1
+Dataset: CIFAR-100
+Dataset: CIFAR-100
+The normalize layer is contained in the network
+Setup random seed = 1
+4500
+Setup random seed = 1
+40500
+number of retain dataset 40500
+number of forget dataset 4500
+[MUKSB] KS bargaining | with_l1=False
+Epoch #0, Learning rate: 0.07
+Batch:   10  prec_u: 100.000 (99.956)  loss_u: 11.5801  loss_r: 0.0160  λ_KS: 0.6701  cos_φ: -0.1020  avg_cos_φ(10): -0.0377  eff_scale: 4.6371e-01  skip_rate: 0.000
+Batch:   20, prec_r: 100.000 (99.969), loss: 0.0215
+Batch:   30, prec_r: 100.000 (99.960), loss: 0.0199
+Batch:   40, prec_r: 100.000 (99.945), loss: 0.0235
+Batch:   50, prec_r: 99.805 (99.904), loss: 0.0272
+Epoch: [0][49/80]	Loss 0.0272 (3.7969)	Accuracy 99.805 (99.904)	Time 54.39
+Batch:   60, prec_r: 99.609 (99.874), loss: 0.0311
+Batch:   70, prec_r: 99.805 (99.844), loss: 0.0303
+Batch:   80, prec_r: 99.805 (99.837), loss: 0.0287
+Epoch 0 done | duration: 82.69s | cumulative skip_rate: 0.000
+Test: [0/80]	Loss 0.0307 (0.0307)	Accuracy 99.414 (99.414)
+Test: [50/80]	Loss 0.0531 (0.0325)	Accuracy 99.023 (99.437)
+  Epoch 0 | retain acc: 99.435
+Test: [0/9]	Loss 0.0344 (0.0344)	Accuracy 99.609 (99.609)
+  Epoch 0 | forget acc: 99.311
+Test: [0/10]	Loss 1.0375 (1.0375)	Accuracy 74.609 (74.609)
+  Epoch 0 | val acc: 74.060
+Test: [0/20]	Loss 1.0295 (1.0295)	Accuracy 74.219 (74.219)
+  Epoch 0 | test acc: 72.720
+Epoch #1, Learning rate: 0.07
+prvs_alpha: [1.64801    0.17749594]
+prvs_alpha: [1.5714744  0.17936112]
+prvs_alpha: [1.0886058 0.1775601]
+prvs_alpha: [0.9452625  0.17314272]
+prvs_alpha: [0.979336   0.16890152]
+prvs_alpha: [0.67109144 0.1681069 ]
+prvs_alpha: [0.6619463  0.16532037]
+prvs_alpha: [0.593617   0.17307718]
+prvs_alpha: [0.50306636 0.1651606 ]
+Batch:   10, prec_u: 92.079 (98.489), loss_u: 0.8738, loss_r: 0.2925
+Batch:   20, prec_r: 98.242 (99.102),loss: 0.1492
+Batch:   30, prec_r: 98.438 (98.985),loss: 0.1155
+Batch:   40, prec_r: 98.047 (98.922),loss: 0.1038
+Batch:   50, prec_r: 98.828 (98.879),loss: 0.0970
+Epoch: [1][49/80]	Loss 0.0970 (0.5418)	Accuracy 98.828 (98.879)	Time 43.79
+Batch:   60, prec_r: 98.828 (98.867),loss: 0.0774
+Batch:   70, prec_r: 98.438 (98.849),loss: 0.0768
+Batch:   80, prec_r: 99.414 (98.868),loss: 0.0640
+one epoch duration:63.68122601509094
+Test: [0/80]	Loss 0.0597 (0.0597)	Accuracy 99.219 (99.219)
+Test: [50/80]	Loss 0.0644 (0.0587)	Accuracy 98.438 (98.943)
+  Epoch 1 | retain acc: 98.931
+Test: [0/9]	Loss 0.1369 (0.1369)	Accuracy 96.484 (96.484)
+  Epoch 1 | forget acc: 97.244
+Test: [0/10]	Loss 0.9856 (0.9856)	Accuracy 74.609 (74.609)
+  Epoch 1 | val acc: 72.160
+Test: [0/20]	Loss 1.0415 (1.0415)	Accuracy 75.391 (75.391)
+  Epoch 1 | test acc: 72.360
+Epoch #2, Learning rate: 0.07
+prvs_alpha: [1.9652091  0.18324184]
+prvs_alpha: [1.6696188  0.17695752]
+prvs_alpha: [1.1473122  0.17164193]
+prvs_alpha: [1.0260564  0.17865199]
+prvs_alpha: [0.838495   0.17094903]
+prvs_alpha: [0.7665998  0.17099594]
+prvs_alpha: [0.5772549  0.17987897]
+prvs_alpha: [0.51787317 0.1759174 ]
+prvs_alpha: [0.463213   0.16838124]
+Batch:   10, prec_u: 84.158 (97.119), loss_u: 0.8374, loss_r: 0.3627
+Batch:   20, prec_r: 97.656 (98.609),loss: 0.1713
+Batch:   30, prec_r: 97.266 (98.544),loss: 0.1276
+Batch:   40, prec_r: 98.047 (98.522),loss: 0.1214
+Batch:   50, prec_r: 99.023 (98.523),loss: 0.0911
+Epoch: [2][49/80]	Loss 0.0911 (0.5153)	Accuracy 99.023 (98.523)	Time 41.71
+Batch:   60, prec_r: 99.023 (98.524),loss: 0.0845
+Batch:   70, prec_r: 98.438 (98.518),loss: 0.0866
+Batch:   80, prec_r: 98.242 (98.525),loss: 0.0910
+one epoch duration:60.83908128738403
+Test: [0/80]	Loss 0.0592 (0.0592)	Accuracy 98.633 (98.633)
+Test: [50/80]	Loss 0.0557 (0.0633)	Accuracy 99.609 (98.901)
+  Epoch 2 | retain acc: 98.879
+Test: [0/9]	Loss 0.1813 (0.1813)	Accuracy 95.508 (95.508)
+  Epoch 2 | forget acc: 95.422
+Test: [0/10]	Loss 1.1048 (1.1048)	Accuracy 72.656 (72.656)
+  Epoch 2 | val acc: 70.980
+Test: [0/20]	Loss 1.0418 (1.0418)	Accuracy 74.414 (74.414)
+  Epoch 2 | test acc: 71.550
+Epoch #3, Learning rate: 0.07
+prvs_alpha: [1.3253227  0.17159909]
+prvs_alpha: [1.1998167  0.17491494]
+prvs_alpha: [0.9927934  0.17497523]
+prvs_alpha: [0.77974117 0.17038497]
+prvs_alpha: [0.8295081  0.16673316]
+prvs_alpha: [0.6954754  0.17307751]
+prvs_alpha: [0.5309742  0.17115234]
+prvs_alpha: [0.4801102  0.17455713]
+prvs_alpha: [0.43843168 0.16693297]
+Batch:   10, prec_u: 83.663 (95.844), loss_u: 0.8182, loss_r: 0.3950
+Batch:   20, prec_r: 96.094 (98.323),loss: 0.1812
+Batch:   30, prec_r: 97.070 (98.283),loss: 0.1443
+Batch:   40, prec_r: 97.266 (98.249),loss: 0.1348
+Batch:   50, prec_r: 98.438 (98.251),loss: 0.0973
+Epoch: [3][49/80]	Loss 0.0973 (0.5013)	Accuracy 98.438 (98.251)	Time 60.84
+Batch:   60, prec_r: 99.414 (98.264),loss: 0.0735
+Batch:   70, prec_r: 98.242 (98.274),loss: 0.0898
+Batch:   80, prec_r: 98.047 (98.275),loss: 0.0818
+one epoch duration:81.72938919067383
+Test: [0/80]	Loss 0.0739 (0.0739)	Accuracy 99.023 (99.023)
+Test: [50/80]	Loss 0.0713 (0.0663)	Accuracy 98.438 (98.698)
+  Epoch 3 | retain acc: 98.662
+Test: [0/9]	Loss 0.1939 (0.1939)	Accuracy 94.336 (94.336)
+  Epoch 3 | forget acc: 93.444
+Test: [0/10]	Loss 1.1401 (1.1401)	Accuracy 74.023 (74.023)
+  Epoch 3 | val acc: 71.140
+Test: [0/20]	Loss 1.0798 (1.0798)	Accuracy 73.242 (73.242)
+  Epoch 3 | test acc: 71.020
+Epoch #4, Learning rate: 0.07
+prvs_alpha: [1.1997085 0.173389 ]
+prvs_alpha: [1.154837   0.17286658]
+prvs_alpha: [1.1806862 0.1722182]
+prvs_alpha: [0.85688764 0.17009208]
+prvs_alpha: [0.7399329  0.17086601]
+prvs_alpha: [0.84246886 0.16702083]
+prvs_alpha: [0.6179485  0.17016366]
+prvs_alpha: [0.51005983 0.17523286]
+prvs_alpha: [0.4606158  0.16442703]
+Batch:   10, prec_u: 85.396 (94.920), loss_u: 0.8433, loss_r: 0.3197
+Batch:   20, prec_r: 98.828 (98.191),loss: 0.1220
+Batch:   30, prec_r: 96.484 (98.173),loss: 0.1432
+Batch:   40, prec_r: 96.875 (98.160),loss: 0.1281
+Batch:   50, prec_r: 98.242 (98.167),loss: 0.0945
+Epoch: [4][49/80]	Loss 0.0945 (0.4909)	Accuracy 98.242 (98.167)	Time 44.83
+Batch:   60, prec_r: 98.438 (98.181),loss: 0.0848
+Batch:   70, prec_r: 97.266 (98.186),loss: 0.1089
+Batch:   80, prec_r: 98.438 (98.189),loss: 0.0979
+one epoch duration:66.42291975021362
+Test: [0/80]	Loss 0.0924 (0.0924)	Accuracy 98.047 (98.047)
+Test: [50/80]	Loss 0.0866 (0.0975)	Accuracy 98.633 (97.863)
+  Epoch 4 | retain acc: 97.943
+Test: [0/9]	Loss 0.3769 (0.3769)	Accuracy 89.648 (89.648)
+  Epoch 4 | forget acc: 91.267
+Test: [0/10]	Loss 1.2462 (1.2462)	Accuracy 70.703 (70.703)
+  Epoch 4 | val acc: 69.500
+Test: [0/20]	Loss 1.1313 (1.1313)	Accuracy 73.242 (73.242)
+  Epoch 4 | test acc: 69.930
+Epoch #5, Learning rate: 0.07
+prvs_alpha: [1.0789762 0.1699917]
+prvs_alpha: [1.1850108  0.16711685]
+prvs_alpha: [0.8455253  0.16639017]
+prvs_alpha: [0.779055   0.16469213]
+prvs_alpha: [0.78919977 0.16696717]
+prvs_alpha: [0.6984266  0.16418196]
+prvs_alpha: [0.5839009  0.16847312]
+prvs_alpha: [0.48697078 0.17410798]
+prvs_alpha: [0.47278556 0.1545985 ]
+Batch:   10, prec_u: 83.416 (94.048), loss_u: 0.8073, loss_r: 0.2914
+Batch:   20, prec_r: 96.875 (98.128),loss: 0.1774
+Batch:   30, prec_r: 98.828 (98.111),loss: 0.1019
+Batch:   40, prec_r: 98.242 (98.109),loss: 0.1086
+Batch:   50, prec_r: 97.852 (98.108),loss: 0.1082
+Epoch: [5][49/80]	Loss 0.1082 (0.4814)	Accuracy 97.852 (98.108)	Time 41.54
+Batch:   60, prec_r: 98.047 (98.107),loss: 0.1131
+Batch:   70, prec_r: 99.414 (98.116),loss: 0.0756
+Batch:   80, prec_r: 99.609 (98.126),loss: 0.0635
+one epoch duration:63.866342306137085
+Test: [0/80]	Loss 0.0677 (0.0677)	Accuracy 98.633 (98.633)
+Test: [50/80]	Loss 0.0905 (0.0760)	Accuracy 97.266 (98.403)
+  Epoch 5 | retain acc: 98.400
+Test: [0/9]	Loss 0.3528 (0.3528)	Accuracy 90.625 (90.625)
+  Epoch 5 | forget acc: 91.333
+Test: [0/10]	Loss 1.1206 (1.1206)	Accuracy 71.094 (71.094)
+  Epoch 5 | val acc: 70.360
+Test: [0/20]	Loss 1.1510 (1.1510)	Accuracy 70.117 (70.117)
+  Epoch 5 | test acc: 70.610
+Epoch #6, Learning rate: 0.07
+prvs_alpha: [1.452411   0.16852081]
+prvs_alpha: [0.98739487 0.16493574]
+prvs_alpha: [0.8661024  0.17271933]
+prvs_alpha: [0.746849 0.165571]
+prvs_alpha: [0.6610918  0.16618258]
+prvs_alpha: [0.56328565 0.1652495 ]
+prvs_alpha: [0.52878    0.17050555]
+prvs_alpha: [0.43671933 0.17452101]
+prvs_alpha: [0.36364943 0.1603584 ]
+Batch:   10, prec_u: 78.465 (93.032), loss_u: 0.8018, loss_r: 0.4934
+Batch:   20, prec_r: 96.875 (98.015),loss: 0.1772
+Batch:   30, prec_r: 96.094 (97.994),loss: 0.1618
+Batch:   40, prec_r: 97.656 (97.985),loss: 0.1122
+Batch:   50, prec_r: 98.242 (97.977),loss: 0.1027
+Epoch: [6][49/80]	Loss 0.1027 (0.4768)	Accuracy 98.242 (97.977)	Time 42.72
+Batch:   60, prec_r: 98.047 (97.982),loss: 0.0864
+Batch:   70, prec_r: 99.414 (97.985),loss: 0.0715
+Batch:   80, prec_r: 98.047 (97.986),loss: 0.1008
+one epoch duration:64.24903512001038
+Test: [0/80]	Loss 0.1616 (0.1616)	Accuracy 95.312 (95.312)
+Test: [50/80]	Loss 0.0957 (0.1265)	Accuracy 97.656 (96.948)
+  Epoch 6 | retain acc: 96.854
+Test: [0/9]	Loss 0.5121 (0.5121)	Accuracy 86.133 (86.133)
+  Epoch 6 | forget acc: 85.978
+Test: [0/10]	Loss 1.2071 (1.2071)	Accuracy 71.680 (71.680)
+  Epoch 6 | val acc: 67.660
+Test: [0/20]	Loss 1.2285 (1.2285)	Accuracy 69.336 (69.336)
+  Epoch 6 | test acc: 68.990
+Epoch #7, Learning rate: 0.07
+prvs_alpha: [0.9165074  0.16102049]
+prvs_alpha: [0.60691977 0.16870894]
+prvs_alpha: [0.5179417 0.162183 ]
+prvs_alpha: [0.38626358 0.16091375]
+prvs_alpha: [0.33424687 0.16616194]
+prvs_alpha: [0.32240555 0.17387131]
+prvs_alpha: [0.28208727 0.17363442]
+prvs_alpha: [0.2903234  0.17972334]
+Test: [0/20]	Loss 0.9581 (0.9581)	Accuracy 76.367 (76.367)
+  Epoch 0 | test acc: 74.010
+Epoch #1, Learning rate: 0.07
+Batch:   10  prec_u: 99.010 (99.644)  loss_u: 9.5877  loss_r: 0.1028  λ_KS: 0.6153  cos_φ: -0.2427  avg_cos_φ(10): -0.1109  eff_scale: 1.8328e+00  skip_rate: 0.000
+Batch:   20, prec_r: 98.438 (99.733), loss: 0.0856
+Batch:   30, prec_r: 98.828 (99.684), loss: 0.0745
+Batch:   40, prec_r: 99.609 (99.659), loss: 0.0577
+Batch:   50, prec_r: 99.805 (99.623), loss: 0.0523
+Epoch: [1][49/80]	Loss 0.0523 (2.8725)	Accuracy 99.805 (99.623)	Time 44.33
+Batch:   60, prec_r: 99.609 (99.605), loss: 0.0465
+Batch:   70, prec_r: 99.023 (99.591), loss: 0.0520
+Batch:   80, prec_r: 99.414 (99.587), loss: 0.0585
+Epoch 1 done | duration: 68.84s | cumulative skip_rate: 0.000
+Test: [0/80]	Loss 0.0520 (0.0520)	Accuracy 99.023 (99.023)
+Test: [50/80]	Loss 0.0282 (0.0389)	Accuracy 100.000 (99.475)
+  Epoch 1 | retain acc: 99.499
+Test: [0/9]	Loss 0.0798 (0.0798)	Accuracy 98.633 (98.633)
+  Epoch 1 | forget acc: 98.867
+Test: [0/10]	Loss 0.9167 (0.9167)	Accuracy 75.781 (75.781)
+  Epoch 1 | val acc: 73.080
+Test: [0/20]	Loss 1.0188 (1.0188)	Accuracy 74.805 (74.805)
+  Epoch 1 | test acc: 73.250
+Epoch #2, Learning rate: 0.07
+Batch:   10  prec_u: 87.376 (98.341)  loss_u: 8.2636  loss_r: 0.3668  λ_KS: 0.6139  cos_φ: -0.2462  avg_cos_φ(10): -0.1418  eff_scale: 3.7477e+00  skip_rate: 0.000
+Batch:   20, prec_r: 96.484 (99.248), loss: 0.1810
+Batch:   30, prec_r: 97.852 (99.135), loss: 0.1391
+Batch:   40, prec_r: 96.875 (99.076), loss: 0.1279
+Batch:   50, prec_r: 98.633 (99.049), loss: 0.0967
+Epoch: [2][49/80]	Loss 0.0967 (2.5962)	Accuracy 98.633 (99.049)	Time 41.68
+Batch:   60, prec_r: 99.023 (99.029), loss: 0.0942
+Batch:   70, prec_r: 98.828 (99.009), loss: 0.0704
+Batch:   80, prec_r: 98.633 (98.994), loss: 0.0815
+Epoch 2 done | duration: 73.54s | cumulative skip_rate: 0.000
+Test: [0/80]	Loss 0.0802 (0.0802)	Accuracy 98.438 (98.438)
+Test: [50/80]	Loss 0.0870 (0.0781)	Accuracy 98.242 (98.522)
+  Epoch 2 | retain acc: 98.491
+Test: [0/9]	Loss 0.1746 (0.1746)	Accuracy 95.312 (95.312)
+  Epoch 2 | forget acc: 95.689
+Test: [0/10]	Loss 1.1984 (1.1984)	Accuracy 70.312 (70.312)
+  Epoch 2 | val acc: 70.760
+Test: [0/20]	Loss 1.0489 (1.0489)	Accuracy 74.023 (74.023)
+  Epoch 2 | test acc: 71.440
+Epoch #3, Learning rate: 0.07
+Batch:   10  prec_u: 80.198 (96.533)  loss_u: 7.9725  loss_r: 0.5620  λ_KS: 0.6107  cos_φ: -0.2541  avg_cos_φ(10): -0.1812  eff_scale: 4.4433e+00  skip_rate: 0.000
+Batch:   20, prec_r: 96.094 (98.625), loss: 0.2082
+Batch:   30, prec_r: 96.875 (98.529), loss: 0.1598
+Batch:   40, prec_r: 95.508 (98.459), loss: 0.1727
+Batch:   50, prec_r: 97.461 (98.414), loss: 0.1099
+Epoch: [3][49/80]	Loss 0.1099 (2.4644)	Accuracy 97.461 (98.414)	Time 57.82
+Batch:   60, prec_r: 98.633 (98.390), loss: 0.0953
+Batch:   70, prec_r: 97.656 (98.376), loss: 0.1134
+Batch:   80, prec_r: 97.656 (98.366), loss: 0.1015
+Epoch 3 done | duration: 83.84s | cumulative skip_rate: 0.000
+Test: [0/80]	Loss 0.1533 (0.1533)	Accuracy 96.094 (96.094)
+Test: [50/80]	Loss 0.1236 (0.1369)	Accuracy 97.070 (96.668)
+  Epoch 3 | retain acc: 96.585
+Test: [0/9]	Loss 0.3127 (0.3127)	Accuracy 91.992 (91.992)
+  Epoch 3 | forget acc: 91.044
+Test: [0/10]	Loss 1.1868 (1.1868)	Accuracy 71.484 (71.484)
+  Epoch 3 | val acc: 69.020
+Test: [0/20]	Loss 1.1629 (1.1629)	Accuracy 71.094 (71.094)
+  Epoch 3 | test acc: 68.560
+Epoch #4, Learning rate: 0.07
+Batch:   10  prec_u: 82.673 (94.929)  loss_u: 8.1922  loss_r: 0.5078  λ_KS: 0.6164  cos_φ: -0.2401  avg_cos_φ(10): -0.1700  eff_scale: 4.4587e+00  skip_rate: 0.000
+Batch:   20, prec_r: 95.703 (98.121), loss: 0.1974
+Batch:   30, prec_r: 94.922 (98.057), loss: 0.2070
+Batch:   40, prec_r: 97.266 (98.015), loss: 0.1458
+Batch:   50, prec_r: 97.070 (98.004), loss: 0.1290
+Epoch: [4][49/80]	Loss 0.1290 (2.3924)	Accuracy 97.070 (98.004)	Time 42.65
+Batch:   60, prec_r: 98.047 (97.991), loss: 0.1108
+Batch:   70, prec_r: 97.656 (97.969), loss: 0.1172
+Batch:   80, prec_r: 97.070 (97.951), loss: 0.1374
+Epoch 4 done | duration: 69.44s | cumulative skip_rate: 0.000
+Test: [0/80]	Loss 0.2328 (0.2328)	Accuracy 94.531 (94.531)
+Test: [50/80]	Loss 0.1508 (0.1811)	Accuracy 96.094 (95.665)
+  Epoch 4 | retain acc: 95.696
+Test: [0/9]	Loss 0.4701 (0.4701)	Accuracy 87.305 (87.305)
+  Epoch 4 | forget acc: 88.089
+Test: [0/10]	Loss 1.5244 (1.5244)	Accuracy 63.477 (63.477)
+  Epoch 4 | val acc: 67.300
+Test: [0/20]	Loss 1.3211 (1.3211)	Accuracy 66.211 (66.211)
+  Epoch 4 | test acc: 67.860
+Epoch #5, Learning rate: 0.07
+Batch:   10  prec_u: 79.208 (93.448)  loss_u: 7.9877  loss_r: 0.5457  λ_KS: 0.6215  cos_φ: -0.2274  avg_cos_φ(10): -0.1564  eff_scale: 4.6610e+00  skip_rate: 0.000
+Batch:   20, prec_r: 94.922 (97.751), loss: 0.2141
+Batch:   30, prec_r: 95.312 (97.710), loss: 0.1681
+Batch:   40, prec_r: 96.289 (97.681), loss: 0.1604
+Batch:   50, prec_r: 98.242 (97.673), loss: 0.1173
+Epoch: [5][49/80]	Loss 0.1173 (2.3430)	Accuracy 98.242 (97.673)	Time 44.01
+Batch:   60, prec_r: 97.461 (97.677), loss: 0.1178
+Batch:   70, prec_r: 98.047 (97.680), loss: 0.1060
+Batch:   80, prec_r: 97.461 (97.684), loss: 0.1128
+Epoch 5 done | duration: 71.96s | cumulative skip_rate: 0.000
+Test: [0/80]	Loss 0.0904 (0.0904)	Accuracy 98.242 (98.242)
+Test: [50/80]	Loss 0.1019 (0.1046)	Accuracy 97.656 (97.438)
+  Epoch 5 | retain acc: 97.543
+Test: [0/9]	Loss 0.3350 (0.3350)	Accuracy 89.453 (89.453)
+  Epoch 5 | forget acc: 90.089
+Test: [0/10]	Loss 1.2857 (1.2857)	Accuracy 70.703 (70.703)
+  Epoch 5 | val acc: 69.520
+Test: [0/20]	Loss 1.2176 (1.2176)	Accuracy 69.336 (69.336)
+  Epoch 5 | test acc: 69.940
+Epoch #6, Learning rate: 0.07
+Batch:   10  prec_u: 73.515 (92.165)  loss_u: 8.0317  loss_r: 0.6103  λ_KS: 0.6326  cos_φ: -0.1996  avg_cos_φ(10): -0.1568  eff_scale: 4.7314e+00  skip_rate: 0.000
+Batch:   20, prec_r: 94.336 (97.515), loss: 0.2581
+Batch:   30, prec_r: 96.484 (97.470), loss: 0.1700
+Batch:   40, prec_r: 96.680 (97.446), loss: 0.1645
+Batch:   50, prec_r: 97.070 (97.432), loss: 0.1242
+Epoch: [6][49/80]	Loss 0.1242 (2.3119)	Accuracy 97.070 (97.432)	Time 45.34
+Batch:   60, prec_r: 97.461 (97.430), loss: 0.1104
+Batch:   70, prec_r: 97.656 (97.424), loss: 0.1145
+Batch:   80, prec_r: 97.656 (97.432), loss: 0.1036
+Epoch 6 done | duration: 74.44s | cumulative skip_rate: 0.000
+Test: [0/80]	Loss 0.1014 (0.1014)	Accuracy 97.266 (97.266)
+Test: [50/80]	Loss 0.1074 (0.1069)	Accuracy 97.266 (97.396)
+  Epoch 6 | retain acc: 97.365
+Test: [0/9]	Loss 0.3866 (0.3866)	Accuracy 89.648 (89.648)
+  Epoch 6 | forget acc: 88.133
+Test: [0/10]	Loss 1.1031 (1.1031)	Accuracy 72.852 (72.852)
+  Epoch 6 | val acc: 69.140
+Test: [0/20]	Loss 1.1591 (1.1591)	Accuracy 71.875 (71.875)
+  Epoch 6 | test acc: 70.460
+Epoch #7, Learning rate: 0.07
+Batch:   10  prec_u: 72.030 (90.989)  loss_u: 8.0010  loss_r: 0.6548  λ_KS: 0.6290  cos_φ: -0.2088  avg_cos_φ(10): -0.1248  eff_scale: 4.8789e+00  skip_rate: 0.000
+Batch:   20, prec_r: 94.336 (97.269), loss: 0.2534
+Batch:   30, prec_r: 97.266 (97.233), loss: 0.1616
+Batch:   40, prec_r: 98.242 (97.217), loss: 0.1136
+Batch:   50, prec_r: 96.484 (97.208), loss: 0.1513
+Epoch: [7][49/80]	Loss 0.1513 (2.2911)	Accuracy 96.484 (97.208)	Time 62.00
+Batch:   60, prec_r: 97.852 (97.203), loss: 0.1145
+Batch:   70, prec_r: 97.656 (97.203), loss: 0.1077
+Batch:   80, prec_r: 97.266 (97.208), loss: 0.1167
+Epoch 7 done | duration: 89.77s | cumulative skip_rate: 0.000
+Test: [0/80]	Loss 0.1389 (0.1389)	Accuracy 95.508 (95.508)
+Test: [50/80]	Loss 0.0894 (0.1099)	Accuracy 98.633 (97.289)
+  Epoch 7 | retain acc: 97.299
+Test: [0/9]	Loss 0.4513 (0.4513)	Accuracy 86.328 (86.328)
+  Epoch 7 | forget acc: 86.956
+Test: [0/10]	Loss 1.1290 (1.1290)	Accuracy 74.023 (74.023)
+  Epoch 7 | val acc: 69.360
+Test: [0/20]	Loss 1.1760 (1.1760)	Accuracy 70.703 (70.703)
+  Epoch 7 | test acc: 69.750
+Epoch #8, Learning rate: 0.07
+Batch:   10  prec_u: 79.455 (90.227)  loss_u: 8.3308  loss_r: 0.3559  λ_KS: 0.6383  cos_φ: -0.1851  avg_cos_φ(10): -0.1178  eff_scale: 3.6440e+00  skip_rate: 0.000
+Batch:   20, prec_r: 96.289 (97.146), loss: 0.1917
+Batch:   30, prec_r: 96.289 (97.142), loss: 0.1638
+Batch:   40, prec_r: 97.070 (97.145), loss: 0.1433
+prvs_alpha: [0.24633713 0.16815186]
+Batch:   10, prec_u: 63.861 (91.061), loss_u: 0.7309, loss_r: 0.9512
+Batch:   20, prec_r: 92.773 (97.706),loss: 0.2865
+Batch:   30, prec_r: 94.336 (97.637),loss: 0.2252
+Batch:   40, prec_r: 97.852 (97.597),loss: 0.1303
+Batch:   50, prec_r: 97.461 (97.579),loss: 0.1619
+Epoch: [7][49/80]	Loss 0.1619 (0.4790)	Accuracy 97.461 (97.579)	Time 51.90
+Batch:   60, prec_r: 97.070 (97.564),loss: 0.1556
+Batch:   70, prec_r: 96.875 (97.544),loss: 0.1361
+Batch:   80, prec_r: 97.656 (97.539),loss: 0.1267
+one epoch duration:83.5061719417572
+Test: [0/80]	Loss 0.1460 (0.1460)	Accuracy 96.289 (96.289)
+Test: [50/80]	Loss 0.1317 (0.1548)	Accuracy 96.875 (95.925)
+  Epoch 7 | retain acc: 95.953
+Test: [0/9]	Loss 0.4911 (0.4911)	Accuracy 84.766 (84.766)
+  Epoch 7 | forget acc: 84.244
+Test: [0/10]	Loss 1.2753 (1.2753)	Accuracy 68.750 (68.750)
+  Epoch 7 | val acc: 67.840
+Test: [0/20]	Loss 1.2878 (1.2878)	Accuracy 68.555 (68.555)
+  Epoch 7 | test acc: 68.420
+Epoch #8, Learning rate: 0.07
+prvs_alpha: [0.76509213 0.16634889]
+prvs_alpha: [0.70661926 0.16720003]
+prvs_alpha: [0.6147212  0.16257448]
+prvs_alpha: [0.52174085 0.1636069 ]
+prvs_alpha: [0.48594347 0.16331494]
+prvs_alpha: [0.38408554 0.16404653]
+prvs_alpha: [0.38219425 0.16559373]
+prvs_alpha: [0.32741567 0.17164893]
+prvs_alpha: [0.3336421  0.15806817]
+Batch:   10, prec_u: 72.772 (89.899), loss_u: 0.8190, loss_r: 0.5384
+Batch:   20, prec_r: 92.969 (97.402),loss: 0.2748
+Batch:   30, prec_r: 94.727 (97.366),loss: 0.2082
+Batch:   40, prec_r: 96.680 (97.343),loss: 0.1625
+Batch:   50, prec_r: 96.094 (97.327),loss: 0.1679
+Epoch: [8][49/80]	Loss 0.1679 (0.4805)	Accuracy 96.094 (97.327)	Time 51.31
+Batch:   60, prec_r: 94.922 (97.313),loss: 0.1380
+Batch:   70, prec_r: 96.875 (97.307),loss: 0.1330
+Batch:   80, prec_r: 97.852 (97.297),loss: 0.1005
+one epoch duration:74.46747088432312
+Test: [0/80]	Loss 0.2019 (0.2019)	Accuracy 94.922 (94.922)
+Test: [50/80]	Loss 0.1913 (0.1800)	Accuracy 95.117 (95.182)
+  Epoch 8 | retain acc: 95.173
+Test: [0/9]	Loss 0.5282 (0.5282)	Accuracy 83.984 (83.984)
+  Epoch 8 | forget acc: 82.200
+Test: [0/10]	Loss 1.3665 (1.3665)	Accuracy 66.992 (66.992)
+  Epoch 8 | val acc: 66.740
+Test: [0/20]	Loss 1.2617 (1.2617)	Accuracy 67.969 (67.969)
+  Epoch 8 | test acc: 67.490
+Epoch #9, Learning rate: 0.07
+prvs_alpha: [0.769534   0.16229163]
+prvs_alpha: [0.7217138  0.16270518]
+prvs_alpha: [0.676223   0.15758854]
+prvs_alpha: [0.49184456 0.16243109]
+prvs_alpha: [0.4302293  0.15911266]
+prvs_alpha: [0.3755157 0.1647671]
+prvs_alpha: [0.31689242 0.16725081]
+prvs_alpha: [0.3504901  0.17298028]
+prvs_alpha: [0.2771043  0.16358264]
+Batch:   10, prec_u: 64.851 (88.753), loss_u: 0.8110, loss_r: 0.8152
+Batch:   20, prec_r: 94.922 (97.160),loss: 0.1923
+Batch:   30, prec_r: 96.484 (97.133),loss: 0.1716
+Batch:   40, prec_r: 95.898 (97.120),loss: 0.1612
+Batch:   50, prec_r: 95.117 (97.109),loss: 0.1617
+Epoch: [9][49/80]	Loss 0.1617 (0.4808)	Accuracy 95.117 (97.109)	Time 47.11
+Batch:   60, prec_r: 95.312 (97.105),loss: 0.1670
+Batch:   70, prec_r: 97.852 (97.106),loss: 0.1173
+Batch:   80, prec_r: 97.070 (97.106),loss: 0.1174
+one epoch duration:80.68389868736267
+Test: [0/80]	Loss 0.1541 (0.1541)	Accuracy 95.508 (95.508)
+Test: [50/80]	Loss 0.1568 (0.1432)	Accuracy 96.289 (96.189)
+  Epoch 9 | retain acc: 96.148
+Test: [0/9]	Loss 0.6320 (0.6320)	Accuracy 81.641 (81.641)
+  Epoch 9 | forget acc: 82.711
+Test: [0/10]	Loss 1.2881 (1.2881)	Accuracy 68.555 (68.555)
+  Epoch 9 | val acc: 67.160
+Test: [0/20]	Loss 1.2071 (1.2071)	Accuracy 71.094 (71.094)
+  Epoch 9 | test acc: 68.380
+Epoch #10, Learning rate: 0.07
+prvs_alpha: [0.8953407  0.16111821]
+prvs_alpha: [0.77869564 0.16150205]
+prvs_alpha: [0.58185834 0.16040616]
+prvs_alpha: [0.5562836 0.1617682]
+prvs_alpha: [0.5895498  0.16081804]
+prvs_alpha: [0.469337   0.16524018]
+prvs_alpha: [0.36552942 0.16389163]
+prvs_alpha: [0.36522505 0.17430769]
+prvs_alpha: [0.32612127 0.15694875]
+Batch:   10, prec_u: 65.594 (87.816), loss_u: 0.7985, loss_r: 0.5133
+Batch:   20, prec_r: 93.750 (97.011),loss: 0.2691
+Batch:   30, prec_r: 95.703 (96.995),loss: 0.2019
+Batch:   40, prec_r: 96.875 (96.985),loss: 0.1559
+Batch:   50, prec_r: 96.484 (96.981),loss: 0.1508
+Epoch: [10][49/80]	Loss 0.1508 (0.4805)	Accuracy 96.484 (96.981)	Time 50.34
+Batch:   60, prec_r: 97.461 (96.981),loss: 0.1363
+Batch:   70, prec_r: 96.680 (96.982),loss: 0.1446
+Batch:   80, prec_r: 97.461 (96.983),loss: 0.1158
+one epoch duration:74.08660387992859
+Test: [0/80]	Loss 0.1937 (0.1937)	Accuracy 94.336 (94.336)
+Test: [50/80]	Loss 0.2556 (0.1980)	Accuracy 93.164 (94.202)
+  Epoch 10 | retain acc: 94.328
+Test: [0/9]	Loss 0.7753 (0.7753)	Accuracy 77.344 (77.344)
+  Epoch 10 | forget acc: 78.956
+Test: [0/10]	Loss 1.2548 (1.2548)	Accuracy 70.508 (70.508)
+  Epoch 10 | val acc: 65.980
+Test: [0/20]	Loss 1.4971 (1.4971)	Accuracy 65.625 (65.625)
+  Epoch 10 | test acc: 66.510
+Epoch #11, Learning rate: 0.07
+prvs_alpha: [0.89739096 0.16020724]
+prvs_alpha: [0.68659866 0.16249691]
+prvs_alpha: [0.6415588  0.16273588]
+prvs_alpha: [0.47407505 0.16677596]
+prvs_alpha: [0.46716747 0.16897477]
+prvs_alpha: [0.38417006 0.16514845]
+prvs_alpha: [0.35989225 0.16973643]
+prvs_alpha: [0.3309839  0.17346404]
+prvs_alpha: [0.29663518 0.16726087]
+Batch:   10, prec_u: 68.317 (86.876), loss_u: 0.7730, loss_r: 0.7029
+Batch:   20, prec_r: 95.703 (96.875),loss: 0.2162
+Batch:   30, prec_r: 94.141 (96.847),loss: 0.2186
+Batch:   40, prec_r: 96.289 (96.833),loss: 0.1686
+Batch:   50, prec_r: 97.852 (96.829),loss: 0.1418
+Epoch: [11][49/80]	Loss 0.1418 (0.4813)	Accuracy 97.852 (96.829)	Time 39.18
+Batch:   60, prec_r: 96.680 (96.827),loss: 0.1357
+Batch:   70, prec_r: 96.875 (96.825),loss: 0.1399
+Batch:   80, prec_r: 97.656 (96.829),loss: 0.1247
+one epoch duration:61.4611279964447
+Test: [0/80]	Loss 0.1826 (0.1826)	Accuracy 94.922 (94.922)
+Test: [50/80]	Loss 0.1894 (0.1906)	Accuracy 94.336 (94.688)
+  Epoch 11 | retain acc: 94.657
+Test: [0/9]	Loss 0.7528 (0.7528)	Accuracy 78.906 (78.906)
+  Epoch 11 | forget acc: 80.178
+Test: [0/10]	Loss 1.3089 (1.3089)	Accuracy 68.164 (68.164)
+  Epoch 11 | val acc: 66.360
+Test: [0/20]	Loss 1.2962 (1.2962)	Accuracy 67.969 (67.969)
+  Epoch 11 | test acc: 66.690
+Epoch #12, Learning rate: 0.07
+prvs_alpha: [0.7506143  0.16245559]
+prvs_alpha: [0.74739486 0.16340943]
+prvs_alpha: [0.57335275 0.16255221]
+prvs_alpha: [0.56808525 0.1616356 ]
+prvs_alpha: [0.4887314  0.16429418]
+prvs_alpha: [0.38561872 0.16382885]
+prvs_alpha: [0.3480556  0.16944413]
+prvs_alpha: [0.3146787  0.16992013]
+prvs_alpha: [0.31563166 0.16151303]
+Batch:   10, prec_u: 63.861 (86.032), loss_u: 0.7925, loss_r: 0.6104
+Batch:   20, prec_r: 92.773 (96.725),loss: 0.2585
+Batch:   30, prec_r: 95.898 (96.706),loss: 0.2042
+Batch:   40, prec_r: 95.508 (96.699),loss: 0.1757
+Batch:   50, prec_r: 96.094 (96.691),loss: 0.1389
+Epoch: [12][49/80]	Loss 0.1389 (0.4823)	Accuracy 96.094 (96.691)	Time 58.98
+Batch:   60, prec_r: 94.727 (96.682),loss: 0.1836
+Batch:   70, prec_r: 95.508 (96.674),loss: 0.2035
+Batch:   80, prec_r: 97.070 (96.672),loss: 0.1432
+one epoch duration:84.23695302009583
+Test: [0/80]	Loss 0.1815 (0.1815)	Accuracy 95.703 (95.703)
+Test: [50/80]	Loss 0.2154 (0.1650)	Accuracy 93.164 (95.573)
+  Epoch 12 | retain acc: 95.580
+Test: [0/9]	Loss 0.6265 (0.6265)	Accuracy 79.492 (79.492)
+  Epoch 12 | forget acc: 79.333
+Test: [0/10]	Loss 1.1850 (1.1850)	Accuracy 68.945 (68.945)
+  Epoch 12 | val acc: 67.120
+Test: [0/20]	Loss 1.2889 (1.2889)	Accuracy 69.336 (69.336)
+  Epoch 12 | test acc: 67.540
+Epoch #13, Learning rate: 0.07
+prvs_alpha: [0.757449   0.15997948]
+prvs_alpha: [0.81877977 0.16238399]
+prvs_alpha: [0.75221914 0.16321619]
+prvs_alpha: [0.5719383  0.16323912]
+prvs_alpha: [0.51187783 0.1588734 ]
+prvs_alpha: [0.4404087 0.1647677]
+prvs_alpha: [0.4261996 0.1656626]
+prvs_alpha: [0.35404226 0.17196766]
+prvs_alpha: [0.32213402 0.15616894]
+Batch:   10, prec_u: 69.307 (85.403), loss_u: 0.8246, loss_r: 0.5418
+Batch:   20, prec_r: 94.727 (96.608),loss: 0.2243
+Batch:   30, prec_r: 95.312 (96.596),loss: 0.1669
+Batch:   40, prec_r: 95.898 (96.592),loss: 0.1754
+Batch:   50, prec_r: 97.070 (96.594),loss: 0.1339
+Epoch: [13][49/80]	Loss 0.1339 (0.4824)	Accuracy 97.070 (96.594)	Time 41.81
+Batch:   50, prec_r: 96.484 (97.149), loss: 0.1357
+Epoch: [8][49/80]	Loss 0.1357 (2.2721)	Accuracy 96.484 (97.149)	Time 50.68
+Batch:   60, prec_r: 97.852 (97.156), loss: 0.1141
+Batch:   70, prec_r: 98.828 (97.163), loss: 0.0861
+Batch:   80, prec_r: 98.047 (97.171), loss: 0.1030
+Epoch 8 done | duration: 79.38s | cumulative skip_rate: 0.000
+Test: [0/80]	Loss 0.1662 (0.1662)	Accuracy 95.898 (95.898)
+Test: [50/80]	Loss 0.1839 (0.1470)	Accuracy 95.898 (96.369)
+  Epoch 8 | retain acc: 96.351
+Test: [0/9]	Loss 0.4906 (0.4906)	Accuracy 85.156 (85.156)
+  Epoch 8 | forget acc: 83.044
+Test: [0/10]	Loss 1.6232 (1.6232)	Accuracy 61.719 (61.719)
+  Epoch 8 | val acc: 67.980
+Test: [0/20]	Loss 1.2271 (1.2271)	Accuracy 70.508 (70.508)
+  Epoch 8 | test acc: 67.730
+Epoch #9, Learning rate: 0.07
+Batch:   10  prec_u: 70.050 (89.378)  loss_u: 8.2838  loss_r: 0.5017  λ_KS: 0.6386  cos_φ: -0.1844  avg_cos_φ(10): -0.1166  eff_scale: 4.3297e+00  skip_rate: 0.000
+Batch:   20, prec_r: 95.898 (97.106), loss: 0.1711
+Batch:   30, prec_r: 96.875 (97.101), loss: 0.1618
+Batch:   40, prec_r: 96.875 (97.102), loss: 0.1386
+Batch:   50, prec_r: 96.484 (97.106), loss: 0.1301
+Epoch: [9][49/80]	Loss 0.1301 (2.2533)	Accuracy 96.484 (97.106)	Time 59.91
+Batch:   60, prec_r: 97.266 (97.117), loss: 0.1197
+Batch:   70, prec_r: 98.438 (97.127), loss: 0.0904
+Batch:   80, prec_r: 99.219 (97.137), loss: 0.0758
+Epoch 9 done | duration: 86.56s | cumulative skip_rate: 0.000
+Test: [0/80]	Loss 0.1257 (0.1257)	Accuracy 96.484 (96.484)
+Test: [50/80]	Loss 0.1310 (0.1129)	Accuracy 96.875 (97.109)
+  Epoch 9 | retain acc: 97.109
+Test: [0/9]	Loss 0.5766 (0.5766)	Accuracy 81.445 (81.445)
+  Epoch 9 | forget acc: 84.244
+Test: [0/10]	Loss 1.2313 (1.2313)	Accuracy 70.117 (70.117)
+  Epoch 9 | val acc: 68.960
+Test: [0/20]	Loss 1.1851 (1.1851)	Accuracy 70.508 (70.508)
+  Epoch 9 | test acc: 69.560
+Epoch #10, Learning rate: 0.07
+Batch:   10  prec_u: 73.020 (88.752)  loss_u: 8.2140  loss_r: 0.3819  λ_KS: 0.6533  cos_φ: -0.1464  avg_cos_φ(10): -0.1141  eff_scale: 3.9888e+00  skip_rate: 0.000
+Batch:   20, prec_r: 96.094 (97.096), loss: 0.1745
+Batch:   30, prec_r: 95.703 (97.096), loss: 0.1682
+Batch:   40, prec_r: 98.438 (97.102), loss: 0.1015
+Batch:   50, prec_r: 98.242 (97.106), loss: 0.1026
+Epoch: [10][49/80]	Loss 0.1026 (2.2372)	Accuracy 98.242 (97.106)	Time 43.05
+Batch:   60, prec_r: 98.242 (97.116), loss: 0.1010
+Batch:   70, prec_r: 97.656 (97.124), loss: 0.0979
+Batch:   80, prec_r: 96.484 (97.132), loss: 0.1478
+Epoch 10 done | duration: 65.51s | cumulative skip_rate: 0.000
+Test: [0/80]	Loss 0.0899 (0.0899)	Accuracy 98.242 (98.242)
+Test: [50/80]	Loss 0.1348 (0.1084)	Accuracy 96.680 (97.457)
+  Epoch 10 | retain acc: 97.491
+Test: [0/9]	Loss 0.6076 (0.6076)	Accuracy 83.984 (83.984)
+  Epoch 10 | forget acc: 83.867
+Test: [0/10]	Loss 1.1987 (1.1987)	Accuracy 70.117 (70.117)
+  Epoch 10 | val acc: 69.280
+Test: [0/20]	Loss 1.1885 (1.1885)	Accuracy 70.508 (70.508)
+  Epoch 10 | test acc: 69.250
+Epoch #11, Learning rate: 0.07
+Batch:   10  prec_u: 68.317 (88.159)  loss_u: 8.1166  loss_r: 0.3779  λ_KS: 0.6559  cos_φ: -0.1396  avg_cos_φ(10): -0.0966  eff_scale: 4.1449e+00  skip_rate: 0.000
+Batch:   20, prec_r: 95.508 (97.092), loss: 0.1879
+Batch:   30, prec_r: 95.508 (97.085), loss: 0.1685
+Batch:   40, prec_r: 97.656 (97.087), loss: 0.1089
+Batch:   50, prec_r: 97.461 (97.093), loss: 0.1096
+Epoch: [11][49/80]	Loss 0.1096 (2.2214)	Accuracy 97.461 (97.093)	Time 59.08
+Batch:   60, prec_r: 98.438 (97.099), loss: 0.0785
+Batch:   70, prec_r: 97.461 (97.105), loss: 0.1209
+Batch:   80, prec_r: 97.656 (97.112), loss: 0.1174
+Epoch 11 done | duration: 88.33s | cumulative skip_rate: 0.000
+Test: [0/80]	Loss 0.2208 (0.2208)	Accuracy 93.555 (93.555)
+Test: [50/80]	Loss 0.2118 (0.1982)	Accuracy 94.336 (94.240)
+  Epoch 11 | retain acc: 94.126
+Test: [0/9]	Loss 0.7807 (0.7807)	Accuracy 77.344 (77.344)
+  Epoch 11 | forget acc: 77.511
+Test: [0/10]	Loss 1.1644 (1.1644)	Accuracy 71.680 (71.680)
+  Epoch 11 | val acc: 65.120
+Test: [0/20]	Loss 1.3140 (1.3140)	Accuracy 69.336 (69.336)
+  Epoch 11 | test acc: 65.720
+Epoch #12, Learning rate: 0.07
+Batch:   10  prec_u: 55.941 (86.809)  loss_u: 7.4855  loss_r: 1.0704  λ_KS: 0.6498  cos_φ: -0.1555  avg_cos_φ(10): -0.1444  eff_scale: 5.5872e+00  skip_rate: 0.000
+Batch:   20, prec_r: 93.164 (96.940), loss: 0.2644
+Batch:   30, prec_r: 95.312 (96.896), loss: 0.2350
+Batch:   40, prec_r: 95.703 (96.867), loss: 0.2162
+Batch:   50, prec_r: 95.898 (96.853), loss: 0.1813
+Epoch: [12][49/80]	Loss 0.1813 (2.2099)	Accuracy 95.898 (96.853)	Time 41.60
+Batch:   60, prec_r: 96.484 (96.846), loss: 0.1536
+Batch:   70, prec_r: 94.922 (96.837), loss: 0.1935
+Batch:   80, prec_r: 96.680 (96.828), loss: 0.1685
+Epoch 12 done | duration: 66.13s | cumulative skip_rate: 0.000
+Test: [0/80]	Loss 0.2063 (0.2063)	Accuracy 93.945 (93.945)
+Test: [50/80]	Loss 0.2354 (0.1845)	Accuracy 93.555 (94.960)
+  Epoch 12 | retain acc: 94.948
+Test: [0/9]	Loss 0.7339 (0.7339)	Accuracy 78.711 (78.711)
+  Epoch 12 | forget acc: 78.689
+Test: [0/10]	Loss 1.2581 (1.2581)	Accuracy 67.969 (67.969)
+  Epoch 12 | val acc: 66.080
+Test: [0/20]	Loss 1.1837 (1.1837)	Accuracy 70.898 (70.898)
+  Epoch 12 | test acc: 66.610
+Epoch #13, Learning rate: 0.07
+Batch:   10  prec_u: 67.822 (86.160)  loss_u: 8.1333  loss_r: 0.4263  λ_KS: 0.6458  cos_φ: -0.1660  avg_cos_φ(10): -0.1043  eff_scale: 4.2042e+00  skip_rate: 0.000
+Batch:   20, prec_r: 95.508 (96.770), loss: 0.2044
+Batch:   30, prec_r: 96.094 (96.759), loss: 0.1788
+Batch:   40, prec_r: 94.336 (96.754), loss: 0.2231
+Batch:   50, prec_r: 97.656 (96.750), loss: 0.1289
+Epoch: [13][49/80]	Loss 0.1289 (2.2038)	Accuracy 97.656 (96.750)	Time 43.60
+Batch:   60, prec_r: 96.875 (96.752), loss: 0.1382
+Batch:   70, prec_r: 96.484 (96.747), loss: 0.1225
+Batch:   80, prec_r: 96.680 (96.741), loss: 0.1253
+Epoch 13 done | duration: 74.42s | cumulative skip_rate: 0.000
+Test: [0/80]	Loss 0.1635 (0.1635)	Accuracy 95.703 (95.703)
+Test: [50/80]	Loss 0.2159 (0.1846)	Accuracy 94.336 (94.830)
+  Epoch 13 | retain acc: 94.835
+Test: [0/9]	Loss 0.7143 (0.7143)	Accuracy 79.297 (79.297)
+  Epoch 13 | forget acc: 78.400
+Test: [0/10]	Loss 1.2996 (1.2996)	Accuracy 66.797 (66.797)
+  Epoch 13 | val acc: 66.480
+Test: [0/20]	Loss 1.3730 (1.3730)	Accuracy 67.969 (67.969)
+  Epoch 13 | test acc: 66.550
+Epoch #14, Learning rate: 0.07
+Batch:   10  prec_u: 65.842 (85.424)  loss_u: 8.1354  loss_r: 0.5860  λ_KS: 0.6465  cos_φ: -0.1640  avg_cos_φ(10): -0.1216  eff_scale: 4.6044e+00  skip_rate: 0.000
+Batch:   20, prec_r: 95.117 (96.658), loss: 0.2457
+Batch:   30, prec_r: 96.289 (96.646), loss: 0.1446
+Batch:   40, prec_r: 97.461 (96.644), loss: 0.1494
+Batch:   50, prec_r: 97.461 (96.642), loss: 0.1222
+Epoch: [14][49/80]	Loss 0.1222 (2.1971)	Accuracy 97.461 (96.642)	Time 49.87
+Batch:   60, prec_r: 96.680 (96.641), loss: 0.1305
+Batch:   70, prec_r: 97.266 (96.643), loss: 0.1151
+Batch:   80, prec_r: 98.438 (96.647), loss: 0.1060
+Epoch 14 done | duration: 72.67s | cumulative skip_rate: 0.000
+Test: [0/80]	Loss 0.1608 (0.1608)	Accuracy 95.117 (95.117)
+Test: [50/80]	Loss 0.1464 (0.1452)	Accuracy 96.484 (96.021)
+  Epoch 14 | retain acc: 96.178
+Test: [0/9]	Loss 0.6315 (0.6315)	Accuracy 79.102 (79.102)
+  Epoch 14 | forget acc: 79.089
+Test: [0/10]	Loss 1.2778 (1.2778)	Accuracy 70.312 (70.312)
+  Epoch 14 | val acc: 68.220
+Test: [0/20]	Loss 1.2685 (1.2685)	Accuracy 71.680 (71.680)
+  Epoch 14 | test acc: 68.010
+Epoch #15, Learning rate: 0.07
+Batch:   10  prec_u: 64.356 (84.856)  loss_u: 7.9271  loss_r: 0.5253  λ_KS: 0.6401  cos_φ: -0.1806  avg_cos_φ(10): -0.1078  eff_scale: 4.3612e+00  skip_rate: 0.000
+Batch:   20, prec_r: 95.703 (96.605), loss: 0.1652
+Batch:   30, prec_r: 96.289 (96.599), loss: 0.1558
+Batch:   40, prec_r: 96.484 (96.598), loss: 0.1363
+Batch:   50, prec_r: 97.266 (96.601), loss: 0.1305
+Epoch: [15][49/80]	Loss 0.1305 (2.1898)	Accuracy 97.266 (96.601)	Time 40.23
+Batch:   60, prec_r: 97.266 (96.604), loss: 0.1192
+Batch:   70, prec_r: 98.438 (96.610), loss: 0.0957
+Batch:   80, prec_r: 97.656 (96.615), loss: 0.0949
+Epoch 15 done | duration: 64.46s | cumulative skip_rate: 0.000
+Test: [0/80]	Loss 0.2105 (0.2105)	Accuracy 94.727 (94.727)
+Batch:   60, prec_r: 96.875 (96.602),loss: 0.1222
+Batch:   70, prec_r: 97.070 (96.608),loss: 0.1082
+Batch:   80, prec_r: 99.023 (96.615),loss: 0.0880
+one epoch duration:63.887996196746826
+Test: [0/80]	Loss 0.1180 (0.1180)	Accuracy 96.680 (96.680)
+Test: [50/80]	Loss 0.1308 (0.1394)	Accuracy 96.484 (96.327)
+  Epoch 13 | retain acc: 96.432
+Test: [0/9]	Loss 0.6480 (0.6480)	Accuracy 81.055 (81.055)
+  Epoch 13 | forget acc: 79.444
+Test: [0/10]	Loss 1.3671 (1.3671)	Accuracy 68.555 (68.555)
+  Epoch 13 | val acc: 67.600
+Test: [0/20]	Loss 1.2787 (1.2787)	Accuracy 71.680 (71.680)
+  Epoch 13 | test acc: 67.640
+Epoch #14, Learning rate: 0.07
+prvs_alpha: [1.0679314 0.1651782]
+prvs_alpha: [0.774996   0.16282547]
+prvs_alpha: [0.7692644 0.1596993]
+prvs_alpha: [0.5819722  0.16328365]
+prvs_alpha: [0.506368  0.1614018]
+prvs_alpha: [0.39683783 0.16848195]
+prvs_alpha: [0.4256536 0.1655147]
+prvs_alpha: [0.33092326 0.17268755]
+prvs_alpha: [0.3492895  0.16057155]
+Batch:   10, prec_u: 63.366 (84.741), loss_u: 0.8077, loss_r: 0.5099
+Batch:   20, prec_r: 95.117 (96.561),loss: 0.2168
+Batch:   30, prec_r: 94.727 (96.553),loss: 0.1690
+Batch:   40, prec_r: 97.266 (96.556),loss: 0.1357
+Batch:   50, prec_r: 97.070 (96.559),loss: 0.1203
+Epoch: [14][49/80]	Loss 0.1203 (0.4813)	Accuracy 97.070 (96.559)	Time 41.87
+Batch:   60, prec_r: 97.266 (96.570),loss: 0.1092
+Batch:   70, prec_r: 98.242 (96.576),loss: 0.0899
+Batch:   80, prec_r: 97.070 (96.584),loss: 0.1023
+one epoch duration:67.08520412445068
+Test: [0/80]	Loss 0.1351 (0.1351)	Accuracy 97.266 (97.266)
+Test: [50/80]	Loss 0.1335 (0.1499)	Accuracy 96.484 (95.925)
+  Epoch 14 | retain acc: 95.983
+Test: [0/9]	Loss 0.7882 (0.7882)	Accuracy 76.953 (76.953)
+  Epoch 14 | forget acc: 78.178
+Test: [0/10]	Loss 1.2908 (1.2908)	Accuracy 70.117 (70.117)
+  Epoch 14 | val acc: 67.920
+Test: [0/20]	Loss 1.2899 (1.2899)	Accuracy 69.141 (69.141)
+  Epoch 14 | test acc: 67.760
+Epoch #15, Learning rate: 0.07
+prvs_alpha: [0.99642587 0.15941134]
+prvs_alpha: [0.6896612  0.15840323]
+prvs_alpha: [0.7415472  0.16634627]
+prvs_alpha: [0.5339558 0.1629103]
+prvs_alpha: [0.46511793 0.16573794]
+prvs_alpha: [0.33792406 0.16383433]
+prvs_alpha: [0.34486163 0.16845383]
+prvs_alpha: [0.33420512 0.17353185]
+prvs_alpha: [0.3048256  0.16191962]
+Batch:   10, prec_u: 61.881 (84.114), loss_u: 0.7712, loss_r: 0.6424
+Batch:   20, prec_r: 95.312 (96.516),loss: 0.2138
+Batch:   30, prec_r: 93.164 (96.500),loss: 0.2150
+Batch:   40, prec_r: 96.484 (96.493),loss: 0.1592
+Batch:   50, prec_r: 98.242 (96.492),loss: 0.1209
+Epoch: [15][49/80]	Loss 0.1209 (0.4809)	Accuracy 98.242 (96.492)	Time 47.50
+Batch:   60, prec_r: 96.289 (96.494),loss: 0.1347
+Batch:   70, prec_r: 98.047 (96.501),loss: 0.0971
+Batch:   80, prec_r: 97.070 (96.506),loss: 0.1027
+one epoch duration:66.661376953125
+Test: [0/80]	Loss 0.1457 (0.1457)	Accuracy 96.680 (96.680)
+Test: [50/80]	Loss 0.1828 (0.1606)	Accuracy 94.922 (95.588)
+  Epoch 15 | retain acc: 95.667
+Test: [0/9]	Loss 0.7950 (0.7950)	Accuracy 78.320 (78.320)
+  Epoch 15 | forget acc: 76.267
+Test: [0/10]	Loss 1.4234 (1.4234)	Accuracy 64.844 (64.844)
+  Epoch 15 | val acc: 67.400
+Test: [0/20]	Loss 1.2856 (1.2856)	Accuracy 69.727 (69.727)
+  Epoch 15 | test acc: 67.860
+Epoch #16, Learning rate: 0.07
+prvs_alpha: [0.8817445  0.16302848]
+prvs_alpha: [0.5929858 0.1627342]
+prvs_alpha: [0.49950385 0.16186793]
+prvs_alpha: [0.38434443 0.16454628]
+prvs_alpha: [0.40008828 0.16303769]
+prvs_alpha: [0.27799407 0.16522186]
+prvs_alpha: [0.27755132 0.16530839]
+prvs_alpha: [0.24193737 0.1810058 ]
+prvs_alpha: [0.24377136 0.1701647 ]
+Batch:   10, prec_u: 53.218 (83.196), loss_u: 0.7605, loss_r: 1.0558
+Batch:   20, prec_r: 91.406 (96.369),loss: 0.3146
+Batch:   30, prec_r: 94.336 (96.340),loss: 0.2419
+Batch:   40, prec_r: 93.750 (96.321),loss: 0.2127
+Batch:   50, prec_r: 97.070 (96.313),loss: 0.1483
+Epoch: [16][49/80]	Loss 0.1483 (0.4834)	Accuracy 97.070 (96.313)	Time 38.72
+Batch:   60, prec_r: 95.117 (96.308),loss: 0.1808
+Batch:   70, prec_r: 94.922 (96.304),loss: 0.1824
+Batch:   80, prec_r: 96.289 (96.304),loss: 0.1665
+one epoch duration:58.62537956237793
+Test: [0/80]	Loss 0.2237 (0.2237)	Accuracy 92.383 (92.383)
+Test: [50/80]	Loss 0.2226 (0.2208)	Accuracy 93.164 (93.666)
+  Epoch 16 | retain acc: 93.726
+Test: [0/9]	Loss 0.9334 (0.9334)	Accuracy 73.047 (73.047)
+  Epoch 16 | forget acc: 73.356
+Test: [0/10]	Loss 1.4751 (1.4751)	Accuracy 65.625 (65.625)
+  Epoch 16 | val acc: 65.020
+Test: [0/20]	Loss 1.4044 (1.4044)	Accuracy 66.602 (66.602)
+  Epoch 16 | test acc: 65.150
+Epoch #17, Learning rate: 0.07
+prvs_alpha: [0.80734026 0.16304593]
+prvs_alpha: [0.6686022  0.16689909]
+prvs_alpha: [0.55323225 0.16503403]
+prvs_alpha: [0.45816338 0.16270737]
+prvs_alpha: [0.39958653 0.16687334]
+prvs_alpha: [0.30532038 0.16677934]
+prvs_alpha: [0.29348785 0.17082745]
+prvs_alpha: [0.27809694 0.17776947]
+prvs_alpha: [0.25306648 0.16293736]
+Batch:   10, prec_u: 56.436 (82.437), loss_u: 0.7868, loss_r: 0.9170
+Batch:   20, prec_r: 90.625 (96.193),loss: 0.3290
+Batch:   30, prec_r: 93.555 (96.169),loss: 0.2508
+Batch:   40, prec_r: 94.727 (96.150),loss: 0.1863
+Batch:   50, prec_r: 93.359 (96.144),loss: 0.2112
+Epoch: [17][49/80]	Loss 0.2112 (0.4862)	Accuracy 93.359 (96.144)	Time 39.98
+Batch:   60, prec_r: 94.531 (96.139),loss: 0.1905
+Batch:   70, prec_r: 96.680 (96.137),loss: 0.1526
+Batch:   80, prec_r: 95.508 (96.138),loss: 0.1722
+one epoch duration:60.80721640586853
+Test: [0/80]	Loss 0.1959 (0.1959)	Accuracy 93.750 (93.750)
+Test: [50/80]	Loss 0.2054 (0.1872)	Accuracy 94.922 (94.596)
+  Epoch 17 | retain acc: 94.578
+Test: [0/9]	Loss 0.8748 (0.8748)	Accuracy 73.828 (73.828)
+  Epoch 17 | forget acc: 74.911
+Test: [0/10]	Loss 1.4659 (1.4659)	Accuracy 63.281 (63.281)
+  Epoch 17 | val acc: 66.840
+Test: [0/20]	Loss 1.3756 (1.3756)	Accuracy 67.969 (67.969)
+  Epoch 17 | test acc: 66.880
+Epoch #18, Learning rate: 0.07
+prvs_alpha: [1.001059   0.17249581]
+prvs_alpha: [0.6830723  0.16483177]
+prvs_alpha: [0.60143197 0.16443117]
+prvs_alpha: [0.49810606 0.16389346]
+prvs_alpha: [0.4186954  0.16591878]
+prvs_alpha: [0.38607153 0.17280962]
+prvs_alpha: [0.3184674  0.17176972]
+prvs_alpha: [0.29340926 0.17483927]
+prvs_alpha: [0.29439986 0.16595025]
+Batch:   10, prec_u: 59.653 (81.853), loss_u: 0.8056, loss_r: 0.6843
+Batch:   20, prec_r: 93.555 (96.064),loss: 0.2540
+Batch:   30, prec_r: 94.531 (96.051),loss: 0.1986
+Batch:   40, prec_r: 96.875 (96.046),loss: 0.1424
+Batch:   50, prec_r: 96.680 (96.047),loss: 0.1478
+Epoch: [18][49/80]	Loss 0.1478 (0.4878)	Accuracy 96.680 (96.047)	Time 42.29
+Batch:   60, prec_r: 95.703 (96.048),loss: 0.1568
+Batch:   70, prec_r: 97.461 (96.054),loss: 0.1140
+Batch:   80, prec_r: 96.289 (96.056),loss: 0.1493
+one epoch duration:67.86260032653809
+Test: [0/80]	Loss 0.1424 (0.1424)	Accuracy 96.094 (96.094)
+Test: [50/80]	Loss 0.1413 (0.1632)	Accuracy 96.680 (95.358)
+  Epoch 18 | retain acc: 95.464
+Test: [0/9]	Loss 0.8407 (0.8407)	Accuracy 77.930 (77.930)
+  Epoch 18 | forget acc: 76.444
+Test: [0/10]	Loss 1.6406 (1.6406)	Accuracy 62.109 (62.109)
+  Epoch 18 | val acc: 66.860
+Test: [0/20]	Loss 1.3232 (1.3232)	Accuracy 69.336 (69.336)
+  Epoch 18 | test acc: 67.420
+Epoch #19, Learning rate: 0.07
+prvs_alpha: [0.731827   0.16794659]
+prvs_alpha: [0.6986919  0.16558732]
+prvs_alpha: [0.5591273 0.1633995]
+prvs_alpha: [0.5426769  0.16993332]
+prvs_alpha: [0.42435837 0.16618052]
+prvs_alpha: [0.3826921  0.16964369]
+prvs_alpha: [0.35915542 0.17096008]
+prvs_alpha: [0.36086798 0.17661838]
+prvs_alpha: [0.31718504 0.16776124]
+Batch:   10, prec_u: 62.129 (81.356), loss_u: 0.8098, loss_r: 0.5873
+Batch:   20, prec_r: 94.922 (96.005),loss: 0.2272
+Batch:   30, prec_r: 94.727 (95.997),loss: 0.1894
+Batch:   40, prec_r: 96.094 (95.999),loss: 0.1479
+Batch:   50, prec_r: 96.484 (96.004),loss: 0.1477
+Epoch: [19][49/80]	Loss 0.1477 (0.4878)	Accuracy 96.484 (96.004)	Time 44.41
+Batch:   60, prec_r: 96.875 (96.012),loss: 0.1281
+Batch:   70, prec_r: 97.070 (96.021),loss: 0.1219
+Batch:   80, prec_r: 97.852 (96.029),loss: 0.0974
+one epoch duration:67.6931083202362
+Test: [0/80]	Loss 0.2017 (0.2017)	Accuracy 95.117 (95.117)
+Test: [50/80]	Loss 0.1253 (0.1429)	Accuracy 97.266 (96.327)
+  Epoch 19 | retain acc: 96.341
+Test: [50/80]	Loss 0.2416 (0.2525)	Accuracy 93.359 (93.172)
+  Epoch 15 | retain acc: 92.963
+Test: [0/9]	Loss 0.9127 (0.9127)	Accuracy 74.805 (74.805)
+  Epoch 15 | forget acc: 74.111
+Test: [0/10]	Loss 1.3637 (1.3637)	Accuracy 66.602 (66.602)
+  Epoch 15 | val acc: 63.740
+Test: [0/20]	Loss 1.3558 (1.3558)	Accuracy 66.211 (66.211)
+  Epoch 15 | test acc: 65.440
+Epoch #16, Learning rate: 0.07
+Batch:   10  prec_u: 59.158 (84.097)  loss_u: 7.8481  loss_r: 0.6338  λ_KS: 0.6483  cos_φ: -0.1594  avg_cos_φ(10): -0.1142  eff_scale: 4.6785e+00  skip_rate: 0.000
+Batch:   20, prec_r: 93.164 (96.534), loss: 0.2617
+Batch:   30, prec_r: 94.336 (96.519), loss: 0.2173
+Batch:   40, prec_r: 96.484 (96.515), loss: 0.1605
+Batch:   50, prec_r: 95.898 (96.512), loss: 0.1482
+Epoch: [16][49/80]	Loss 0.1482 (2.1840)	Accuracy 95.898 (96.512)	Time 41.26
+Batch:   60, prec_r: 96.289 (96.512), loss: 0.1477
+Batch:   70, prec_r: 94.336 (96.515), loss: 0.1643
+Batch:   80, prec_r: 97.461 (96.516), loss: 0.1182
+Epoch 16 done | duration: 68.48s | cumulative skip_rate: 0.000
+Test: [0/80]	Loss 0.1723 (0.1723)	Accuracy 95.898 (95.898)
+Test: [50/80]	Loss 0.1962 (0.1691)	Accuracy 93.750 (95.332)
+  Epoch 16 | retain acc: 95.286
+Test: [0/9]	Loss 0.7599 (0.7599)	Accuracy 77.539 (77.539)
+  Epoch 16 | forget acc: 75.578
+Test: [0/10]	Loss 1.5188 (1.5188)	Accuracy 64.453 (64.453)
+  Epoch 16 | val acc: 66.540
+Test: [0/20]	Loss 1.3480 (1.3480)	Accuracy 68.750 (68.750)
+  Epoch 16 | test acc: 66.410
+Epoch #17, Learning rate: 0.07
+Batch:   10  prec_u: 64.109 (83.480)  loss_u: 7.9457  loss_r: 0.5553  λ_KS: 0.6468  cos_φ: -0.1632  avg_cos_φ(10): -0.1120  eff_scale: 4.7541e+00  skip_rate: 0.000
+Batch:   20, prec_r: 94.141 (96.455), loss: 0.2269
+Batch:   30, prec_r: 95.508 (96.450), loss: 0.1927
+Batch:   40, prec_r: 95.898 (96.444), loss: 0.1494
+Batch:   50, prec_r: 96.680 (96.449), loss: 0.1320
+Epoch: [17][49/80]	Loss 0.1320 (2.1778)	Accuracy 96.680 (96.449)	Time 46.64
+Batch:   60, prec_r: 98.047 (96.451), loss: 0.1057
+Batch:   70, prec_r: 96.484 (96.452), loss: 0.1328
+Batch:   80, prec_r: 98.242 (96.457), loss: 0.1036
+Epoch 17 done | duration: 71.60s | cumulative skip_rate: 0.000
+Test: [0/80]	Loss 0.1561 (0.1561)	Accuracy 95.117 (95.117)
+Test: [50/80]	Loss 0.1701 (0.1693)	Accuracy 94.727 (95.144)
+  Epoch 17 | retain acc: 95.183
+Test: [0/9]	Loss 0.8314 (0.8314)	Accuracy 76.758 (76.758)
+  Epoch 17 | forget acc: 75.578
+Test: [0/10]	Loss 1.3996 (1.3996)	Accuracy 68.164 (68.164)
+  Epoch 17 | val acc: 67.040
+Test: [0/20]	Loss 1.3363 (1.3363)	Accuracy 67.578 (67.578)
+  Epoch 17 | test acc: 66.700
+Epoch #18, Learning rate: 0.07
+Batch:   10  prec_u: 59.653 (82.837)  loss_u: 8.0330  loss_r: 0.6740  λ_KS: 0.6460  cos_φ: -0.1653  avg_cos_φ(10): -0.1015  eff_scale: 4.7080e+00  skip_rate: 0.000
+Batch:   20, prec_r: 94.922 (96.390), loss: 0.2209
+Batch:   30, prec_r: 93.164 (96.380), loss: 0.2304
+Batch:   40, prec_r: 96.484 (96.377), loss: 0.1631
+Batch:   50, prec_r: 96.484 (96.376), loss: 0.1626
+Epoch: [18][49/80]	Loss 0.1626 (2.1731)	Accuracy 96.484 (96.376)	Time 48.55
+Batch:   60, prec_r: 94.336 (96.373), loss: 0.1785
+Batch:   70, prec_r: 97.070 (96.376), loss: 0.1186
+Batch:   80, prec_r: 96.094 (96.378), loss: 0.1403
+Epoch 18 done | duration: 77.30s | cumulative skip_rate: 0.000
+Test: [0/80]	Loss 0.1799 (0.1799)	Accuracy 95.117 (95.117)
+Test: [50/80]	Loss 0.2107 (0.2089)	Accuracy 94.141 (94.106)
+  Epoch 18 | retain acc: 94.163
+Test: [0/9]	Loss 0.9912 (0.9912)	Accuracy 70.508 (70.508)
+  Epoch 18 | forget acc: 73.800
+Test: [0/10]	Loss 1.1940 (1.1940)	Accuracy 69.531 (69.531)
+  Epoch 18 | val acc: 65.320
+Test: [0/20]	Loss 1.3974 (1.3974)	Accuracy 68.164 (68.164)
+  Epoch 18 | test acc: 65.610
+Epoch #19, Learning rate: 0.07
+Batch:   10  prec_u: 58.663 (82.219)  loss_u: 7.8948  loss_r: 0.7257  λ_KS: 0.6447  cos_φ: -0.1687  avg_cos_φ(10): -0.1229  eff_scale: 4.9100e+00  skip_rate: 0.000
+Batch:   20, prec_r: 93.359 (96.306), loss: 0.2723
+Batch:   30, prec_r: 96.094 (96.294), loss: 0.1790
+Batch:   40, prec_r: 95.312 (96.289), loss: 0.1689
+Batch:   50, prec_r: 96.875 (96.289), loss: 0.1673
+Epoch: [19][49/80]	Loss 0.1673 (2.1695)	Accuracy 96.875 (96.289)	Time 45.50
+Batch:   60, prec_r: 96.289 (96.291), loss: 0.1572
+Batch:   70, prec_r: 97.070 (96.294), loss: 0.1105
+Batch:   80, prec_r: 96.680 (96.299), loss: 0.1313
+Epoch 19 done | duration: 85.16s | cumulative skip_rate: 0.000
+Test: [0/80]	Loss 0.1650 (0.1650)	Accuracy 95.898 (95.898)
+Test: [50/80]	Loss 0.1514 (0.1607)	Accuracy 96.289 (95.699)
+  Epoch 19 | retain acc: 95.659
+Test: [0/9]	Loss 0.8740 (0.8740)	Accuracy 74.609 (74.609)
+  Epoch 19 | forget acc: 75.467
+Test: [0/10]	Loss 1.4906 (1.4906)	Accuracy 65.430 (65.430)
+  Epoch 19 | val acc: 66.780
+Test: [0/20]	Loss 1.2878 (1.2878)	Accuracy 67.188 (67.188)
+  Epoch 19 | test acc: 67.400
+Epoch #20, Learning rate: 0.07
+Batch:   10  prec_u: 63.366 (81.716)  loss_u: 8.1999  loss_r: 0.5794  λ_KS: 0.6457  cos_φ: -0.1662  avg_cos_φ(10): -0.1073  eff_scale: 4.4013e+00  skip_rate: 0.000
+Batch:   20, prec_r: 94.922 (96.250), loss: 0.2473
+Batch:   30, prec_r: 95.898 (96.245), loss: 0.1918
+Batch:   40, prec_r: 96.094 (96.245), loss: 0.1619
+Batch:   50, prec_r: 96.289 (96.251), loss: 0.1577
+Epoch: [20][49/80]	Loss 0.1577 (2.1659)	Accuracy 96.289 (96.251)	Time 47.81
+Batch:   60, prec_r: 96.484 (96.256), loss: 0.1410
+Batch:   70, prec_r: 96.484 (96.262), loss: 0.1371
+Batch:   80, prec_r: 99.219 (96.268), loss: 0.0852
+Epoch 20 done | duration: 75.18s | cumulative skip_rate: 0.000
+Test: [0/80]	Loss 0.1393 (0.1393)	Accuracy 96.680 (96.680)
+Test: [50/80]	Loss 0.0917 (0.1364)	Accuracy 97.656 (96.492)
+  Epoch 20 | retain acc: 96.467
+Test: [0/9]	Loss 0.8864 (0.8864)	Accuracy 75.977 (75.977)
+  Epoch 20 | forget acc: 76.422
+Test: [0/10]	Loss 1.1374 (1.1374)	Accuracy 70.898 (70.898)
+  Epoch 20 | val acc: 67.480
+Test: [0/20]	Loss 1.2163 (1.2163)	Accuracy 69.922 (69.922)
+  Epoch 20 | test acc: 67.790
+Epoch #21, Learning rate: 0.07
+Batch:   10  prec_u: 59.901 (81.183)  loss_u: 7.6322  loss_r: 0.8156  λ_KS: 0.6588  cos_φ: -0.1320  avg_cos_φ(10): -0.1097  eff_scale: 4.9821e+00  skip_rate: 0.000
+Batch:   20, prec_r: 94.141 (96.202), loss: 0.2901
+Batch:   30, prec_r: 95.312 (96.191), loss: 0.1829
+Batch:   40, prec_r: 97.070 (96.188), loss: 0.1542
+Batch:   50, prec_r: 96.289 (96.186), loss: 0.1291
+Epoch: [21][49/80]	Loss 0.1291 (2.1619)	Accuracy 96.289 (96.186)	Time 62.38
+Batch:   60, prec_r: 95.117 (96.186), loss: 0.1791
+Batch:   70, prec_r: 96.875 (96.192), loss: 0.1506
+Batch:   80, prec_r: 97.656 (96.198), loss: 0.1107
+Epoch 21 done | duration: 91.46s | cumulative skip_rate: 0.000
+Test: [0/80]	Loss 0.2254 (0.2254)	Accuracy 93.359 (93.359)
+Test: [50/80]	Loss 0.2394 (0.2203)	Accuracy 93.750 (93.689)
+  Epoch 21 | retain acc: 93.956
+Test: [0/9]	Loss 0.9452 (0.9452)	Accuracy 74.609 (74.609)
+  Epoch 21 | forget acc: 72.533
+Test: [0/10]	Loss 1.4044 (1.4044)	Accuracy 67.969 (67.969)
+  Epoch 21 | val acc: 65.660
+Test: [0/20]	Loss 1.3621 (1.3621)	Accuracy 69.141 (69.141)
+  Epoch 21 | test acc: 65.890
+Epoch #22, Learning rate: 0.07
+Batch:   10  prec_u: 64.851 (80.730)  loss_u: 8.1420  loss_r: 0.7144  λ_KS: 0.6625  cos_φ: -0.1222  avg_cos_φ(10): -0.0975  eff_scale: 4.7229e+00  skip_rate: 0.000
+Batch:   20, prec_r: 93.164 (96.149), loss: 0.2427
+Batch:   30, prec_r: 95.508 (96.143), loss: 0.1766
+Batch:   40, prec_r: 97.070 (96.140), loss: 0.1489
+Batch:   50, prec_r: 97.656 (96.142), loss: 0.1155
+Epoch: [22][49/80]	Loss 0.1155 (2.1587)	Accuracy 97.656 (96.142)	Time 50.79
+Batch:   60, prec_r: 97.266 (96.145), loss: 0.1167
+Batch:   70, prec_r: 96.875 (96.150), loss: 0.1425
+Batch:   80, prec_r: 97.656 (96.156), loss: 0.1035
+Epoch 22 done | duration: 80.11s | cumulative skip_rate: 0.000
+Test: [0/80]	Loss 0.1252 (0.1252)	Accuracy 97.070 (97.070)
+Test: [50/80]	Loss 0.1253 (0.1208)	Accuracy 96.875 (96.841)
+  Epoch 22 | retain acc: 96.951
+Test: [0/9]	Loss 0.7976 (0.7976)	Accuracy 75.586 (75.586)
+  Epoch 22 | forget acc: 74.756
+Test: [0/10]	Loss 1.2156 (1.2156)	Accuracy 71.289 (71.289)
+  Epoch 22 | val acc: 68.000
+Test: [0/20]	Loss 1.2503 (1.2503)	Accuracy 69.336 (69.336)
+  Epoch 22 | test acc: 68.040
+Epoch #23, Learning rate: 0.07
+Test: [0/9]	Loss 0.8503 (0.8503)	Accuracy 74.414 (74.414)
+  Epoch 19 | forget acc: 76.022
+Test: [0/10]	Loss 1.3260 (1.3260)	Accuracy 70.117 (70.117)
+  Epoch 19 | val acc: 67.400
+Test: [0/20]	Loss 1.2294 (1.2294)	Accuracy 70.703 (70.703)
+  Epoch 19 | test acc: 68.350
+Epoch #20, Learning rate: 0.07
+prvs_alpha: [1.1071726  0.16706783]
+prvs_alpha: [0.7574273  0.16760351]
+prvs_alpha: [0.67788905 0.16118191]
+prvs_alpha: [0.5258368  0.16396655]
+prvs_alpha: [0.4597073 0.1611584]
+prvs_alpha: [0.4541424  0.16898601]
+prvs_alpha: [0.47439808 0.16969527]
+prvs_alpha: [0.39184934 0.17385434]
+prvs_alpha: [0.3386153  0.15838628]
+Batch:   10, prec_u: 68.812 (80.968), loss_u: 0.8265, loss_r: 0.4578
+Batch:   20, prec_r: 94.141 (96.005),loss: 0.2478
+Batch:   30, prec_r: 96.094 (96.006),loss: 0.1662
+Batch:   40, prec_r: 97.266 (96.011),loss: 0.1186
+Batch:   50, prec_r: 96.875 (96.017),loss: 0.1514
+Epoch: [20][49/80]	Loss 0.1514 (0.4866)	Accuracy 96.875 (96.017)	Time 45.66
+Batch:   60, prec_r: 96.875 (96.027),loss: 0.1467
+Batch:   70, prec_r: 97.461 (96.036),loss: 0.1051
+Batch:   80, prec_r: 97.852 (96.046),loss: 0.0894
+one epoch duration:66.8328320980072
+Test: [0/80]	Loss 0.0820 (0.0820)	Accuracy 98.633 (98.633)
+Test: [50/80]	Loss 0.0974 (0.1048)	Accuracy 97.852 (97.423)
+  Epoch 20 | retain acc: 97.343
+Test: [0/9]	Loss 0.8596 (0.8596)	Accuracy 73.828 (73.828)
+  Epoch 20 | forget acc: 76.244
+Test: [0/10]	Loss 1.0444 (1.0444)	Accuracy 75.000 (75.000)
+  Epoch 20 | val acc: 68.920
+Test: [0/20]	Loss 1.2477 (1.2477)	Accuracy 69.727 (69.727)
+  Epoch 20 | test acc: 68.370
+Epoch #21, Learning rate: 0.07
+prvs_alpha: [0.9880953  0.16082112]
+prvs_alpha: [0.76114756 0.1672764 ]
+prvs_alpha: [1.0340902  0.16670157]
+prvs_alpha: [0.62133825 0.16405797]
+prvs_alpha: [0.6789896 0.1643109]
+prvs_alpha: [0.5892444  0.16907096]
+prvs_alpha: [0.45482883 0.16997647]
+prvs_alpha: [0.47120684 0.17263134]
+prvs_alpha: [0.4234732  0.16054524]
+Batch:   10, prec_u: 63.861 (80.656), loss_u: 0.8089, loss_r: 0.3285
+Batch:   20, prec_r: 95.703 (96.039),loss: 0.1741
+Batch:   30, prec_r: 96.484 (96.045),loss: 0.1326
+Batch:   40, prec_r: 98.047 (96.054),loss: 0.1029
+Batch:   50, prec_r: 97.656 (96.065),loss: 0.0901
+Epoch: [21][49/80]	Loss 0.0901 (0.4845)	Accuracy 97.656 (96.065)	Time 55.53
+Batch:   60, prec_r: 97.656 (96.074),loss: 0.1023
+Batch:   70, prec_r: 97.266 (96.085),loss: 0.0966
+Batch:   80, prec_r: 98.242 (96.098),loss: 0.0768
+one epoch duration:77.47921204566956
+Test: [0/80]	Loss 0.1237 (0.1237)	Accuracy 96.094 (96.094)
+Test: [50/80]	Loss 0.1083 (0.0960)	Accuracy 96.875 (97.576)
+  Epoch 21 | retain acc: 97.533
+Test: [0/9]	Loss 0.7793 (0.7793)	Accuracy 78.320 (78.320)
+  Epoch 21 | forget acc: 76.844
+Test: [0/10]	Loss 1.1381 (1.1381)	Accuracy 73.633 (73.633)
+  Epoch 21 | val acc: 68.440
+Test: [0/20]	Loss 1.1563 (1.1563)	Accuracy 72.461 (72.461)
+  Epoch 21 | test acc: 69.050
+Epoch #22, Learning rate: 0.07
+prvs_alpha: [1.1986936  0.16374178]
+prvs_alpha: [0.794316   0.16282396]
+prvs_alpha: [0.62558633 0.16250841]
+prvs_alpha: [0.69514227 0.16849229]
+prvs_alpha: [0.52708364 0.16159484]
+prvs_alpha: [0.5834805  0.16339825]
+prvs_alpha: [0.46081594 0.16504614]
+prvs_alpha: [0.41374016 0.17495283]
+prvs_alpha: [0.41070494 0.15663296]
+Batch:   10, prec_u: 66.337 (80.368), loss_u: 0.8088, loss_r: 0.3554
+Batch:   20, prec_r: 96.875 (96.091),loss: 0.1618
+Batch:   30, prec_r: 97.070 (96.096),loss: 0.1263
+Batch:   40, prec_r: 97.461 (96.100),loss: 0.1267
+Batch:   50, prec_r: 97.461 (96.108),loss: 0.1023
+Epoch: [22][49/80]	Loss 0.1023 (0.4823)	Accuracy 97.461 (96.108)	Time 53.51
+Batch:   60, prec_r: 98.047 (96.117),loss: 0.0881
+Batch:   70, prec_r: 98.438 (96.129),loss: 0.0954
+Batch:   80, prec_r: 98.828 (96.141),loss: 0.0771
+one epoch duration:86.50220465660095
+Test: [0/80]	Loss 0.0804 (0.0804)	Accuracy 97.852 (97.852)
+Test: [50/80]	Loss 0.0601 (0.0771)	Accuracy 99.414 (98.223)
+  Epoch 22 | retain acc: 98.353
+Test: [0/9]	Loss 0.6244 (0.6244)	Accuracy 82.031 (82.031)
+  Epoch 22 | forget acc: 77.356
+Test: [0/10]	Loss 1.1418 (1.1418)	Accuracy 71.680 (71.680)
+  Epoch 22 | val acc: 69.680
+Test: [0/20]	Loss 1.1400 (1.1400)	Accuracy 70.312 (70.312)
+  Epoch 22 | test acc: 69.790
+Epoch #23, Learning rate: 0.07
+prvs_alpha: [0.9842287  0.16468373]
+prvs_alpha: [1.2157633  0.16670229]
+prvs_alpha: [1.0819647  0.16461122]
+prvs_alpha: [0.8276296 0.1623375]
+prvs_alpha: [0.76677936 0.16286187]
+prvs_alpha: [0.5844042 0.1634448]
+prvs_alpha: [0.6586959  0.16430624]
+prvs_alpha: [0.5815994 0.1678831]
+prvs_alpha: [0.45305187 0.15215416]
+Batch:   10, prec_u: 69.554 (80.148), loss_u: 0.8069, loss_r: 0.2893
+Batch:   20, prec_r: 98.438 (96.152),loss: 0.1173
+Batch:   30, prec_r: 98.633 (96.163),loss: 0.1018
+Batch:   40, prec_r: 98.047 (96.174),loss: 0.0887
+Batch:   50, prec_r: 98.438 (96.187),loss: 0.0748
+Epoch: [23][49/80]	Loss 0.0748 (0.4790)	Accuracy 98.438 (96.187)	Time 52.91
+Batch:   60, prec_r: 98.633 (96.199),loss: 0.0729
+Batch:   70, prec_r: 99.414 (96.212),loss: 0.0595
+Batch:   80, prec_r: 97.852 (96.226),loss: 0.0746
+one epoch duration:81.39464855194092
+Test: [0/80]	Loss 0.0669 (0.0669)	Accuracy 98.828 (98.828)
+Test: [50/80]	Loss 0.0619 (0.0705)	Accuracy 98.438 (98.464)
+  Epoch 23 | retain acc: 98.474
+Test: [0/9]	Loss 0.7712 (0.7712)	Accuracy 78.125 (78.125)
+  Epoch 23 | forget acc: 78.378
+Test: [0/10]	Loss 1.2210 (1.2210)	Accuracy 70.508 (70.508)
+  Epoch 23 | val acc: 69.440
+Test: [0/20]	Loss 1.1567 (1.1567)	Accuracy 71.289 (71.289)
+  Epoch 23 | test acc: 70.420
+Epoch #24, Learning rate: 0.07
+prvs_alpha: [1.2858213  0.16129334]
+prvs_alpha: [1.1896871  0.16287896]
+prvs_alpha: [0.88445985 0.16161528]
+prvs_alpha: [0.64668924 0.16377625]
+prvs_alpha: [0.89198333 0.15795171]
+prvs_alpha: [0.5761198  0.16348009]
+prvs_alpha: [0.58397907 0.16510196]
+prvs_alpha: [0.44097358 0.16616543]
+prvs_alpha: [0.41937172 0.14607532]
+Batch:   10, prec_u: 70.792 (79.943), loss_u: 0.8066, loss_r: 0.3010
+Batch:   20, prec_r: 98.047 (96.232),loss: 0.1381
+Batch:   30, prec_r: 98.828 (96.241),loss: 0.1005
+Batch:   40, prec_r: 99.023 (96.252),loss: 0.0864
+Batch:   50, prec_r: 99.023 (96.262),loss: 0.0713
+Epoch: [24][49/80]	Loss 0.0713 (0.4757)	Accuracy 99.023 (96.262)	Time 47.84
+Batch:   60, prec_r: 99.219 (96.275),loss: 0.0642
+Batch:   70, prec_r: 98.633 (96.287),loss: 0.0779
+Batch:   80, prec_r: 97.461 (96.297),loss: 0.0967
+one epoch duration:70.55450367927551
+Test: [0/80]	Loss 0.0698 (0.0698)	Accuracy 98.828 (98.828)
+Test: [50/80]	Loss 0.0874 (0.0801)	Accuracy 97.656 (98.231)
+  Epoch 24 | retain acc: 98.230
+Test: [0/9]	Loss 0.7770 (0.7770)	Accuracy 77.344 (77.344)
+  Epoch 24 | forget acc: 76.067
+Test: [0/10]	Loss 1.3477 (1.3477)	Accuracy 66.602 (66.602)
+  Epoch 24 | val acc: 68.960
+Test: [0/20]	Loss 1.2348 (1.2348)	Accuracy 69.141 (69.141)
+  Epoch 24 | test acc: 69.700
+Epoch #25, Learning rate: 0.07
+prvs_alpha: [0.997444   0.16018145]
+prvs_alpha: [0.7884479  0.15753715]
+prvs_alpha: [0.78487766 0.16365357]
+prvs_alpha: [0.55754673 0.15724713]
+prvs_alpha: [0.5561834  0.16391854]
+prvs_alpha: [0.46713054 0.16313243]
+prvs_alpha: [0.4291325  0.16860284]
+prvs_alpha: [0.38015184 0.17161237]
+prvs_alpha: [0.33646944 0.15383548]
+Batch:   10, prec_u: 65.347 (79.614), loss_u: 0.8005, loss_r: 0.3936
+Batch:   20, prec_r: 96.094 (96.286),loss: 0.1591
+Batch:   30, prec_r: 97.656 (96.290),loss: 0.1224
+Batch:   40, prec_r: 96.875 (96.296),loss: 0.1446
+Batch:   50, prec_r: 98.828 (96.303),loss: 0.0891
+Epoch: [25][49/80]	Loss 0.0891 (0.4732)	Accuracy 98.828 (96.303)	Time 50.42
+Batch:   60, prec_r: 98.438 (96.314),loss: 0.0916
+Batch:   70, prec_r: 98.438 (96.324),loss: 0.0875
+Batch:   80, prec_r: 97.461 (96.334),loss: 0.0952
+one epoch duration:76.43217039108276
+Test: [0/80]	Loss 0.0758 (0.0758)	Accuracy 98.242 (98.242)
+Test: [50/80]	Loss 0.0904 (0.0773)	Accuracy 97.852 (98.227)
+  Epoch 25 | retain acc: 98.180
+Test: [0/9]	Loss 0.8493 (0.8493)	Accuracy 73.828 (73.828)
+  Epoch 25 | forget acc: 75.556
+Test: [0/10]	Loss 1.3007 (1.3007)	Accuracy 69.141 (69.141)
+  Epoch 25 | val acc: 69.680
+Test: [0/20]	Loss 1.1726 (1.1726)	Accuracy 72.266 (72.266)
+  Epoch 25 | test acc: 69.680
+Epoch #26, Learning rate: 0.07
+prvs_alpha: [1.4674238  0.15766586]
+prvs_alpha: [0.9735124  0.15546651]
+Batch:   10  prec_u: 62.129 (80.436)  loss_u: 8.1039  loss_r: 0.3475  λ_KS: 0.6569  cos_φ: -0.1370  avg_cos_φ(10): -0.0843  eff_scale: 3.9148e+00  skip_rate: 0.000
+Batch:   20, prec_r: 96.289 (96.143), loss: 0.1731
+Batch:   30, prec_r: 95.312 (96.148), loss: 0.1669
+Batch:   40, prec_r: 97.461 (96.154), loss: 0.1041
+Batch:   50, prec_r: 98.828 (96.163), loss: 0.0966
+Epoch: [23][49/80]	Loss 0.0966 (2.1540)	Accuracy 98.828 (96.163)	Time 47.70
+Batch:   60, prec_r: 98.047 (96.171), loss: 0.1043
+Batch:   70, prec_r: 98.047 (96.182), loss: 0.0916
+Batch:   80, prec_r: 97.852 (96.190), loss: 0.0873
+Epoch 23 done | duration: 76.14s | cumulative skip_rate: 0.000
+Test: [0/80]	Loss 0.0872 (0.0872)	Accuracy 97.656 (97.656)
+Test: [50/80]	Loss 0.0972 (0.1213)	Accuracy 97.461 (96.963)
+  Epoch 23 | retain acc: 96.980
+Test: [0/9]	Loss 0.9113 (0.9113)	Accuracy 71.680 (71.680)
+  Epoch 23 | forget acc: 74.622
+Test: [0/10]	Loss 1.4994 (1.4994)	Accuracy 64.258 (64.258)
+  Epoch 23 | val acc: 67.660
+Test: [0/20]	Loss 1.2714 (1.2714)	Accuracy 68.750 (68.750)
+  Epoch 23 | test acc: 67.690
+Epoch #24, Learning rate: 0.07
+Batch:   10  prec_u: 65.842 (80.148)  loss_u: 8.2289  loss_r: 0.3791  λ_KS: 0.6476  cos_φ: -0.1613  avg_cos_φ(10): -0.0865  eff_scale: 3.8444e+00  skip_rate: 0.000
+Batch:   20, prec_r: 97.656 (96.186), loss: 0.1566
+Batch:   30, prec_r: 96.875 (96.191), loss: 0.1190
+Batch:   40, prec_r: 97.070 (96.199), loss: 0.1315
+Batch:   50, prec_r: 98.633 (96.208), loss: 0.0849
+Epoch: [24][49/80]	Loss 0.0849 (2.1482)	Accuracy 98.633 (96.208)	Time 51.96
+Batch:   60, prec_r: 98.242 (96.218), loss: 0.0960
+Batch:   70, prec_r: 98.828 (96.230), loss: 0.0734
+Batch:   80, prec_r: 98.828 (96.242), loss: 0.0836
+Epoch 24 done | duration: 80.76s | cumulative skip_rate: 0.000
+Test: [0/80]	Loss 0.0857 (0.0857)	Accuracy 98.047 (98.047)
+Test: [50/80]	Loss 0.1330 (0.0871)	Accuracy 96.484 (97.875)
+  Epoch 24 | retain acc: 97.884
+Test: [0/9]	Loss 0.8223 (0.8223)	Accuracy 75.977 (75.977)
+  Epoch 24 | forget acc: 76.822
+Test: [0/10]	Loss 1.3327 (1.3327)	Accuracy 69.922 (69.922)
+  Epoch 24 | val acc: 68.940
+Test: [0/20]	Loss 1.2411 (1.2411)	Accuracy 69.922 (69.922)
+  Epoch 24 | test acc: 69.000
+Epoch #25, Learning rate: 0.07
+Batch:   10  prec_u: 66.584 (79.887)  loss_u: 8.2072  loss_r: 0.4143  λ_KS: 0.6587  cos_φ: -0.1322  avg_cos_φ(10): -0.0977  eff_scale: 3.9595e+00  skip_rate: 0.000
+Batch:   20, prec_r: 96.875 (96.228), loss: 0.1586
+Batch:   30, prec_r: 96.680 (96.230), loss: 0.1462
+Batch:   40, prec_r: 97.461 (96.235), loss: 0.1299
+Batch:   50, prec_r: 97.070 (96.241), loss: 0.1207
+Epoch: [25][49/80]	Loss 0.1207 (2.1424)	Accuracy 97.070 (96.241)	Time 48.94
+Batch:   60, prec_r: 98.633 (96.249), loss: 0.0889
+Batch:   70, prec_r: 97.656 (96.258), loss: 0.1162
+Batch:   80, prec_r: 98.242 (96.267), loss: 0.0918
+Epoch 25 done | duration: 78.59s | cumulative skip_rate: 0.000
+Test: [0/80]	Loss 0.0936 (0.0936)	Accuracy 97.461 (97.461)
+Test: [50/80]	Loss 0.0877 (0.0899)	Accuracy 98.828 (97.798)
+  Epoch 25 | retain acc: 97.773
+Test: [0/9]	Loss 0.8661 (0.8661)	Accuracy 75.977 (75.977)
+  Epoch 25 | forget acc: 76.378
+Test: [0/10]	Loss 1.1785 (1.1785)	Accuracy 71.289 (71.289)
+  Epoch 25 | val acc: 68.500
+Test: [0/20]	Loss 1.1643 (1.1643)	Accuracy 70.117 (70.117)
+  Epoch 25 | test acc: 68.930
+Epoch #26, Learning rate: 0.07
+Batch:   10  prec_u: 65.099 (79.614)  loss_u: 8.0150  loss_r: 0.4305  λ_KS: 0.6620  cos_φ: -0.1236  avg_cos_φ(10): -0.0776  eff_scale: 4.2212e+00  skip_rate: 0.000
+Batch:   20, prec_r: 97.266 (96.262), loss: 0.1406
+Batch:   30, prec_r: 96.680 (96.265), loss: 0.1334
+Batch:   40, prec_r: 99.023 (96.271), loss: 0.0947
+Batch:   50, prec_r: 97.852 (96.278), loss: 0.1011
+Epoch: [26][49/80]	Loss 0.1011 (2.1361)	Accuracy 97.852 (96.278)	Time 48.98
+Batch:   60, prec_r: 97.852 (96.287), loss: 0.0793
+Batch:   70, prec_r: 97.852 (96.297), loss: 0.0832
+Batch:   80, prec_r: 98.633 (96.307), loss: 0.0776
+Epoch 26 done | duration: 77.80s | cumulative skip_rate: 0.000
+Test: [0/80]	Loss 0.0808 (0.0808)	Accuracy 98.047 (98.047)
+Test: [50/80]	Loss 0.0564 (0.0654)	Accuracy 98.633 (98.529)
+  Epoch 26 | retain acc: 98.477
+Test: [0/9]	Loss 0.7606 (0.7606)	Accuracy 77.930 (77.930)
+  Epoch 26 | forget acc: 76.667
+Test: [0/10]	Loss 0.9446 (0.9446)	Accuracy 72.656 (72.656)
+  Epoch 26 | val acc: 69.540
+Test: [0/20]	Loss 1.1674 (1.1674)	Accuracy 72.266 (72.266)
+  Epoch 26 | test acc: 70.010
+Epoch #27, Learning rate: 0.07
+Batch:   10  prec_u: 62.129 (79.297)  loss_u: 7.8552  loss_r: 0.3622  λ_KS: 0.6532  cos_φ: -0.1468  avg_cos_φ(10): -0.0847  eff_scale: 3.9987e+00  skip_rate: 0.000
+Batch:   20, prec_r: 98.047 (96.300), loss: 0.1240
+Batch:   30, prec_r: 96.289 (96.302), loss: 0.1253
+Batch:   40, prec_r: 98.047 (96.306), loss: 0.1136
+Batch:   50, prec_r: 98.242 (96.315), loss: 0.0856
+Epoch: [27][49/80]	Loss 0.0856 (2.1293)	Accuracy 98.242 (96.315)	Time 47.14
+Batch:   60, prec_r: 98.242 (96.323), loss: 0.0957
+Batch:   70, prec_r: 98.828 (96.332), loss: 0.0721
+Batch:   80, prec_r: 97.852 (96.338), loss: 0.0782
+Epoch 27 done | duration: 78.97s | cumulative skip_rate: 0.000
+Test: [0/80]	Loss 0.1239 (0.1239)	Accuracy 96.484 (96.484)
+Test: [50/80]	Loss 0.0939 (0.1156)	Accuracy 97.852 (97.032)
+  Epoch 27 | retain acc: 97.017
+Test: [0/9]	Loss 0.9553 (0.9553)	Accuracy 74.805 (74.805)
+  Epoch 27 | forget acc: 72.800
+Test: [0/10]	Loss 1.1948 (1.1948)	Accuracy 72.656 (72.656)
+  Epoch 27 | val acc: 68.040
+Test: [0/20]	Loss 1.3058 (1.3058)	Accuracy 66.797 (66.797)
+  Epoch 27 | test acc: 67.180
+Epoch #28, Learning rate: 0.07
+Batch:   10  prec_u: 65.347 (78.966)  loss_u: 8.0059  loss_r: 0.4487  λ_KS: 0.6598  cos_φ: -0.1294  avg_cos_φ(10): -0.0954  eff_scale: 4.4244e+00  skip_rate: 0.000
+Batch:   20, prec_r: 96.875 (96.326), loss: 0.1555
+Batch:   30, prec_r: 96.875 (96.327), loss: 0.1329
+Batch:   40, prec_r: 96.484 (96.331), loss: 0.1442
+Batch:   50, prec_r: 97.461 (96.337), loss: 0.1214
+Epoch: [28][49/80]	Loss 0.1214 (2.1229)	Accuracy 97.461 (96.337)	Time 59.13
+Batch:   60, prec_r: 97.266 (96.345), loss: 0.1160
+Batch:   70, prec_r: 98.242 (96.352), loss: 0.0929
+Batch:   80, prec_r: 98.242 (96.360), loss: 0.0921
+Epoch 28 done | duration: 87.63s | cumulative skip_rate: 0.000
+Test: [0/80]	Loss 0.1073 (0.1073)	Accuracy 98.047 (98.047)
+Test: [50/80]	Loss 0.0921 (0.0938)	Accuracy 97.266 (97.545)
+  Epoch 28 | retain acc: 97.615
+Test: [0/9]	Loss 0.8535 (0.8535)	Accuracy 74.805 (74.805)
+  Epoch 28 | forget acc: 74.800
+Test: [0/10]	Loss 1.2719 (1.2719)	Accuracy 69.141 (69.141)
+  Epoch 28 | val acc: 68.360
+Test: [0/20]	Loss 1.1950 (1.1950)	Accuracy 71.484 (71.484)
+  Epoch 28 | test acc: 68.450
+Epoch #29, Learning rate: 0.07
+Batch:   10  prec_u: 59.158 (78.658)  loss_u: 7.6761  loss_r: 0.4488  λ_KS: 0.6618  cos_φ: -0.1240  avg_cos_φ(10): -0.0902  eff_scale: 4.2905e+00  skip_rate: 0.000
+Batch:   20, prec_r: 97.070 (96.352), loss: 0.1782
+Batch:   30, prec_r: 97.266 (96.356), loss: 0.1498
+Batch:   40, prec_r: 98.633 (96.361), loss: 0.0971
+Batch:   50, prec_r: 99.219 (96.368), loss: 0.0831
+Epoch: [29][49/80]	Loss 0.0831 (2.1169)	Accuracy 99.219 (96.368)	Time 48.27
+Batch:   60, prec_r: 97.852 (96.373), loss: 0.0963
+Batch:   70, prec_r: 96.680 (96.379), loss: 0.1285
+Batch:   80, prec_r: 98.633 (96.387), loss: 0.0688
+Epoch 29 done | duration: 77.70s | cumulative skip_rate: 0.000
+Test: [0/80]	Loss 0.0991 (0.0991)	Accuracy 97.461 (97.461)
+Test: [50/80]	Loss 0.0885 (0.0908)	Accuracy 97.461 (97.656)
+  Epoch 29 | retain acc: 97.652
+Test: [0/9]	Loss 0.8981 (0.8981)	Accuracy 75.195 (75.195)
+  Epoch 29 | forget acc: 73.956
+Test: [0/10]	Loss 1.2333 (1.2333)	Accuracy 70.117 (70.117)
+  Epoch 29 | val acc: 68.320
+Test: [0/20]	Loss 1.2229 (1.2229)	Accuracy 70.703 (70.703)
+  Epoch 29 | test acc: 68.670
+[MUKSB] Anti-parallel skips: 0/270 (0.0%)
+[MUKSB] cos_φ stats: mean=-0.1069  min=-0.2702  max=0.0033
+Test: [0/80]	Loss 0.0751 (0.0751)	Accuracy 97.070 (97.070)
+Test: [50/80]	Loss 0.0742 (0.0903)	Accuracy 98.242 (97.675)
+retain acc: 97.65185185260538
+Test: [0/9]	Loss 0.8786 (0.8786)	Accuracy 73.438 (73.438)
+forget acc: 73.95555569797092
+Test: [0/10]	Loss 1.2333 (1.2333)	Accuracy 70.117 (70.117)
+val acc: 68.31999986572265
+prvs_alpha: [0.8589767  0.15889527]
+prvs_alpha: [1.1002008  0.16044071]
+prvs_alpha: [0.79060745 0.15472867]
+prvs_alpha: [0.67683333 0.16109325]
+prvs_alpha: [0.53891486 0.15954877]
+prvs_alpha: [0.5523923 0.1644572]
+prvs_alpha: [0.5058822  0.15268776]
+Batch:   10, prec_u: 68.812 (79.413), loss_u: 0.8029, loss_r: 0.2058
+Batch:   20, prec_r: 97.070 (96.345),loss: 0.1559
+Batch:   30, prec_r: 97.852 (96.353),loss: 0.0917
+Batch:   40, prec_r: 98.242 (96.362),loss: 0.0939
+Batch:   50, prec_r: 98.828 (96.371),loss: 0.0787
+Epoch: [26][49/80]	Loss 0.0787 (0.4699)	Accuracy 98.828 (96.371)	Time 49.52
+Batch:   60, prec_r: 98.633 (96.381),loss: 0.0621
+Batch:   70, prec_r: 99.609 (96.393),loss: 0.0692
+Batch:   80, prec_r: 98.438 (96.404),loss: 0.0849
+one epoch duration:74.63986897468567
+Test: [0/80]	Loss 0.0916 (0.0916)	Accuracy 97.070 (97.070)
+Test: [50/80]	Loss 0.0777 (0.0833)	Accuracy 98.438 (98.058)
+  Epoch 26 | retain acc: 97.963
+Test: [0/9]	Loss 0.7982 (0.7982)	Accuracy 77.930 (77.930)
+  Epoch 26 | forget acc: 75.044
+Test: [0/10]	Loss 1.4160 (1.4160)	Accuracy 68.164 (68.164)
+  Epoch 26 | val acc: 68.740
+Test: [0/20]	Loss 1.1916 (1.1916)	Accuracy 72.656 (72.656)
+  Epoch 26 | test acc: 69.270
+Epoch #27, Learning rate: 0.07
+prvs_alpha: [1.2175237  0.15243196]
+prvs_alpha: [0.81387746 0.15215884]
+prvs_alpha: [0.63120043 0.15854013]
+prvs_alpha: [0.54960924 0.15592666]
+prvs_alpha: [0.6041989  0.15870355]
+prvs_alpha: [0.4801338 0.1658802]
+prvs_alpha: [0.43374807 0.16140242]
+prvs_alpha: [0.38948938 0.1634151 ]
+prvs_alpha: [0.36086717 0.15189053]
+Batch:   10, prec_u: 61.139 (79.098), loss_u: 0.7558, loss_r: 0.3451
+Batch:   20, prec_r: 98.438 (96.399),loss: 0.1080
+Batch:   30, prec_r: 98.633 (96.404),loss: 0.1155
+Batch:   40, prec_r: 98.047 (96.407),loss: 0.0938
+Batch:   50, prec_r: 99.219 (96.414),loss: 0.0757
+Epoch: [27][49/80]	Loss 0.0757 (0.4670)	Accuracy 99.219 (96.414)	Time 47.19
+Batch:   60, prec_r: 98.828 (96.421),loss: 0.0880
+Batch:   70, prec_r: 97.266 (96.429),loss: 0.1049
+Batch:   80, prec_r: 98.828 (96.435),loss: 0.0854
+one epoch duration:72.77710700035095
+Test: [0/80]	Loss 0.0779 (0.0779)	Accuracy 98.242 (98.242)
+Test: [50/80]	Loss 0.1154 (0.1119)	Accuracy 97.070 (97.193)
+  Epoch 27 | retain acc: 97.202
+Test: [0/9]	Loss 0.8941 (0.8941)	Accuracy 73.047 (73.047)
+  Epoch 27 | forget acc: 71.956
+Test: [0/10]	Loss 1.2612 (1.2612)	Accuracy 70.508 (70.508)
+  Epoch 27 | val acc: 67.440
+Test: [0/20]	Loss 1.2303 (1.2303)	Accuracy 71.875 (71.875)
+  Epoch 27 | test acc: 68.160
+Epoch #28, Learning rate: 0.07
+prvs_alpha: [1.0431973  0.15800086]
+prvs_alpha: [0.9490433  0.15766147]
+prvs_alpha: [0.535185   0.15675442]
+prvs_alpha: [0.5304747  0.16288963]
+prvs_alpha: [0.4453148  0.16073208]
+prvs_alpha: [0.41229042 0.16792786]
+prvs_alpha: [0.41742492 0.1644158 ]
+prvs_alpha: [0.40697396 0.17400387]
+prvs_alpha: [0.31448752 0.16124268]
+Batch:   10, prec_u: 61.881 (78.734), loss_u: 0.7646, loss_r: 0.5166
+Batch:   20, prec_r: 95.508 (96.421),loss: 0.1896
+Batch:   30, prec_r: 98.242 (96.421),loss: 0.1136
+Batch:   40, prec_r: 96.289 (96.425),loss: 0.1430
+Batch:   50, prec_r: 96.875 (96.429),loss: 0.1248
+Epoch: [28][49/80]	Loss 0.1248 (0.4653)	Accuracy 96.875 (96.429)	Time 48.12
+Batch:   60, prec_r: 97.852 (96.435),loss: 0.1034
+Batch:   70, prec_r: 98.047 (96.443),loss: 0.0853
+Batch:   80, prec_r: 98.242 (96.450),loss: 0.0838
+one epoch duration:74.73998212814331
+Test: [0/80]	Loss 0.1447 (0.1447)	Accuracy 96.289 (96.289)
+Test: [50/80]	Loss 0.1611 (0.1362)	Accuracy 95.703 (96.243)
+  Epoch 28 | retain acc: 96.360
+Test: [0/9]	Loss 0.9772 (0.9772)	Accuracy 72.266 (72.266)
+  Epoch 28 | forget acc: 71.689
+Test: [0/10]	Loss 1.4670 (1.4670)	Accuracy 66.211 (66.211)
+  Epoch 28 | val acc: 66.120
+Test: [0/20]	Loss 1.1760 (1.1760)	Accuracy 71.094 (71.094)
+  Epoch 28 | test acc: 67.610
+Epoch #29, Learning rate: 0.07
+prvs_alpha: [0.88287145 0.1526986 ]
+prvs_alpha: [0.6864356  0.15844946]
+prvs_alpha: [0.7517751  0.15599902]
+prvs_alpha: [0.6109335  0.15616854]
+prvs_alpha: [0.5369192  0.15723279]
+prvs_alpha: [0.48142937 0.16156316]
+prvs_alpha: [0.49231768 0.16186549]
+prvs_alpha: [0.39407656 0.16592494]
+prvs_alpha: [0.37365496 0.15501563]
+Batch:   10, prec_u: 62.871 (78.461), loss_u: 0.7682, loss_r: 0.3608
+Batch:   20, prec_r: 97.852 (96.442),loss: 0.1532
+Batch:   30, prec_r: 98.047 (96.447),loss: 0.1272
+Batch:   40, prec_r: 99.023 (96.453),loss: 0.0954
+Batch:   50, prec_r: 98.633 (96.458),loss: 0.0937
+Epoch: [29][49/80]	Loss 0.0937 (0.4632)	Accuracy 98.633 (96.458)	Time 45.66
+Batch:   60, prec_r: 98.828 (96.464),loss: 0.0776
+Batch:   70, prec_r: 97.461 (96.471),loss: 0.0918
+Batch:   80, prec_r: 98.047 (96.479),loss: 0.0737
+one epoch duration:73.34630560874939
+Test: [0/80]	Loss 0.1106 (0.1106)	Accuracy 96.680 (96.680)
+Test: [50/80]	Loss 0.0845 (0.1130)	Accuracy 98.047 (97.017)
+  Epoch 29 | retain acc: 97.064
+Test: [0/9]	Loss 1.0063 (1.0063)	Accuracy 72.461 (72.461)
+  Epoch 29 | forget acc: 72.733
+Test: [0/10]	Loss 1.4537 (1.4537)	Accuracy 65.820 (65.820)
+  Epoch 29 | val acc: 68.540
+Test: [0/20]	Loss 1.2440 (1.2440)	Accuracy 69.141 (69.141)
+  Epoch 29 | test acc: 68.270
+Test: [0/80]	Loss 0.0973 (0.0973)	Accuracy 97.461 (97.461)
+Test: [50/80]	Loss 0.0790 (0.1146)	Accuracy 98.633 (97.063)
+retain acc: 97.06419752634308
+Test: [0/9]	Loss 0.9184 (0.9184)	Accuracy 74.219 (74.219)
+forget acc: 72.73333305528429
+Test: [0/10]	Loss 1.4537 (1.4537)	Accuracy 65.820 (65.820)
+val acc: 68.54000007324218
+Test: [0/20]	Loss 1.2440 (1.2440)	Accuracy 69.141 (69.141)
+test acc: 68.27000002441406
+Paper MIA:1.344444444444437%
+The MIA has an accuracy of 0.513 on forgotten vs unseen images
+{'correctness': 0.2726666666666666, 'confidence': 0.4768888888888889, 'entropy': 0.5564444444444445, 'm_entropy': 0.5862222222222222, 'prob': 0.6113333333333333}
+{'correctness': 0.6411507042253521, 'confidence': 0.6767338028169014, 'entropy': 0.6499985915492958, 'm_entropy': 0.5937915492957746, 'prob': 0.5431915492957746}
+====== DONE MUNBa ======
+  Output: results/cifar100/random_4500_bs512_lr_0_07/munba/seed1/
+Test: [0/20]	Loss 1.2229 (1.2229)	Accuracy 70.703 (70.703)
+test acc: 68.66999993896485
+Paper MIA:1.6888888888888842%
+The MIA has an accuracy of 0.517 on forgotten vs unseen images
+{'correctness': 0.2604444444444445, 'confidence': 0.5013333333333334, 'entropy': 0.5704444444444444, 'm_entropy': 0.6204444444444445, 'prob': 0.5291111111111111}
+{'correctness': 0.643512676056338, 'confidence': 0.679894366197183, 'entropy': 0.6516577464788733, 'm_entropy': 0.5947605633802817, 'prob': 0.5566070422535212}
+====== DONE MUKSB ======
+  Output: results/cifar100/random_4500_bs512_lr_0_07/muksb/seed1/
+==========================================
+Results: results/cifar100/random_4500_bs512_lr_0_07/
+  MUKSB : DONE
+  MUNBa : DONE
+==========================================

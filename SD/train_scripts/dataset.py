@@ -185,6 +185,67 @@ def setup_data(class_to_forget, batch_size, image_size,
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Objectnette helpers — SD-generated 10-class OBJECT dataset, stored in the same
+# ImageFolder layout as imagenette2 (one subdir per class under <root>/train).
+# This makes object-concept removal use the EXACT same code path as Imagenette
+# class removal: pick a class index to forget, the other 9 become the retain set.
+# ─────────────────────────────────────────────────────────────────────────────
+
+OBJECTNETTE_ROOT = "/storage/s25017/Datasets/objectnette2"
+
+# The set of classes to generate (folder names). NOTE: torchvision ImageFolder
+# assigns label indices by SORTED folder name, so the authoritative index->name
+# map is taken from dataset.classes at load time. This list only declares which
+# class folders should exist.
+OBJECTNETTE_CLASSES = [
+    "dog", "cat", "car", "bicycle", "airplane",
+    "bird", "horse", "boat", "truck", "train",
+]
+
+
+def _load_objectnette(image_size, interpolation="bicubic",
+                      root=OBJECTNETTE_ROOT):
+    """Load the SD-generated objectnette train split (ImageFolder) and return
+    (dataset, descriptions). Mirrors _load_imagenette exactly."""
+    from torchvision.datasets import ImageFolder
+    transform = get_transform(INTERPOLATIONS[interpolation], image_size)
+    train_dir = os.path.join(root, "train")
+    dataset   = ImageFolder(train_dir, transform=transform)
+    descriptions = [f"an image of a {name}" for name in dataset.classes]
+    return dataset, descriptions
+
+
+def setup_objectnette_forget_remain_data(class_to_forget, batch_size, image_size,
+                                         interpolation="bicubic",
+                                         root=OBJECTNETTE_ROOT):
+    """Forget/retain DataLoaders for objectnette — identical interface and
+    behaviour to setup_forget_remain_data (Imagenette), just reading the
+    SD-generated ImageFolder dataset.
+
+    Returns
+    -------
+    forget_loader, remain_loader, descriptions
+    """
+    dataset, descriptions = _load_objectnette(image_size, interpolation, root)
+    assert 0 <= class_to_forget < len(dataset.classes), \
+        f"class_to_forget={class_to_forget} out of range (0..{len(dataset.classes)-1})"
+
+    forget_idx, remain_idx = [], []
+    for i, (_, target) in enumerate(dataset.samples):
+        (forget_idx if target == class_to_forget else remain_idx).append(i)
+
+    forget_loader = DataLoader(Subset(dataset, forget_idx),
+                               batch_size=batch_size, shuffle=True,
+                               num_workers=4, pin_memory=True,
+                               persistent_workers=True)
+    remain_loader = DataLoader(Subset(dataset, remain_idx),
+                               batch_size=batch_size, shuffle=True,
+                               num_workers=4, pin_memory=True,
+                               persistent_workers=True)
+    return forget_loader, remain_loader, descriptions
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # NSFW dataset stubs (for future use / NSFW unlearning experiments)
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -304,4 +365,99 @@ def setup_nsfw_data(batch_size, forget_path, remain_path, image_size,
                             shuffle=True, num_workers=num_workers, pin_memory=True,
                             persistent_workers=True, prefetch_factor=4,
                             drop_last=True)
+    return forget_dl, remain_dl
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Object-concept datasets (generic objects: dog / car / bicycle)
+#
+# Images are generated from SD v1.4 (see Evaluation/objects/generate_objects_*),
+# which writes a manifest.csv (filename,prompt) next to the PNGs. Each image is
+# returned with the *prompt that generated it* as its caption, so the forget /
+# retain conditioning matches the image content. Falls back to `default_caption`
+# when no manifest is present.
+# ─────────────────────────────────────────────────────────────────────────────
+
+import csv as _csv
+
+
+def _load_manifest(img_dir):
+    """Return {basename: prompt} from <img_dir>/manifest.csv, or {} if absent."""
+    path = os.path.join(img_dir, "manifest.csv")
+    if not os.path.isfile(path):
+        return {}
+    mapping = {}
+    with open(path, newline="") as f:
+        reader = _csv.DictReader(f)
+        for row in reader:
+            fname = row.get("filename") or row.get("file") or row.get("image")
+            prompt = row.get("prompt", "")
+            if fname:
+                mapping[os.path.basename(fname)] = prompt
+    return mapping
+
+
+class ObjectDataset(Dataset):
+    """Generic-object images from a directory, captioned via manifest.csv.
+
+    Returns {"jpg": HWC float tensor in [-1, 1], "txt": prompt} to match the
+    LDM ``get_input`` / ``shared_step`` contract used elsewhere in MUKSB.
+    """
+
+    def __init__(self, img_dir, transform, default_caption="a photo",
+                 image_key="jpg", txt_key="txt"):
+        self.img_dir   = img_dir
+        self.all_imgs  = sorted(
+            _glob.glob(os.path.join(img_dir, "**/*.png"),  recursive=True) +
+            _glob.glob(os.path.join(img_dir, "**/*.jpg"),  recursive=True) +
+            _glob.glob(os.path.join(img_dir, "**/*.jpeg"), recursive=True)
+        )
+        if not self.all_imgs:
+            raise RuntimeError(f"ObjectDataset: no images found under {img_dir}")
+        self.manifest        = _load_manifest(img_dir)
+        self.default_caption = default_caption
+        self.image_key       = image_key
+        self.txt_key         = txt_key
+        self.transform       = transform
+
+    def __len__(self):
+        return len(self.all_imgs)
+
+    def _caption_for(self, img_name):
+        return self.manifest.get(os.path.basename(img_name), self.default_caption)
+
+    def __getitem__(self, idx):
+        img_name = self.all_imgs[idx]
+        for attempt in range(10):
+            try:
+                image = Image.open(img_name).convert("RGB")
+                break
+            except Exception:
+                if attempt == 9:
+                    raise RuntimeError(f"Failed to load image: {img_name}")
+                idx      = random.randint(0, len(self.all_imgs) - 1)
+                img_name = self.all_imgs[idx]
+        caption = self._caption_for(img_name)
+        image   = self.transform(image).permute(1, 2, 0)  # CHW -> HWC
+        return {self.image_key: image, self.txt_key: caption}
+
+
+def setup_object_data(batch_size, forget_path, remain_path, image_size,
+                      forget_caption="a photo", remain_caption="a photo",
+                      interpolation="bicubic", num_workers=8):
+    """DataLoaders for generic-object forget / retain image directories.
+
+    `*_caption` are only used as a fallback when an image has no manifest entry.
+    """
+    transform = get_transform(INTERPOLATIONS[interpolation], image_size)
+    forget_dl = DataLoader(
+        ObjectDataset(forget_path, transform, default_caption=forget_caption),
+        batch_size=batch_size, shuffle=True, num_workers=num_workers,
+        pin_memory=True, persistent_workers=True, prefetch_factor=4,
+        drop_last=True)
+    remain_dl = DataLoader(
+        ObjectDataset(remain_path, transform, default_caption=remain_caption),
+        batch_size=batch_size, shuffle=True, num_workers=num_workers,
+        pin_memory=True, persistent_workers=True, prefetch_factor=4,
+        drop_last=True)
     return forget_dl, remain_dl

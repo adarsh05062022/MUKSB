@@ -25,7 +25,7 @@ from PIL import Image
 from tqdm import tqdm
 from transformers import CLIPTextModel, CLIPTokenizer
 
-I2P_CSV_DEFAULT = "/storage/s25017/MUKSB/SD/prompts/coco_30k.csv"
+I2P_CSV_DEFAULT = "/scratch/s25017/MUKSB/SD/prompts/coco_30k.csv"
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────

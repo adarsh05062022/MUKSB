@@ -1,0 +1,124 @@
+{
+  "method": "MUKSB",
+  "label": "MUKSB",
+  "seed": "1",
+  "final_metrics": {
+    "acc_forget": 95.39999986572266,
+    "acc_retain": 98.1825,
+    "acc_val": 92.27999998779296,
+    "acc_test": 91.85,
+    "MIA": 52.33
+  },
+  "epochs": [
+    {
+      "epoch": 0,
+      "accuracy": {
+        "retain": 96.8,
+        "forget": 96.01999986572265,
+        "val": 89.96000002441406,
+        "test": 90.95
+      },
+      "skip_rate": 0.0,
+      "duration": 103.33509516716003
+    },
+    {
+      "epoch": 1,
+      "accuracy": {
+        "retain": 98.31,
+        "forget": 97.73999998779297,
+        "val": 91.67999993896484,
+        "test": 91.92
+      },
+      "skip_rate": 0.0,
+      "duration": 130.76344227790833
+    },
+    {
+      "epoch": 2,
+      "accuracy": {
+        "retain": 97.6925,
+        "forget": 96.79999997558593,
+        "val": 91.15999998779297,
+        "test": 91.54
+      },
+      "skip_rate": 0.0,
+      "duration": 183.98268461227417
+    },
+    {
+      "epoch": 3,
+      "accuracy": {
+        "retain": 98.1925,
+        "forget": 97.13999998779298,
+        "val": 91.51999998779297,
+        "test": 91.43
+      },
+      "skip_rate": 0.0,
+      "duration": 169.2573320865631
+    },
+    {
+      "epoch": 4,
+      "accuracy": {
+        "retain": 98.68,
+        "forget": 97.41999998779296,
+        "val": 92.25999998779297,
+        "test": 92.39
+      },
+      "skip_rate": 0.0,
+      "duration": 170.76527285575867
+    },
+    {
+      "epoch": 5,
+      "accuracy": {
+        "retain": 99.0375,
+        "forget": 97.49999987792968,
+        "val": 92.43999986572265,
+        "test": 92.38
+      },
+      "skip_rate": 0.0,
+      "duration": 171.57266664505005
+    },
+    {
+      "epoch": 6,
+      "accuracy": {
+        "retain": 98.6625,
+        "forget": 96.25999997558594,
+        "val": 91.87999987792969,
+        "test": 92.33
+      },
+      "skip_rate": 0.0,
+      "duration": 124.63428401947021
+    },
+    {
+      "epoch": 7,
+      "accuracy": {
+        "retain": 96.6625,
+        "forget": 93.57999996337891,
+        "val": 90.39999997558594,
+        "test": 89.67
+      },
+      "skip_rate": 0.0,
+      "duration": 115.93264245986938
+    },
+    {
+      "epoch": 8,
+      "accuracy": {
+        "retain": 97.155,
+        "forget": 94.33999995117188,
+        "val": 90.4799999633789,
+        "test": 90.25
+      },
+      "skip_rate": 0.0,
+      "duration": 115.93350791931152
+    },
+    {
+      "epoch": 9,
+      "accuracy": {
+        "retain": 98.1825,
+        "forget": 95.39999987792969,
+        "val": 92.27999998779296,
+        "test": 91.85
+      },
+      "skip_rate": 0.0,
+      "duration": 199.7918562889099
+    }
+  ]
+}

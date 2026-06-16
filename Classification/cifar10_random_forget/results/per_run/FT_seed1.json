@@ -1,0 +1,123 @@
+{
+  "method": "FT",
+  "label": "FT",
+  "seed": "1",
+  "final_metrics": {
+    "acc_forget": 99.98,
+    "acc_retain": 99.98,
+    "acc_val": 93.79999995117187,
+    "acc_test": 94.36
+  },
+  "epochs": [
+    {
+      "epoch": 0,
+      "train_acc": 99.995,
+      "accuracy": {
+        "retain": 99.995,
+        "forget": 100.0,
+        "val": 94.49999997558594,
+        "test": 94.88
+      },
+      "duration": 23.646706581115723
+    },
+    {
+      "epoch": 1,
+      "train_acc": 99.97,
+      "accuracy": {
+        "retain": 99.995,
+        "forget": 99.96,
+        "val": 94.39999986572266,
+        "test": 94.6
+      },
+      "duration": 15.211449384689331
+    },
+    {
+      "epoch": 2,
+      "train_acc": 99.9775,
+      "accuracy": {
+        "retain": 99.9975,
+        "forget": 100.0,
+        "val": 94.4599999633789,
+        "test": 94.81
+      },
+      "duration": 14.601155996322632
+    },
+    {
+      "epoch": 3,
+      "train_acc": 99.9475,
+      "accuracy": {
+        "retain": 99.9675,
+        "forget": 99.96,
+        "val": 94.25999986572266,
+        "test": 94.66
+      },
+      "duration": 14.569917678833008
+    },
+    {
+      "epoch": 4,
+      "train_acc": 99.93,
+      "accuracy": {
+        "retain": 99.975,
+        "forget": 99.94,
+        "val": 94.23999997558593,
+        "test": 94.55
+      },
+      "duration": 14.585476160049438
+    },
+    {
+      "epoch": 5,
+      "train_acc": 99.945,
+      "accuracy": {
+        "retain": 99.9475,
+        "forget": 99.94,
+        "val": 94.07999986572266,
+        "test": 94.37
+      },
+      "duration": 12.749501466751099
+    },
+    {
+      "epoch": 6,
+      "train_acc": 99.8625,
+      "accuracy": {
+        "retain": 99.965,
+        "forget": 99.92,
+        "val": 94.09999995117188,
+        "test": 94.41
+      },
+      "duration": 16.478893280029297
+    },
+    {
+      "epoch": 7,
+      "train_acc": 99.88,
+      "accuracy": {
+        "retain": 99.8,
+        "forget": 99.79999989013672,
+        "val": 93.73999997558593,
+        "test": 94.3
+      },
+      "duration": 14.48673701286316
+    },
+    {
+      "epoch": 8,
+      "train_acc": 99.8325,
+      "accuracy": {
+        "retain": 99.9025,
+        "forget": 99.82,
+        "val": 93.49999997558594,
+        "test": 94.1
+      },
+      "duration": 17.027568817138672
+    },
+    {
+      "epoch": 9,
+      "train_acc": 99.9225,
+      "accuracy": {
+        "retain": 99.9475,
+        "forget": 99.86,
+        "val": 93.97999986572266,
+        "test": 94.36
+      },
+      "duration": 19.807144165039062
+    }
+  ]
+}

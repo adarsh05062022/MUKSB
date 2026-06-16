@@ -270,7 +270,7 @@ if __name__ == "__main__":
         description="Multi-GPU Imagenette image generation launcher"
     )
     parser.add_argument("--model_path",     type=str,
-                        default="/storage/s25017/MUKSB/SD/models/compvis-cls_0-MUKSB-g0.5-method_full-lr_1e-05_E3_U963_pseudo/diffusers-cls_0-MUKSB-g0.5-method_full-lr_1e-05_E3_U963_pseudo-epoch_1.pt",
+                        default="/scratch/s25017/MUKSB/SD/models/compvis-cls_0-MUKSB-g0.5-method_full-lr_1e-05_E3_U963_pseudo/diffusers-cls_0-MUKSB-g0.5-method_full-lr_1e-05_E3_U963_pseudo-epoch_1.pt",
                         help="SSU .pt checkpoint. Empty → SD v1.4 baseline.")
     parser.add_argument("--output_dir",     type=str,
                         default="Evaluation/imagenette/generated")

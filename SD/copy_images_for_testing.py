@@ -11,9 +11,9 @@ import shutil
 from pathlib import Path
 
 SRC = Path(
-    "/storage/s25017/MUKSB/SD/Evaluation/imagenette/pseudo_generated/diffusers-cls_9-MUKSB-g0.5-method_full-lr_1e-05_E3_U960_pseudo-epoch_1"
+    "/scratch/s25017/MUKSB/SD/Evaluation/imagenette/pseudo_generated/diffusers-cls_9-MUKSB-g0.5-method_full-lr_1e-05_E3_U960_pseudo-epoch_1"
 )
-DST = Path("/storage/s25017/MUKSB/SD/eval_scripts/Imagenette/cls9")
+DST = Path("/scratch/s25017/MUKSB/SD/eval_scripts/Imagenette/cls9")
 
 DST.mkdir(parents=True, exist_ok=True)
 

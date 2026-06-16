@@ -1,0 +1,332 @@
+[
+  {
+    "epoch": 0,
+    "train_acc": 2.2888888888888888,
+    "accuracy": {
+      "retain": 11.31111111129949,
+      "forget": 0.0,
+      "val": 10.32,
+      "test": 11.377777777777778
+    },
+    "duration": 5.649741172790527
+  },
+  {
+    "epoch": 1,
+    "train_acc": 0.0,
+    "accuracy": {
+      "retain": 11.11111111045178,
+      "forget": 0.0,
+      "val": 10.0,
+      "test": 11.11111111111111
+    },
+    "duration": 1.476865291595459
+  },
+  {
+    "epoch": 2,
+    "train_acc": 0.0,
+    "accuracy": {
+      "retain": 11.111111111299492,
+      "forget": 0.0,
+      "val": 10.0,
+      "test": 11.11111111111111
+    },
+    "duration": 1.3265864849090576
+  },
+  {
+    "epoch": 3,
+    "train_acc": 0.0,
+    "accuracy": {
+      "retain": 11.111111111299492,
+      "forget": 0.0,
+      "val": 10.0,
+      "test": 11.11111111111111
+    },
+    "duration": 1.35972261428833
+  },
+  {
+    "epoch": 4,
+    "train_acc": 0.0,
+    "accuracy": {
+      "retain": 11.11111111045178,
+      "forget": 0.0,
+      "val": 10.0,
+      "test": 11.11111111111111
+    },
+    "duration": 1.293745756149292
+  },
+  {
+    "epoch": 5,
+    "train_acc": 0.0,
+    "accuracy": {
+      "retain": 11.111111111299492,
+      "forget": 0.0,
+      "val": 10.0,
+      "test": 11.11111111111111
+    },
+    "duration": 1.393965721130371
+  },
+  {
+    "epoch": 6,
+    "train_acc": 0.0,
+    "accuracy": {
+      "retain": 11.111111111205302,
+      "forget": 0.0,
+      "val": 10.0,
+      "test": 11.11111111111111
+    },
+    "duration": 1.3286423683166504
+  },
+  {
+    "epoch": 7,
+    "train_acc": 0.0,
+    "accuracy": {
+      "retain": 11.11111111054597,
+      "forget": 0.0,
+      "val": 10.0,
+      "test": 11.11111111111111
+    },
+    "duration": 1.3836073875427246
+  },
+  {
+    "epoch": 8,
+    "train_acc": 0.0,
+    "accuracy": {
+      "retain": 0.0,
+      "forget": 100.0,
+      "val": 10.0,
+      "test": 0.0
+    },
+    "duration": 1.3463842868804932
+  },
+  {
+    "epoch": 9,
+    "train_acc": 0.0,
+    "accuracy": {
+      "retain": 11.11111111082854,
+      "forget": 0.0,
+      "val": 10.0,
+      "test": 11.11111111111111
+    },
+    "duration": 1.3485357761383057
+  },
+  {
+    "epoch": 10,
+    "train_acc": 54.48888888888889,
+    "accuracy": {
+      "retain": 0.0,
+      "forget": 100.0,
+      "val": 10.0,
+      "test": 0.0
+    },
+    "duration": 1.3905792236328125
+  },
+  {
+    "epoch": 11,
+    "train_acc": 100.0,
+    "accuracy": {
+      "retain": 0.0,
+      "forget": 100.0,
+      "val": 10.0,
+      "test": 0.0
+    },
+    "duration": 1.4205958843231201
+  },
+  {
+    "epoch": 12,
+    "train_acc": 100.0,
+    "accuracy": {
+      "retain": 0.0,
+      "forget": 100.0,
+      "val": 10.0,
+      "test": 0.0
+    },
+    "duration": 1.393599510192871
+  },
+  {
+    "epoch": 13,
+    "train_acc": 100.0,
+    "accuracy": {
+      "retain": 0.0,
+      "forget": 100.0,
+      "val": 10.0,
+      "test": 0.0
+    },
+    "duration": 1.2755801677703857
+  },
+  {
+    "epoch": 14,
+    "train_acc": 100.0,
+    "accuracy": {
+      "retain": 0.0,
+      "forget": 100.0,
+      "val": 10.0,
+      "test": 0.0
+    },
+    "duration": 1.5391383171081543
+  },
+  {
+    "epoch": 15,
+    "train_acc": 100.0,
+    "accuracy": {
+      "retain": 0.0,
+      "forget": 100.0,
+      "val": 10.0,
+      "test": 0.0
+    },
+    "duration": 1.3217189311981201
+  },
+  {
+    "epoch": 16,
+    "train_acc": 100.0,
+    "accuracy": {
+      "retain": 0.0,
+      "forget": 100.0,
+      "val": 10.0,
+      "test": 0.0
+    },
+    "duration": 1.3863780498504639
+  },
+  {
+    "epoch": 17,
+    "train_acc": 100.0,
+    "accuracy": {
+      "retain": 0.0,
+      "forget": 100.0,
+      "val": 10.0,
+      "test": 0.0
+    },
+    "duration": 1.3379790782928467
+  },
+  {
+    "epoch": 18,
+    "train_acc": 100.0,
+    "accuracy": {
+      "retain": 0.0,
+      "forget": 100.0,
+      "val": 10.0,
+      "test": 0.0
+    },
+    "duration": 1.3333313465118408
+  },
+  {
+    "epoch": 19,
+    "train_acc": 100.0,
+    "accuracy": {
+      "retain": 0.0,
+      "forget": 100.0,
+      "val": 10.0,
+      "test": 0.0
+    },
+    "duration": 1.3010761737823486
+  },
+  {
+    "epoch": 20,
+    "train_acc": 100.0,
+    "accuracy": {
+      "retain": 0.0,
+      "forget": 100.0,
+      "val": 10.0,
+      "test": 0.0
+    },
+    "duration": 1.3317890167236328
+  },
+  {
+    "epoch": 21,
+    "train_acc": 100.0,
+    "accuracy": {
+      "retain": 0.0,
+      "forget": 100.0,
+      "val": 10.0,
+      "test": 0.0
+    },
+    "duration": 1.282198429107666
+  },
+  {
+    "epoch": 22,
+    "train_acc": 100.0,
+    "accuracy": {
+      "retain": 0.0,
+      "forget": 100.0,
+      "val": 10.0,
+      "test": 0.0
+    },
+    "duration": 1.306290626525879
+  },
+  {
+    "epoch": 23,
+    "train_acc": 100.0,
+    "accuracy": {
+      "retain": 0.0,
+      "forget": 100.0,
+      "val": 10.0,
+      "test": 0.0
+    },
+    "duration": 1.3831892013549805
+  },
+  {
+    "epoch": 24,
+    "train_acc": 100.0,
+    "accuracy": {
+      "retain": 0.0,
+      "forget": 100.0,
+      "val": 10.0,
+      "test": 0.0
+    },
+    "duration": 1.297083854675293
+  },
+  {
+    "epoch": 25,
+    "train_acc": 100.0,
+    "accuracy": {
+      "retain": 0.0,
+      "forget": 100.0,
+      "val": 10.0,
+      "test": 0.0
+    },
+    "duration": 1.3050990104675293
+  },
+  {
+    "epoch": 26,
+    "train_acc": 100.0,
+    "accuracy": {
+      "retain": 0.0,
+      "forget": 100.0,
+      "val": 10.0,
+      "test": 0.0
+    },
+    "duration": 1.3221709728240967
+  },
+  {
+    "epoch": 27,
+    "train_acc": 100.0,
+    "accuracy": {
+      "retain": 0.0,
+      "forget": 100.0,
+      "val": 10.0,
+      "test": 0.0
+    },
+    "duration": 1.3031151294708252
+  },
+  {
+    "epoch": 28,
+    "train_acc": 100.0,
+    "accuracy": {
+      "retain": 0.0,
+      "forget": 100.0,
+      "val": 10.0,
+      "test": 0.0
+    },
+    "duration": 1.3484318256378174
+  },
+  {
+    "epoch": 29,
+    "train_acc": 100.0,
+    "accuracy": {
+      "retain": 0.0,
+      "forget": 100.0,
+      "val": 10.0,
+      "test": 0.0
+    },
+    "duration": 1.3426494598388672
+  }
+]

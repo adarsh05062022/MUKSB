@@ -1,9 +1,9 @@
 {
   "model_tag": "diffusers-cls_4-MUKSB-g0.5-method_full-lr_1e-05_E3_U941_-epoch_3",
-  "model_path": "/storage/s25017/MUKSB/SD/models/compvis-cls_4-MUKSB-g0.5-method_full-lr_1e-05_E3_U941_/diffusers-cls_4-MUKSB-g0.5-method_full-lr_1e-05_E3_U941_-epoch_3.pt",
+  "model_path": "/scratch/s25017/MUKSB/SD/models/compvis-cls_4-MUKSB-g0.5-method_full-lr_1e-05_E3_U941_/diffusers-cls_4-MUKSB-g0.5-method_full-lr_1e-05_E3_U941_-epoch_3.pt",
   "class_to_forget": 4,
   "forget_class": "church",
-  "gen_root": "/storage/s25017/MUKSB/SD/Evaluation/imagenette/no_mask/diffusers-cls_4-MUKSB-g0.5-method_full-lr_1e-05_E3_U941_-epoch_3",
+  "gen_root": "/scratch/s25017/MUKSB/SD/Evaluation/imagenette/no_mask/diffusers-cls_4-MUKSB-g0.5-method_full-lr_1e-05_E3_U941_-epoch_3",
   "retain_fid": 3.8756,
   "ua_top1": 100.0,
   "ua_top5": 100.0,
