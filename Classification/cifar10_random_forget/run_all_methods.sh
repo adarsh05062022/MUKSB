@@ -128,9 +128,9 @@ CFG[GA]="GA|0.0001|5|256|91,136|"                                 # gradient asc
 CFG[IU]="IU|0.01|1|256|91,136|--iu_damping 1e-3 --iu_scale 1.0"   # one-shot influence (epochs unused)
 CFG[BE]="boundary_expanding|0.0001|10|256|91,136|"               # boundary expanding
 CFG[l1sparse]="FT_l1|0.03|10|256|91,136|--with_l1 --alpha 5e-4"   # ℓ1-sparse fine-tuning
-CFG[SalUn]="SalUn|0.03|10|256|91,136|--salun_density 0.5"         # saliency unlearning
-CFG[MUNBa]="MUNBa|0.03|10|256|91,136|--beta 1.0"                  # Nash bargaining baseline
-CFG[MUKSB]="MUKSB|0.03|10|256|91,136|--gamma 0.5 --alpha 0.2"     # ours (KS bargaining)
+CFG[SalUn]="SalUn|0.013|10|256|91,136|--salun_density 0.5"         # saliency unlearning
+CFG[MUNBa]="MUNBa|0.013|10|256|91,136|--beta 1.0"                  # Nash bargaining baseline
+CFG[MUKSB]="MUKSB|0.013|10|256|91,136|--gamma 0.5 --alpha 0.2"     # ours (KS bargaining)
 
 # ── Validate requested methods ───────────────────────────────────────────────
 for M in "${METHODS[@]}"; do
