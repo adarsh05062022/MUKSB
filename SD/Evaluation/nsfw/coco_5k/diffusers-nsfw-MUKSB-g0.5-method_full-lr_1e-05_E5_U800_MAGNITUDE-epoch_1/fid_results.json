@@ -1,6 +1,0 @@
-{
-  "gen_dir": "Evaluation/nsfw/coco_5k/diffusers-nsfw-MUKSB-g0.5-method_full-lr_1e-05_E5_U800_MAGNITUDE-epoch_1",
-  "real_path": "/storage/s25017/Datasets/COCO/coco_5k_val_2014_images",
-  "image_size": 512,
-  "fid": 47.9887
-}

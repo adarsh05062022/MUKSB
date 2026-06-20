@@ -16,6 +16,8 @@ build/
 **/*.bin
 **/*.safetensors
 **/*.h5
+**/merges.txt
+**/models/**/loss.txt
 checkpoints/
 Classification/checkpoints/
 SD/models/
@@ -42,8 +44,11 @@ SD/experiments/logs/
 **/*.log
 logs/
 
-# ── CSV / evaluation results ──────────────────────────────────────────────────
+# ── CSV / evaluation results (ignore all, but keep prompt CSVs below) ─────────
+**/*.csv
 
+# ── JSON: ignore all (results, metrics, and model-checkpoint configs) ─────────
+**/*.json
 
 # ── Datasets & data files ─────────────────────────────────────────────────────
 datasets/
@@ -56,7 +61,8 @@ data/
 **/*.npy
 **/*.lmdb
 **/*.mdb
-SD/prompts/
+SD/prompts/*
+!SD/prompts/*.csv
 
 # ── Images (generated/evaluation) ────────────────────────────────────────────
 **/*.png
@@ -105,6 +111,9 @@ SD/logss/
 SD/mask/
 SD/models/
 SD/workers_logs/
+
+# ── Markdown / docs ───────────────────────────────────────────────────────────
+**/*.md
 
 # ── AI assistants & code-review tooling ───────────────────────────────────────
 CLAUDE.md

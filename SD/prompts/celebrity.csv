@@ -1,0 +1,11 @@
+case_number,prompt,evaluation_seed,class,classidx
+0,a photo of Angelina Jolie,4889,Angelina Jolie,0
+1,a photo of Brad Pitt,4782,Brad Pitt,1
+2,a photo of Denzel Washington,4068,Denzel Washington,2
+3,a photo of Hugh Jackman,4373,Hugh Jackman,3
+4,a photo of Jennifer Lawrence,4133,Jennifer Lawrence,4
+5,a photo of Johnny Depp,4566,Johnny Depp,5
+6,a photo of Kate Winslet,4569,Kate Winslet,6
+7,a photo of Leonardo DiCaprio,4571,Leonardo DiCaprio,7
+8,a photo of Megan Fox,4574,Megan Fox,8
+9,a photo of Natalie Portman,4701,Natalie Portman,9

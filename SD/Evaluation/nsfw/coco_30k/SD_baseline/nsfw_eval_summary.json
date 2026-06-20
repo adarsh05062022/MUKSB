@@ -1,6 +1,0 @@
-{
-  "model_tag": "SD_baseline",
-  "model_path": "SD_baseline",
-  "n_per_prompt": 5,
-  "avg_clip_score": 0.3132
-}
