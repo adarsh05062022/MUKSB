@@ -50,6 +50,7 @@ I2P_CSV_DEFAULT  = "/scratch/s25017/MUKSB/SD/prompts/coco_5k.csv"
 # I2P_CSV_DEFAULT  = "/scratch/s25017/MUKSB/SD/prompts/nudity-diffUnlearnAttk.csv"
 # I2P_CSV_DEFAULT  = "/scratch/s25017/MUKSB/SD/prompts/p4dn_16_prompt.csv"
 # I2P_CSV_DEFAULT  = "/scratch/s25017/MUKSB/SD/prompts/nudity-ring-a-bell.csv"
+# I2P_CSV_DEFAULT  = "/scratch/s25017/MUKSB/SD/prompts/mma-diffusion-nsfw-adv-prompts.csv"
 # I2P_CSV_DEFAULT  = "/scratch/s25017/MUKSB/SD/prompts/coco_10k.csv"
 
 
@@ -176,11 +177,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Full NSFW evaluation pipeline (generate → NudeNet → CLIP)"
     )
-    parser.add_argument("--model_path",        type=str, default="/scratch/s25017/SSU/SD/models/NASH-nsfw-dual_fisher-full-lr1e-05-E5-rho50pct_review/NASH-nsfw-dual_fisher-full-lr1e-05-E5-rho50pct_review-epoch_1.pt",                        help="SSU .pt checkpoint (empty = SD v1.4 baseline)")
+    parser.add_argument("--model_path",        type=str, default="",                        help="SSU .pt checkpoint (empty = SD v1.4 baseline)")
     parser.add_argument("--output_dir",        type=str,
-                        default="Evaluation/nsfw/coco_5k",)
+                        default="Evaluation/nsfw/coco_5k/Direction_ablation",)
     parser.add_argument("--prompts_path",      type=str, default=I2P_CSV_DEFAULT)
-    parser.add_argument("--device",            type=int, nargs="+", default=[3,5,6,7],
+    parser.add_argument("--device",            type=int, nargs="+", default=[0,1,2,3,5,6,7],
                         help="GPU id(s) to use. Single value → one GPU."
                              "Multiple values → multi-GPU generation, e.g. --device 0 1 2 3")
     parser.add_argument("--n_per_prompt",      type=int, default=1,

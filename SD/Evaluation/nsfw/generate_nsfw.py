@@ -47,18 +47,33 @@ def load_pipeline(model_path: str, device: str):
     unet         = UNet2DConditionModel.from_pretrained(base, subfolder="unet")
 
     if model_path and os.path.exists(model_path):
-        state = torch.load(model_path, map_location="cpu", weights_only=False)
-        if "state_dict" in state:
-            state = state["state_dict"]
-        # SSU compvis checkpoint: extract UNet sub-dict
-        unet_state = {k.replace("model.diffusion_model.", ""): v
-                      for k, v in state.items()
-                      if k.startswith("model.diffusion_model.")}
-        if unet_state:
-            missing, unexpected = unet.load_state_dict(unet_state, strict=False)
+        if os.path.isdir(model_path):
+            # HuggingFace directory with pytorch_model.bin + config.json (AdvUnlearn HF format)
+            text_encoder = CLIPTextModel.from_pretrained(model_path)
+            print(f"[TextEncoder] loaded HF dir {model_path}")
         else:
-            missing, unexpected = unet.load_state_dict(state, strict=False)
-        print(f"[UNet] loaded {model_path} | missing={len(missing)}  unexpected={len(unexpected)}")
+            state = torch.load(model_path, map_location="cpu", weights_only=False)
+            if "state_dict" in state:
+                state = state["state_dict"]
+            first_key = next(iter(state))
+            if first_key.startswith("text_model."):
+                # AdvUnlearn-style: text encoder checkpoint
+                # Strip text_model. prefix if model uses bare keys (newer transformers)
+                model_first_key = next(iter(text_encoder.state_dict()))
+                if not model_first_key.startswith("text_model."):
+                    state = {k.replace("text_model.", "", 1): v for k, v in state.items()}
+                missing, unexpected = text_encoder.load_state_dict(state, strict=False)
+                print(f"[TextEncoder] loaded {model_path} | missing={len(missing)}  unexpected={len(unexpected)}")
+            else:
+                # SSU/MUKSB-style: unlearned UNet checkpoint
+                unet_state = {k.replace("model.diffusion_model.", ""): v
+                              for k, v in state.items()
+                              if k.startswith("model.diffusion_model.")}
+                if unet_state:
+                    missing, unexpected = unet.load_state_dict(unet_state, strict=False)
+                else:
+                    missing, unexpected = unet.load_state_dict(state, strict=False)
+                print(f"[UNet] loaded {model_path} | missing={len(missing)}  unexpected={len(unexpected)}")
     else:
         print("[UNet] No checkpoint — using vanilla SD v1.4.")
 

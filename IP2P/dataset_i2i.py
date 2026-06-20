@@ -1,17 +1,18 @@
 """
-i2i/dataset_i2i.py
-==================
+IP2P/dataset_i2i.py
+===================
 Image-to-Image NSFW dataset for InstructPix2Pix unlearning under MUKSB.
 
 Each sample returns:
-    - "jpg" : target image tensor (HWC, [-1, 1])  — same format as
-              MUKSB's T2I dataset (see train_scripts/dataset.NSFWDataset)
+    - "jpg" : target image tensor (HWC, [-1, 1])
     - "src" : source image tensor for I2I conditioning (HWC, [-1, 1])
     - "txt" : edit instruction (string)
 
 Modes:
     - "forget" → NSFW edit instructions cycled per sample
-    - "retain" → neutral / clothed-preserving instructions cycled
+    - "retain" → diverse benign attribute-edit instructions cycled
+                 (used for base-model distillation so general editing
+                  capability is preserved during unlearning)
 
 Source and target are the same image — the simplest, cleanest I2I
 setup for this unlearning task.
@@ -20,20 +21,34 @@ setup for this unlearning task.
 import glob
 import os
 import random
-import sys
 
+import torchvision.transforms as T
 from PIL import Image, ImageFile
 from torch.utils.data import DataLoader, Dataset
-
-# Reuse the SD-level transform so image preprocessing matches the
-# T2I MUKSB code exactly.
-_THIS_DIR = os.path.dirname(os.path.abspath(__file__))
-_SD_DIR = os.path.abspath(os.path.join(_THIS_DIR, ".."))
-if _SD_DIR not in sys.path:
-    sys.path.insert(0, _SD_DIR)
-from train_scripts.dataset import get_transform, INTERPOLATIONS
+from torchvision.transforms.functional import InterpolationMode
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
+
+
+INTERPOLATIONS = {
+    "bilinear": InterpolationMode.BILINEAR,
+    "bicubic":  InterpolationMode.BICUBIC,
+    "lanczos":  InterpolationMode.LANCZOS,
+}
+
+
+def _to_rgb(image):
+    return image.convert("RGB")
+
+
+def get_transform(interpolation=InterpolationMode.BICUBIC, size=512):
+    return T.Compose([
+        T.Resize(size, interpolation=interpolation),
+        T.CenterCrop(size),
+        _to_rgb,
+        T.ToTensor(),
+        T.Normalize([0.5], [0.5]),
+    ])
 
 
 FORGET_INSTRUCTIONS = [
@@ -43,11 +58,22 @@ FORGET_INSTRUCTIONS = [
     "edit this into explicit nudity",
 ]
 
+# Diverse benign attribute edits.  The retain branch distills the trainable
+# UNet toward the frozen base model on these instructions, so the model keeps
+# its general editing ability instead of collapsing to an identity / copy map.
 RETAIN_INSTRUCTIONS = [
-    "keep the person fully clothed",
-    "preserve the original outfit",
-    "maintain the dressed appearance",
-    "keep the clothing intact",
+    "make the person smile",
+    "give the person a happy expression",
+    "add sunglasses to the person",
+    "make the person wear a hat",
+    "change the hair color to blonde",
+    "make the person look older",
+    "change the background to a forest",
+    "change the background to a city street",
+    "add a beard to the person",
+    "make the lighting warmer",
+    "turn this into a watercolor painting",
+    "make the person wear a red jacket",
 ]
 
 
@@ -89,7 +115,6 @@ class I2INSFWDataset(Dataset):
 def setup_i2i_nsfw_data(
     batch_size, forget_path, remain_path, image_size, interpolation="bicubic"
 ):
-    """Mirror of train_scripts.dataset.setup_nsfw_data, yielding I2I dicts."""
     transform = get_transform(INTERPOLATIONS[interpolation], image_size)
     forget_set = I2INSFWDataset(forget_path, transform, mode="forget")
     remain_set = I2INSFWDataset(remain_path, transform, mode="retain")

@@ -1,17 +1,25 @@
 """
-i2i/MUKSB_nsfw_i2i.py
-=====================
-MUKSB (Magnitude-Aware Kalai-Smorodinsky Bargaining) NSFW concept
+IP2P/MUNBa_nsfw_i2i.py
+=======================
+MUNBa (Machine Unlearning via Nash Bargaining) NSFW concept
 unlearning under **Image-to-Image** (InstructPix2Pix).
 
-This is the I2I counterpart of SD/MUKSB_nsfw.py. The bargaining math
-(`ks_step`), L1 regularisation, and mask-driven sparse update are
-identical; the forward pass goes through the diffusers IP2P UNet with
-8-channel inputs (noisy target latent ⊕ source-image latent).
+This is the Nash-bargaining counterpart of MUKSB_nsfw_i2i.py.  Everything
+— data, parameter selection, forget/retain losses, mask variants, L1
+regularisation, optimizer, saving — is IDENTICAL to MUKSB_nsfw_i2i.py.
+The ONLY algorithmic difference is the bargaining solver used to merge
+the retain and forget gradients:
+
+  MUKSB (KS)   : g* = (ĝ_r + ĝ_f) / ||ĝ_r + ĝ_f|| , scaled by the
+                 harmonic mean of the gradient norms; skips the step when
+                 the two gradients are anti-parallel.
+  MUNBa (Nash) : update = α_r · g_r + α_f · g_f , where (α_r, α_f) solve
+                 the two-player Nash bargaining game — handles all
+                 gradient angles without ever skipping a step.
 
 Mask variants
 -------------
-  none          — no mask (all selected params updated under KS bargaining)
+  none          — no mask (all selected params updated under Nash bargaining)
   random        — uniform random top-k%
   forget_fisher — single-sided forget Fisher (F_f)
   salun         — gradient-magnitude saliency |∇L_f|
@@ -19,10 +27,11 @@ Mask variants
 
 Usage
 -----
-  python i2i/MUKSB_nsfw_i2i.py --mask_variant dual_fisher --epochs 5 --device 0
+  python MUNBa_nsfw_i2i.py --mask_variant dual_fisher --epochs 5 --device 0
 """
 
 import argparse
+import copy
 import gc
 import os
 import random
@@ -37,27 +46,51 @@ from tqdm import tqdm
 from diffusers import StableDiffusionInstructPix2PixPipeline
 
 _THIS_DIR = os.path.dirname(os.path.abspath(__file__))
-_SD_DIR = os.path.abspath(os.path.join(_THIS_DIR, ".."))
-for d in (_SD_DIR, _THIS_DIR):
-    if d not in sys.path:
-        sys.path.insert(0, d)
+if _THIS_DIR not in sys.path:
+    sys.path.insert(0, _THIS_DIR)
 
 from logger.logger import setup_logger
-
 from dataset_i2i import setup_i2i_nsfw_data
 from mask_variants_i2i import build_mask, MASK_VARIANT_CHOICES
 
-PSEUDO_INSTRUCTION = "keep the image unchanged"
+# Semantic "clothed" anchors for the forget objective.  Instead of redirecting
+# the NSFW instruction onto an identity / "keep unchanged" map (which collapses
+# editing and causes flicker), we redirect it onto the FROZEN base model's
+# behaviour under one of these clothed anchors, sampled at random per image.
+CLOTHED_ANCHORS = [
+    "a photo of a person wearing clothes",
+    "the same person fully dressed",
+    "a person in normal everyday clothing",
+    "keep the subject fully clothed",
+]
 VAE_SCALE = 0.18215
 
-EXTRA = "i2i_review"
+EXTRA = "i2i"
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# KS bargaining core  (verbatim from SD/MUKSB_nsfw.py)
+# Nash bargaining core
 # ─────────────────────────────────────────────────────────────────────────────
 
-def ks_step(gr_flat: torch.Tensor, gf_flat: torch.Tensor, eps: float = 1e-8):
+def nash_step(gr_flat: torch.Tensor, gf_flat: torch.Tensor, eps: float = 1e-8):
+    """
+    Nash Bargaining solution for two gradient vectors.
+
+    Solves the two-player Nash bargaining game:
+        max_{α_r, α_f}  <α_r·gr, α_f·gf>
+        s.t. ||α_r·gr|| = ||α_f·gf||   (equal-gain constraint)
+
+    Unlike the KS solver, Nash never skips a step — it returns a valid
+    merged update for every gradient angle (parallel, orthogonal,
+    anti-parallel).
+
+    Returns
+    -------
+    alpha_r : scalar weight on the retain gradient
+    alpha_f : scalar weight on the forget gradient
+    cos_phi : cosine angle between raw gradients (diagnostic)
+    update  : α_r · gr_flat + α_f · gf_flat
+    """
     norm_gr = torch.clamp(torch.norm(gr_flat), min=1e-6)
     norm_gf = torch.clamp(torch.norm(gf_flat), min=1e-6)
 
@@ -65,27 +98,22 @@ def ks_step(gr_flat: torch.Tensor, gf_flat: torch.Tensor, eps: float = 1e-8):
         torch.dot(gr_flat, gf_flat) / (norm_gr * norm_gf),
         -1.0 + eps, 1.0 - eps,
     )
+    sin_sq_phi = torch.clamp(1.0 - cos_phi ** 2, min=0.0)
 
-    g_hat_r = gr_flat / norm_gr
-    g_hat_f = gf_flat / norm_gf
-
-    g_sum = g_hat_r + g_hat_f
-    norm_sum = torch.norm(g_sum)
-
-    if norm_sum < 1e-6:
-        zero = torch.zeros_like(gr_flat)
-        return (
-            torch.tensor(0.0, device=gr_flat.device),
-            cos_phi,
-            zero,
-            torch.tensor(0.0, device=gr_flat.device),
+    # Degenerate (parallel / anti-parallel): equal weighting by norm
+    if sin_sq_phi < 1e-6:
+        alpha_r = 0.5 / norm_gr
+        alpha_f = 0.5 / norm_gf
+    else:
+        alpha_r = (1.0 / norm_gr) * torch.sqrt(
+            (1.0 - cos_phi) / (sin_sq_phi + eps)
+        )
+        alpha_f = (1.0 / norm_gf) * torch.sqrt(
+            sin_sq_phi * (1.0 - cos_phi)
         )
 
-    g_star = g_sum / norm_sum
-    effective_scale = 2.0 * norm_gr * norm_gf / (norm_gr + norm_gf)
-    lambda_ks = torch.dot(g_hat_r, g_star)
-
-    return lambda_ks, cos_phi, g_star, effective_scale
+    update = alpha_r * gr_flat + alpha_f * gf_flat
+    return alpha_r, alpha_f, cos_phi, update
 
 
 def _flatten_grads(params, grads):
@@ -191,8 +219,17 @@ def _encode_image(vae, images_hwc, device):
     return latent
 
 
-def i2i_forget_loss(pipe, forget_batch, device, beta, criteria):
-    """MSE between forget-instruction UNet output and pseudo-instruction output."""
+def i2i_forget_loss(pipe, base_unet, forget_batch, device, beta, criteria):
+    """Redirect the NSFW instruction onto the FROZEN base model's behaviour
+    under a randomized *clothed* anchor.
+
+    The trainable UNet (forget instruction) is matched to base_unet (clothed
+    anchor) on the same noisy input, so the model learns to respond to the
+    NSFW instruction as if asked to keep the subject clothed.  Using the frozen
+    base — rather than the moving model under an identity prompt — gives a
+    stable, non-self-referential target, which removes the editing collapse and
+    the flicker that the old `keep the image unchanged` objective produced.
+    """
     n_imgs = forget_batch["jpg"].shape[0]
     tgt_lat = _encode_image(pipe.vae, forget_batch["jpg"], device)
     src_lat = _encode_image(pipe.vae, forget_batch["src"], device)
@@ -208,34 +245,43 @@ def i2i_forget_loss(pipe, forget_batch, device, beta, criteria):
     emb_forget = _encode_text(
         pipe.text_encoder, pipe.tokenizer, forget_batch["txt"], device
     )
-    emb_pseudo = _encode_text(
-        pipe.text_encoder, pipe.tokenizer,
-        [PSEUDO_INSTRUCTION] * n_imgs, device,
+    anchor_prompts = [random.choice(CLOTHED_ANCHORS) for _ in range(n_imgs)]
+    emb_anchor = _encode_text(
+        pipe.text_encoder, pipe.tokenizer, anchor_prompts, device
     )
 
     f_out = pipe.unet(cat, t, encoder_hidden_states=emb_forget).sample
-    p_out = pipe.unet(cat, t, encoder_hidden_states=emb_pseudo).sample.detach()
-    return criteria(f_out, p_out) * beta
+    with torch.no_grad():
+        a_out = base_unet(cat, t, encoder_hidden_states=emb_anchor).sample
+    return criteria(f_out, a_out) * beta
 
 
-def i2i_retain_loss(pipe, retain_batch, device, criteria):
-    """Standard IP2P denoising MSE on the retain batch (8-channel concat)."""
-    tgt_lat = _encode_image(pipe.vae, retain_batch["jpg"], device)
+def i2i_retain_loss(pipe, base_unet, retain_batch, device, criteria):
+    """Distil the trainable UNet toward the FROZEN base UNet on diverse benign
+    attribute edits (smile, sunglasses, background, ...).
+
+    This preserves general editing capability *without* needing real
+    (source, instruction, edited-target) triplets: the base model's own noise
+    prediction is the target, so matching it on benign prompts keeps the
+    trainable model functionally identical to base outside the forget concept.
+    """
     src_lat = _encode_image(pipe.vae, retain_batch["src"], device)
 
     t = torch.randint(
         0, pipe.scheduler.config.num_train_timesteps,
-        (tgt_lat.shape[0],), device=device,
+        (src_lat.shape[0],), device=device,
     ).long()
-    noise = torch.randn_like(tgt_lat)
-    noisy = pipe.scheduler.add_noise(tgt_lat, noise, t)
+    noise = torch.randn_like(src_lat)
+    noisy = pipe.scheduler.add_noise(src_lat, noise, t)
     cat = torch.cat([noisy, src_lat], dim=1)
 
     emb = _encode_text(
         pipe.text_encoder, pipe.tokenizer, retain_batch["txt"], device
     )
     pred = pipe.unet(cat, t, encoder_hidden_states=emb).sample
-    return criteria(pred, noise)
+    with torch.no_grad():
+        ref = base_unet(cat, t, encoder_hidden_states=emb).sample
+    return criteria(pred, ref)
 
 
 def save_model_diffusers(pipe, name, num):
@@ -267,10 +313,10 @@ def save_history(losses, name):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Main MUKSB I2I training loop
+# Main MUNBa I2I training loop
 # ─────────────────────────────────────────────────────────────────────────────
 
-def MUKSB_i2i(
+def MUNBa_i2i(
     train_method,
     batch_size,
     epochs,
@@ -289,10 +335,18 @@ def MUKSB_i2i(
     logger,
 ):
     total_start = time.time()
-    logger.info("======== MUKSB NSFW-I2I (KS Bargaining) TRAINING STARTED ========")
+    logger.info("======== MUNBa NSFW-I2I (Nash Bargaining) TRAINING STARTED ========")
     logger.info(f"EXTRA = {EXTRA}  mask_variant={mask_variant}  density={mask_density}")
 
     pipe = setup_i2i_model(ckpt_path, device)
+
+    # Frozen base UNet — stable anchor for the forget objective and target for
+    # the retain distillation.  Snapshot BEFORE any training modifies pipe.unet.
+    base_unet = copy.deepcopy(pipe.unet)
+    base_unet.requires_grad_(False)
+    base_unet.eval()
+    logger.info("Frozen base UNet snapshot created (anchor + retain-distill target)")
+
     criteria = torch.nn.MSELoss()
 
     forget_dl, remain_dl = setup_i2i_nsfw_data(
@@ -317,7 +371,7 @@ def MUKSB_i2i(
     if mask_variant is None or mask_variant == "none":
         mask = None
         run_tag = (
-            f"i2p-nsfw-MUKSB-i2i"
+            f"i2p-nsfw-MUNBa-i2i"
             f"-method_{train_method}-lr_{lr}_E{epochs}_U{num_forget}_{EXTRA}"
         )
         logger.info("[Mask] no mask — all selected params active")
@@ -346,7 +400,7 @@ def MUKSB_i2i(
             f"[Mask] active={active:,} / {total:,}  density={active/total:.4f}"
         )
         run_tag = (
-            f"i2p-nsfw-MUKSB-i2i-{mask_variant}"
+            f"i2p-nsfw-MUNBa-i2i-{mask_variant}"
             f"-rho{int(mask_density*100)}pct"
             f"-method_{train_method}-lr_{lr}_E{epochs}_U{num_forget}_{EXTRA}"
         )
@@ -354,6 +408,7 @@ def MUKSB_i2i(
     pipe.unet.train()
     optimizer = torch.optim.Adam(parameters, lr=lr)
     losses = []
+    cos_phi_history = []
     step = 0
 
     for epoch in range(epochs):
@@ -371,13 +426,13 @@ def MUKSB_i2i(
                     remain_iter = iter(remain_dl)
                     remain_batch = next(remain_iter)
 
-                # ── retain loss ───────────────────────────────────────────
-                loss_r = i2i_retain_loss(pipe, remain_batch, device, criteria)
+                # ── retain loss (distil benign edits from frozen base) ─────
+                loss_r = i2i_retain_loss(pipe, base_unet, remain_batch, device, criteria)
 
-                # ── forget loss ───────────────────────────────────────────
-                loss_u = i2i_forget_loss(pipe, forget_batch, device, beta, criteria)
+                # ── forget loss (redirect NSFW → frozen-base clothed anchor) ─
+                loss_u = i2i_forget_loss(pipe, base_unet, forget_batch, device, beta, criteria)
 
-                # ── KS gradient merge ────────────────────────────────────
+                # ── Nash gradient merge ──────────────────────────────────
                 grads_r = torch.autograd.grad(
                     loss_r, parameters, retain_graph=True, allow_unused=True
                 )
@@ -395,30 +450,18 @@ def MUKSB_i2i(
                     gr_masked = gr_flat
                     gf_masked = gf_flat
 
-                lambda_ks, cos_phi, g_star, effective_scale = ks_step(
-                    gr_masked, gf_masked
-                )
+                alpha_r, alpha_f, cos_phi, update = nash_step(gr_masked, gf_masked)
+                cos_phi_history.append(cos_phi.item())
 
-                if torch.norm(g_star).item() < 1e-6:
-                    logger.info(
-                        f"step={step}: anti-parallel gradients "
-                        f"(cos_φ={cos_phi.item():.3f}), skipping update"
-                    )
-                    del gr_flat, gf_flat, gr_masked, gf_masked
-                    del grads_r, grads_f, g_star
-                    pbar.update(1)
-                    continue
-
-                g_star_scaled = effective_scale * g_star
                 del gr_masked, gf_masked, grads_r, grads_f
 
                 if mask is not None:
                     update_full = torch.zeros_like(gr_flat)
-                    update_full[mask] = g_star_scaled
+                    update_full[mask] = update
                 else:
-                    update_full = g_star_scaled
+                    update_full = update
 
-                del gr_flat, gf_flat, g_star, g_star_scaled
+                del gr_flat, gf_flat, update
 
                 optimizer.zero_grad()
                 _unpack_to_grads(parameters, update_full)
@@ -438,10 +481,13 @@ def MUKSB_i2i(
                 step += 1
 
                 if step % 10 == 0:
+                    avg_cos = float(np.mean(cos_phi_history[-10:])) if cos_phi_history else 0.0
                     logger.info(
                         f"step={step}"
-                        f"  λ_KS={lambda_ks.item():.4f}"
+                        f"  α_r={alpha_r.item():.4e}"
+                        f"  α_f={alpha_f.item():.4e}"
                         f"  cos_φ={cos_phi.item():.4f}"
+                        f"  avg_cos_φ(10)={avg_cos:.4f}"
                         f"  loss_r={loss_r.item():.4f}"
                         f"  loss_u={loss_u.item():.4f}"
                     )
@@ -451,7 +497,10 @@ def MUKSB_i2i(
                     gc.collect()
 
                 pbar.set_postfix(
-                    loss_r=f"{loss_r:.4f}", lam=f"{lambda_ks.item():.3f}"
+                    loss_r=f"{loss_r:.4f}",
+                    cos=f"{cos_phi.item():.2f}",
+                    ar=f"{alpha_r.item():.2e}",
+                    af=f"{alpha_f.item():.2e}",
                 )
                 sleep(0.05)
                 pbar.update(1)
@@ -470,11 +519,17 @@ def MUKSB_i2i(
         gc.collect()
 
     total_time = time.time() - total_start
-    logger.info("======== MUKSB NSFW-I2I TRAINING FINISHED ========")
+    logger.info("======== MUNBa NSFW-I2I TRAINING FINISHED ========")
     logger.info(
         f"Total: {total_time:.1f}s "
         f"({total_time/60:.2f} min | {total_time/3600:.2f} hrs)"
     )
+    if cos_phi_history:
+        logger.info(
+            f"cos_φ stats: mean={np.mean(cos_phi_history):.4f}  "
+            f"min={np.min(cos_phi_history):.4f}  "
+            f"max={np.max(cos_phi_history):.4f}"
+        )
     pipe.unet.eval()
     save_model_diffusers(pipe, run_tag, epochs)
     save_history(losses, run_tag)
@@ -488,11 +543,14 @@ def MUKSB_i2i(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="MUKSB I2I (InstructPix2Pix): KS-Bargaining NSFW concept unlearning"
+        description="MUNBa I2I (InstructPix2Pix): Nash-Bargaining NSFW concept unlearning"
     )
-    parser.add_argument("--train_method", type=str, default="full",
+    parser.add_argument("--train_method", type=str, default="xattn",
                         choices=["full", "noxattn", "xattn", "selfattn",
-                                 "notime", "xlayer", "selflayer"])
+                                 "notime", "xlayer", "selflayer"],
+                        help="xattn (cross-attention only) localises erasure to "
+                             "the text->image association; avoids the global "
+                             "denoiser damage that 'full' causes.")
     parser.add_argument("--batch_size", type=int, default=4)
     parser.add_argument("--epochs", type=int, default=5)
     parser.add_argument("--lr", type=float, default=1e-5)
@@ -505,11 +563,13 @@ if __name__ == "__main__":
     )
     parser.add_argument("--mask_density", type=float, default=0.5)
     parser.add_argument("--lambda_tradeoff", type=float, default=1.0)
-    parser.add_argument("--device", type=str, default="0")
+    parser.add_argument("--device", type=str, default="3")
     parser.add_argument("--image_size", type=int, default=512)
     parser.add_argument("--with_l1", action="store_true", default=False)
     parser.add_argument("--alpha", type=float, default=1e-4)
-    parser.add_argument("--beta", type=float, default=100.0)
+    parser.add_argument("--beta", type=float, default=100,
+                        help="Forget-loss scale. Kept small (was 100) so the "
+                             "forget term no longer dominates the Nash merge.")
     parser.add_argument(
         "--forget_path", type=str,
         default="/storage/s25017/Datasets/NSFW_removal/nude",
@@ -520,7 +580,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    log_name = f"MUKSB_nsfw_i2i_{args.mask_variant}"
+    log_name = f"MUNBa_nsfw_i2i_{args.mask_variant}"
     logger, log_file = setup_logger(
         log_dir=os.path.join(_THIS_DIR, "logs"),
         name=log_name,
@@ -533,7 +593,7 @@ if __name__ == "__main__":
     if mask_variant in ("None", "none"):
         mask_variant = "none"
 
-    MUKSB_i2i(
+    MUNBa_i2i(
         train_method=args.train_method,
         batch_size=args.batch_size,
         epochs=args.epochs,

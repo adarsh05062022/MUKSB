@@ -246,6 +246,109 @@ def setup_objectnette_forget_remain_data(class_to_forget, batch_size, image_size
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Celebrity helpers — SD-generated identity dataset, stored in the same
+# ImageFolder layout as imagenette2 (one subdir per celebrity under <root>/train).
+# This makes celebrity *identity* removal use the EXACT same code path as
+# Imagenette class removal: pick a celebrity index to forget, the others become
+# the retain set. Folders are named "<NN>_<Name_with_underscores>" so the sorted
+# ImageFolder index order matches the canonical celebrity index (CSV classidx).
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Real Celebrity Faces Dataset (17 identities, ~100 real jpg faces each), laid
+# out as ImageFolder: one folder per celebrity (names with spaces, no prefix).
+CELEBRITY_ROOT = "/storage/s25017/Datasets/Celebrity_Faces_Dataset"
+
+# Canonical 10-class subset — mirrors the Imagenette-10 setup. THIS list defines
+# the class indices (class_to_forget) for BOTH training and evaluation; the real
+# dataset has 17 folders, the other 7 are ignored. The same 10 names (same order)
+# must appear in prompts/celebrity.csv and the Evaluation/celebrity/*.py scripts.
+# To change which celebrities are used, edit this list (and those copies).
+CELEBRITY_CLASSES = [
+    "Angelina Jolie", "Brad Pitt", "Denzel Washington", "Hugh Jackman",
+    "Jennifer Lawrence", "Johnny Depp", "Kate Winslet", "Leonardo DiCaprio",
+    "Megan Fox", "Natalie Portman",
+]
+
+
+def _celeb_clean_name(folder_name):
+    """"00_Brad_Pitt" -> "Brad Pitt"; "Brad_Pitt" -> "Brad Pitt"; "Brad Pitt" -> "Brad Pitt"."""
+    parts = folder_name.split("_", 1)
+    if len(parts) == 2 and parts[0].isdigit():
+        folder_name = parts[1]
+    return folder_name.replace("_", " ")
+
+
+def _load_celebrity(image_size, interpolation="bicubic", root=CELEBRITY_ROOT,
+                    classes=None):
+    """Load the celebrity ImageFolder restricted to `classes` (default
+    CELEBRITY_CLASSES) and remap labels to that list's order. Works with either
+    layout: <root>/train/<class>/ or <root>/<class>/ (the real dataset).
+
+    Returns
+    -------
+    subset       : torch Subset yielding (image, remapped_label)
+    descriptions : ["a photo of <Name>", ...] indexed by remapped label
+    labels       : list of remapped labels parallel to `subset` indices
+    """
+    from torchvision.datasets import ImageFolder
+    classes = list(classes) if classes is not None else list(CELEBRITY_CLASSES)
+    transform = get_transform(INTERPOLATIONS[interpolation], image_size)
+    train_dir = os.path.join(root, "train")
+    if not os.path.isdir(train_dir):
+        train_dir = root
+    dataset = ImageFolder(train_dir, transform=transform)
+
+    # Match requested class names to ImageFolder folders via the cleaned name.
+    name_to_new = {n: i for i, n in enumerate(classes)}
+    clean_by_old = {old: _celeb_clean_name(c) for c, old in dataset.class_to_idx.items()}
+    old_to_new = {old: name_to_new[clean]
+                  for old, clean in clean_by_old.items() if clean in name_to_new}
+    missing = [n for n in classes if n not in clean_by_old.values()]
+    if missing:
+        raise RuntimeError(f"Celebrity classes not found under {train_dir}: {missing}")
+
+    keep_idx, labels = [], []
+    for i, (_, target) in enumerate(dataset.samples):
+        if target in old_to_new:
+            keep_idx.append(i)
+            labels.append(old_to_new[target])
+
+    dataset.target_transform = lambda y, m=old_to_new: m[y]
+    subset = Subset(dataset, keep_idx)
+    descriptions = [f"a photo of {n}" for n in classes]
+    return subset, descriptions, labels
+
+
+def setup_celebrity_forget_remain_data(class_to_forget, batch_size, image_size,
+                                       interpolation="bicubic",
+                                       root=CELEBRITY_ROOT, classes=None):
+    """Forget/retain DataLoaders for the celebrity dataset — same interface as
+    setup_forget_remain_data (Imagenette). Restricted to the 10-class subset
+    `classes` (default CELEBRITY_CLASSES); labels are remapped to 0..len-1.
+
+    Returns
+    -------
+    forget_loader, remain_loader, descriptions
+    """
+    subset, descriptions, labels = _load_celebrity(image_size, interpolation, root, classes)
+    assert 0 <= class_to_forget < len(descriptions), \
+        f"class_to_forget={class_to_forget} out of range (0..{len(descriptions)-1})"
+
+    forget_idx = [i for i, l in enumerate(labels) if l == class_to_forget]
+    remain_idx = [i for i, l in enumerate(labels) if l != class_to_forget]
+
+    forget_loader = DataLoader(Subset(subset, forget_idx),
+                               batch_size=batch_size, shuffle=True,
+                               num_workers=4, pin_memory=True,
+                               persistent_workers=True)
+    remain_loader = DataLoader(Subset(subset, remain_idx),
+                               batch_size=batch_size, shuffle=True,
+                               num_workers=4, pin_memory=True,
+                               persistent_workers=True)
+    return forget_loader, remain_loader, descriptions
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # NSFW dataset stubs (for future use / NSFW unlearning experiments)
 # ─────────────────────────────────────────────────────────────────────────────
 

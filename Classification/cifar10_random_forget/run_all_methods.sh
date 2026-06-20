@@ -6,9 +6,8 @@
 #  Methods : Retrain, FT, GA, IU, BE, ℓ1-sparse, SalUn, MUNBa, MUKSB (ours)
 #
 #  Shared mask:
-#    SalUn, MUNBa and MUKSB all update the SAME subset of weights — one saliency
-#    mask at density MASK_DENSITY (default 0.5), generated per seed and fed to all
-#    three via --path. This makes their comparison like-for-like.
+#    Only SalUn uses a saliency mask (density MASK_DENSITY, default 0.5).
+#    MUNBa and MUKSB run on ALL parameters (no --path flag).
 #
 #  Parallelism:
 #    Methods run in PARALLEL (one job per GPU, round-robin over GPUS); seeds run
@@ -47,20 +46,20 @@ CLASS_TO_REPLACE=-1
 NUM_INDEXES=5000           # 10% of 50,000 CIFAR-10 training samples
 PRINT_FREQ=50
 NUM_WORKERS=4
+NOTE="lr_0_03_512"
 
 # ── Output dirs (self-contained under this folder) ───────────────────────────
 CKPT_ROOT="${HERE}/checkpoints"
 LOG_ROOT="${HERE}/logs"
-RESULTS_DIR="${HERE}/results"
+RESULTS_DIR="${HERE}/results/${NOTE}"
 MASK_ROOT="${HERE}/masks"
 mkdir -p "${CKPT_ROOT}" "${LOG_ROOT}" "${RESULTS_DIR}" "${MASK_ROOT}"
 
-# ── Shared saliency mask (fair comparison) ───────────────────────────────────
-# SalUn, MUNBa and MUKSB all update the SAME subset of weights, defined by one
-# gradient-saliency mask at this density (top-MASK_DENSITY by |∇L_forget|).
-# One mask is generated per seed and fed to all three via --path.
+# ── Shared saliency mask (SalUn only) ────────────────────────────────────────
+# Only SalUn uses a gradient-saliency mask at density MASK_DENSITY.
+# MUNBa and MUKSB run on all parameters (no mask).
 MASK_DENSITY="${MASK_DENSITY:-0.5}"
-MASKED_METHODS=(SalUn MUNBa MUKSB)
+MASKED_METHODS=(SalUn)
 
 # ── Seeds & GPUs ─────────────────────────────────────────────────────────────
 # Seeds run sequentially; within a seed the methods run in parallel, each on a
@@ -75,7 +74,7 @@ read -ra GPUS  <<< "${GPUS:-0 1 2 3 4 5 6 7}"
 #   bash run_all_methods.sh MUKSB               # only MUKSB
 #   METHODS="FT MUKSB" bash run_all_methods.sh  # same, via env var
 # ALL_METHODS=(retrain FT GA IU BE l1sparse SalUn MUNBa MUKSB)
-ALL_METHODS=(SalUn MUNBa MUKSB)
+ALL_METHODS=(SalUn MUNBa MUKSB retrain)
 
 case "${1:-}" in
     -h|--help|help)
@@ -128,9 +127,9 @@ CFG[GA]="GA|0.0001|5|256|91,136|"                                 # gradient asc
 CFG[IU]="IU|0.01|1|256|91,136|--iu_damping 1e-3 --iu_scale 1.0"   # one-shot influence (epochs unused)
 CFG[BE]="boundary_expanding|0.0001|10|256|91,136|"               # boundary expanding
 CFG[l1sparse]="FT_l1|0.03|10|256|91,136|--with_l1 --alpha 5e-4"   # ℓ1-sparse fine-tuning
-CFG[SalUn]="SalUn|0.013|10|256|91,136|--salun_density 0.5"         # saliency unlearning
-CFG[MUNBa]="MUNBa|0.013|10|256|91,136|--beta 1.0"                  # Nash bargaining baseline
-CFG[MUKSB]="MUKSB|0.013|10|256|91,136|--gamma 0.5 --alpha 0.2"     # ours (KS bargaining)
+CFG[SalUn]="SalUn|0.03|30|512|91,136|--salun_density 0.5"         # saliency unlearning
+CFG[MUNBa]="MUNBa|0.03|30|512|91,136|--beta 1.0"                  # Nash bargaining baseline
+CFG[MUKSB]="MUKSB|0.03|30|512|91,136|--gamma 0.5 --alpha 0.2"     # ours (KS bargaining)
 
 # ── Validate requested methods ───────────────────────────────────────────────
 for M in "${METHODS[@]}"; do
@@ -168,7 +167,7 @@ run_method() {
     mkdir -p "${SAVE_DIR}" "${RES_RUN_DIR}"
     local rc=0
 
-    # Masked methods (SalUn/MUNBa/MUKSB) share the per-seed saliency mask.
+    # Only SalUn uses a saliency mask; MUNBa and MUKSB run on all parameters.
     local MASK_FLAG=""
     for MM in "${MASKED_METHODS[@]}"; do
         if [ "${METHOD}" = "${MM}" ]; then

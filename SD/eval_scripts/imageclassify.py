@@ -6,12 +6,110 @@ import torch
 from PIL import Image
 from torchvision.models import ResNet50_Weights, resnet50
 
+
+def build_classifier(device):
+    """Load the ResNet-50 (ImageNet) classifier + its preprocessing transforms."""
+    weights = ResNet50_Weights.DEFAULT
+    model = resnet50(weights=weights)
+    model.to(device)
+    model.eval()
+    return model, weights
+
+
+def classify_folder(
+    folder,
+    prompts_path,
+    save_path,
+    device="cuda:0",
+    topk=5,
+    batch_size=250,
+    model=None,
+    weights=None,
+):
+    """Classify every image in `folder` and write a merged `*_classification.csv`.
+
+    The folder is expected to contain images named `<case_number>_<idx>.png`
+    (as produced by generate_images.py). The output CSV merges the per-image
+    top-k predictions with the prompt metadata (case_number, prompt, class,
+    classidx) so downstream UA/RA computation has the class for every row.
+
+    Returns the path to the written CSV.
+    """
+    os.makedirs(save_path, exist_ok=True)
+
+    if model is None or weights is None:
+        model, weights = build_classifier(device)
+    preprocess = weights.transforms()
+
+    print(f"Processing folder: {folder}")
+
+    scores = {}
+    categories = {}
+    indexes = {}
+    for k in range(1, topk + 1):
+        scores[f"top{k}"] = []
+        indexes[f"top{k}"] = []
+        categories[f"top{k}"] = []
+
+    names = os.listdir(folder)
+    names = [name for name in names if ".png" in name or ".jpg" in name]
+    if not names:
+        raise FileNotFoundError(f"No images (.png/.jpg) found in {folder}")
+
+    images = []
+    for name in names:
+        img = Image.open(os.path.join(folder, name)).convert("RGB")
+        images.append(preprocess(img))
+
+    if batch_size is None or batch_size > len(names):
+        batch_size = len(names)
+
+    images = torch.stack(images)
+
+    for i in range(((len(names) - 1) // batch_size) + 1):
+        batch = images[i * batch_size : min(len(names), (i + 1) * batch_size)].to(device)
+        with torch.no_grad():
+            prediction = model(batch).softmax(1)
+        probs, class_ids = torch.topk(prediction, topk, dim=1)
+        for k in range(1, topk + 1):
+            scores[f"top{k}"].extend(probs[:, k - 1].detach().cpu().numpy())
+            indexes[f"top{k}"].extend(class_ids[:, k - 1].detach().cpu().numpy())
+            categories[f"top{k}"].extend(
+                [
+                    weights.meta["categories"][idx]
+                    for idx in class_ids[:, k - 1].detach().cpu().numpy()
+                ]
+            )
+
+    df = pd.read_csv(prompts_path)
+    df["case_number"] = df["case_number"].astype("int")
+
+    case_numbers = [
+        int(name.split("_")[0].replace(".png", "").replace(".jpg", ""))
+        for name in names
+    ]
+
+    dict_final = {"case_number": case_numbers}
+    for k in range(1, topk + 1):
+        dict_final[f"category_top{k}"] = categories[f"top{k}"]
+        dict_final[f"index_top{k}"] = indexes[f"top{k}"]
+        dict_final[f"scores_top{k}"] = scores[f"top{k}"]
+
+    df_results = pd.DataFrame(dict_final)
+    merged_df = pd.merge(df, df_results)
+
+    folder_name = folder.rstrip("/").split("/")[-1]
+    output_csv = os.path.join(save_path, f"{folder_name}_classification.csv")
+    merged_df.to_csv(output_csv, index=False)
+    print(f"Saved results to {output_csv}")
+    return output_csv
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         prog="ImageClassification",
         description="Takes the path of images and generates classification scores",
     )
-
     parser.add_argument(
         "--prompts_path",
         help="path to prompts",
@@ -19,7 +117,6 @@ if __name__ == "__main__":
         required=False,
         default="/scratch/s25017/MUKSB/SD/prompts/imagenette.csv",
     )
-
     parser.add_argument(
         "--save_path",
         help="base path to save results",
@@ -27,111 +124,37 @@ if __name__ == "__main__":
         required=False,
         default="CLASS/UA/Imagenatte",
     )
-
+    parser.add_argument(
+        "--image_folder",
+        help="single folder of images to classify (overrides the built-in list)",
+        type=str,
+        required=False,
+        default=None,
+    )
     parser.add_argument("--device", type=str, required=False, default="cuda:2")
     parser.add_argument("--topk", type=int, required=False, default=5)
     parser.add_argument("--batch_size", type=int, required=False, default=250)
-
     args = parser.parse_args()
 
-    device = args.device
-    topk = args.topk
-    batch_size = args.batch_size
-    prompts_path = args.prompts_path
-    save_path = args.save_path
-
     # -------- LIST OF IMAGE FOLDERS --------
-    folders = [
-      "/scratch/s25017/MUKSB/SD/eval_scripts/CLASS/generated/diffusers-cls_4-MUKSB-g0.5-method_full-lr_5e-06_E5_U941_-epoch_4.pt",
-      "/scratch/s25017/MUKSB/SD/eval_scripts/CLASS/generated/diffusers-cls_6-MUKSB-g0.5-method_full-lr_5e-06_E5_U961_-epoch_4.pt",
-      "/scratch/s25017/MUKSB/SD/eval_scripts/CLASS/generated/diffusers-cls_7-MUKSB-g0.5-method_full-lr_5e-06_E5_U931_-epoch_4.pt"
-      
+    if args.image_folder is not None:
+        folders = [args.image_folder]
+    else:
+        folders = [
+            "/scratch/s25017/MUKSB/SD/eval_scripts/CLASS/generated/diffusers-cls_4-MUKSB-g0.5-method_full-lr_5e-06_E5_U941_-epoch_4.pt",
+            "/scratch/s25017/MUKSB/SD/eval_scripts/CLASS/generated/diffusers-cls_6-MUKSB-g0.5-method_full-lr_5e-06_E5_U961_-epoch_4.pt",
+            "/scratch/s25017/MUKSB/SD/eval_scripts/CLASS/generated/diffusers-cls_7-MUKSB-g0.5-method_full-lr_5e-06_E5_U931_-epoch_4.pt",
+        ]
 
-
-    ]
-
-    weights = ResNet50_Weights.DEFAULT
-    model = resnet50(weights=weights)
-    model.to(device)
-    model.eval()
-
-    preprocess = weights.transforms()
-
+    model, weights = build_classifier(args.device)
     for folder in folders:
-
-        print(f"Processing folder: {folder}")
-
-        scores = {}
-        categories = {}
-        indexes = {}
-
-        for k in range(1, topk + 1):
-            scores[f"top{k}"] = []
-            indexes[f"top{k}"] = []
-            categories[f"top{k}"] = []
-
-        names = os.listdir(folder)
-        names = [name for name in names if ".png" in name or ".jpg" in name]
-
-        images = []
-        for name in names:
-            img = Image.open(os.path.join(folder, name))
-            batch = preprocess(img)
-            images.append(batch)
-
-        if batch_size is None:
-            batch_size = len(names)
-
-        if batch_size > len(names):
-            batch_size = len(names)
-
-        images = torch.stack(images)
-
-        for i in range(((len(names) - 1) // batch_size) + 1):
-
-            batch = images[i * batch_size : min(len(names), (i + 1) * batch_size)].to(device)
-
-            with torch.no_grad():
-                prediction = model(batch).softmax(1)
-
-            probs, class_ids = torch.topk(prediction, topk, dim=1)
-
-            for k in range(1, topk + 1):
-                scores[f"top{k}"].extend(probs[:, k - 1].detach().cpu().numpy())
-                indexes[f"top{k}"].extend(class_ids[:, k - 1].detach().cpu().numpy())
-
-                categories[f"top{k}"].extend(
-                    [
-                        weights.meta["categories"][idx]
-                        for idx in class_ids[:, k - 1].detach().cpu().numpy()
-                    ]
-                )
-
-        df = pd.read_csv(prompts_path)
-        df["case_number"] = df["case_number"].astype("int")
-
-        case_numbers = []
-        for name in names:
-            case_number = (
-                name.split("_")[0]
-                .replace(".png", "")
-                .replace(".jpg", "")
-            )
-            case_numbers.append(int(case_number))
-
-        dict_final = {"case_number": case_numbers}
-
-        for k in range(1, topk + 1):
-            dict_final[f"category_top{k}"] = categories[f"top{k}"]
-            dict_final[f"index_top{k}"] = indexes[f"top{k}"]
-            dict_final[f"scores_top{k}"] = scores[f"top{k}"]
-
-        df_results = pd.DataFrame(dict_final)
-        merged_df = pd.merge(df, df_results)
-
-        folder_name = folder.split("/")[-1]
-        output_csv = os.path.join(save_path, f"{folder_name}_classification.csv")
-
-        merged_df.to_csv(output_csv, index=False)
-
-        print(f"Saved results to {output_csv}")
+        classify_folder(
+            folder=folder,
+            prompts_path=args.prompts_path,
+            save_path=args.save_path,
+            device=args.device,
+            topk=args.topk,
+            batch_size=args.batch_size,
+            model=model,
+            weights=weights,
+        )

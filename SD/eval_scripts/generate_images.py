@@ -129,7 +129,7 @@ def generate_images(
 
         batch_size = len(prompt)
 
-        for i in range(5):
+        for i in range(10):
             text_input = tokenizer(
                 prompt,
                 padding="max_length",

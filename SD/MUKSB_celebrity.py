@@ -1,29 +1,3 @@
-"""
-MUKSB_object.py — OBJECT concept removal on the SD-generated objectnette2 dataset
-=================================================================================
-This is the EXACT same KS-bargaining class-unlearning code as MUKSB_cls.py
-(Imagenette-10), pointed at the SD-generated 10-class object dataset
-(/storage/s25017/Datasets/objectnette2, ImageFolder layout).
-
-You specify which class to forget at runtime (index 0-9 or class name); the
-other 9 classes are the retain set. The forget loss uses the "next class"
-pseudo-label, identical to MUKSB_cls.py:
-
-    pseudo_prompt = descriptions[(class_to_forget + 1) % num_classes]
-    forget loss   = MSE( eps(forget_img | forget_prompt),
-                         eps(forget_img | pseudo_prompt).detach() )
-
-Build the dataset once with build_objectnette.py, then:
-
-    python MUKSB_object.py --class_to_forget dog --device 4 --epochs 5
-    python MUKSB_object.py --class_to_forget 6   --device 4 --epochs 5
-"""
-
-
-
-# 0 airplane  1 bicycle  2 bird  3 boat  4 car
-# 5 cat       6 dog       7 horse 8 train 9 truck
-
 import argparse
 import gc
 import os
@@ -41,31 +15,34 @@ _THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 if _THIS_DIR not in sys.path:
     sys.path.insert(0, _THIS_DIR)
 
-# taming-transformers is vendored but not pip-installed in the env
-_TAMING = os.path.join(_THIS_DIR, "src", "taming-transformers")
-if os.path.isdir(_TAMING) and _TAMING not in sys.path:
-    sys.path.insert(0, _TAMING)
+# Vendored taming-transformers (needed by ldm.models.autoencoder). The other SD
+# trainers rely on the caller exporting PYTHONPATH; wire it up here so this
+# script is self-sufficient.
+_SRC_TAMING = os.path.join(_THIS_DIR, "src", "taming-transformers")
+if os.path.isdir(_SRC_TAMING) and _SRC_TAMING not in sys.path:
+    sys.path.insert(0, _SRC_TAMING)
 
 from logger.logger import setup_logger
 from train_scripts.convertModels import savemodelDiffusers
 from train_scripts.dataset import (
-    setup_objectnette_forget_remain_data,
+    setup_celebrity_forget_remain_data,
     setup_model,
-    OBJECTNETTE_ROOT,
 )
 from mask_variants import build_mask, MASK_VARIANT_CHOICES
 
 
-EXTRA = "objnette"
-
-MODELS_ROOT = "/storage/s25017/SD_models"
+EXTRA = "celeb"
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# KS bargaining core — identical to MUKSB_cls.py
+# KS bargaining core — magnitude-aware (identical to MUKSB_cls.py)
 # ─────────────────────────────────────────────────────────────────────────────
 
-def ks_step(gr_flat: torch.Tensor, gf_flat: torch.Tensor, eps: float = 1e-8):
+def ks_step(
+    gr_flat: torch.Tensor,
+    gf_flat: torch.Tensor,
+    eps: float = 1e-8,
+):
     norm_gr = torch.clamp(torch.norm(gr_flat), min=1e-6)
     norm_gf = torch.clamp(torch.norm(gf_flat), min=1e-6)
 
@@ -90,8 +67,13 @@ def ks_step(gr_flat: torch.Tensor, gf_flat: torch.Tensor, eps: float = 1e-8):
         )
 
     g_star = g_sum / norm_sum
+
+    # SCALE: harmonic mean of gradient norms (conservative, smaller-norm dominated)
     effective_scale = 2.0 * norm_gr * norm_gf / (norm_gr + norm_gf)
+
+    # diagnostic: common proportional gain
     lambda_ks = torch.dot(g_hat_r, g_star)
+
     return lambda_ks, cos_phi, g_star, effective_scale
 
 
@@ -113,6 +95,10 @@ def _unpack_to_grads(parameters, flat_vec):
         p.grad = chunk.clone() if p.grad is None else p.grad.copy_(chunk)
         offset += n
 
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Utilities
+# ─────────────────────────────────────────────────────────────────────────────
 
 def l1_regularization(parameters):
     return torch.linalg.norm(
@@ -160,7 +146,7 @@ def save_model(
     compvis_config_file=None, diffusers_config_file=None,
     device="cpu", save_compvis=False, save_diffusers=True,
 ):
-    folder_path = f"{MODELS_ROOT}/{name}"
+    folder_path = f"models/{name}"
     os.makedirs(folder_path, exist_ok=True)
     path = (
         f"{folder_path}/{name}-epoch_{num}.pt" if num is not None
@@ -171,52 +157,31 @@ def save_model(
         print("Saving model in Diffusers format")
         savemodelDiffusers(
             name, compvis_config_file, diffusers_config_file,
-            device=device, num=num, models_root=MODELS_ROOT,
+            device=device, num=num,
         )
     if not save_compvis and os.path.exists(path):
         os.remove(path)
 
 
 def save_history(losses, name):
-    folder_path = f"{MODELS_ROOT}/{name}"
+    folder_path = f"models/{name}"
     os.makedirs(folder_path, exist_ok=True)
     with open(f"{folder_path}/loss.txt", "w") as f:
         f.writelines([str(v) + "\n" for v in losses])
-    v = np.convolve(losses, np.ones(min(3, len(losses))) / min(3, len(losses)), mode="valid")
-    plt.figure()
-    plt.plot(v, label="loss")
-    plt.legend(loc="upper left")
-    plt.title("MUKSB object training loss")
-    plt.xlabel("Step"); plt.ylabel("Loss")
-    plt.savefig(f"{folder_path}/loss.png")
-    plt.close()
+    if len(losses) >= 1:
+        w = min(3, len(losses))
+        v = np.convolve(losses, np.ones(w) / w, mode="valid")
+        plt.figure()
+        plt.plot(v, label="loss")
+        plt.legend(loc="upper left")
+        plt.title("MUKSB celebrity training loss")
+        plt.xlabel("Step"); plt.ylabel("Loss")
+        plt.savefig(f"{folder_path}/loss.png")
+        plt.close()
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Class-name -> index resolution (ImageFolder uses sorted folder names)
-# ─────────────────────────────────────────────────────────────────────────────
-
-def resolve_class_index(class_arg, root):
-    """Resolve a class given as an int index or a class name to its ImageFolder
-    label index. Returns (index:int, classes:list)."""
-    train_dir = os.path.join(root, "train")
-    classes = sorted(
-        d for d in os.listdir(train_dir)
-        if os.path.isdir(os.path.join(train_dir, d))
-    )
-    s = str(class_arg)
-    if s.isdigit():
-        idx = int(s)
-        if not (0 <= idx < len(classes)):
-            raise ValueError(f"class index {idx} out of range (0..{len(classes)-1})")
-        return idx, classes
-    if s not in classes:
-        raise ValueError(f"class '{s}' not found. Available: {classes}")
-    return classes.index(s), classes
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Main unlearning function — mirrors MUKSB_cls.py
+# Main unlearning function — celebrity identity forgetting
 # ─────────────────────────────────────────────────────────────────────────────
 
 def MUKSB(
@@ -237,26 +202,27 @@ def MUKSB(
     with_l1,
     beta,
     alpha,
-    root,
+    anchor_mode,
+    anchor_prompt,
     logger,
 ):
     total_start = time.time()
-    logger.info("======== MUKSB OBJECT (KS Bargaining) TRAINING STARTED ========")
-    logger.info(f"class_to_forget={class_to_forget}  train_method={train_method}  root={root}")
+    logger.info("======== MUKSB CELEBRITY (KS Bargaining) TRAINING STARTED ========")
+    logger.info(f"class_to_forget={class_to_forget}  train_method={train_method}  "
+                f"anchor_mode={anchor_mode}")
 
     # ── model + data ─────────────────────────────────────────────────────────
     model    = setup_model(config_path, ckpt_path, device)
     criteria = torch.nn.MSELoss()
 
-    forget_dl, remain_dl, descriptions = setup_objectnette_forget_remain_data(
-        class_to_forget, batch_size, image_size, root=root,
+    forget_dl, remain_dl, descriptions = setup_celebrity_forget_remain_data(
+        class_to_forget, batch_size, image_size
     )
     num_classes = len(descriptions)
     num_forget  = len(forget_dl.dataset)
-    pseudo_idx  = (int(class_to_forget) + 1) % num_classes
-    logger.info(f"Classes ({num_classes}): {descriptions}")
-    logger.info(f"Forget set: {num_forget} samples | forget='{descriptions[class_to_forget]}' "
-                f"| pseudo(next)='{descriptions[pseudo_idx]}'")
+    logger.info(f"Celebrities: {num_classes} | forget idx {class_to_forget} "
+                f"('{descriptions[class_to_forget]}') | forget samples: {num_forget} "
+                f"| retain samples: {len(remain_dl.dataset)}")
 
     # ── parameter selection ───────────────────────────────────────────────────
     parameters = select_parameters(model, train_method)
@@ -287,22 +253,23 @@ def MUKSB(
         total  = mask.numel()
         logger.info(f"[Mask] active={active:,} / {total:,}  density={active/total:.4f}")
         name = (
-            f"compvis-obj_{class_to_forget}-MUKSB-{mask_variant}"
+            f"compvis-celeb_{class_to_forget}-MUKSB-{mask_variant}"
             f"-rho{int(mask_density*100)}pct"
             f"-method_{train_method}-lr_{lr}_E{epochs}_U{num_forget}_{EXTRA}"
         )
     else:
         mask = None
         name = (
-            f"compvis-obj_{class_to_forget}-MUKSB"
+            f"compvis-celeb_{class_to_forget}-MUKSB"
             f"-method_{train_method}-lr_{lr}_E{epochs}_U{num_forget}_{EXTRA}"
         )
+
+    print(f"RUN_TAG={name}", flush=True)
 
     # ── training loop ─────────────────────────────────────────────────────────
     model.train()
     losses, step = [], 0
-    skipped_steps   = 0
-    total_steps     = 0
+    skipped_steps, total_steps = 0, 0
     cos_phi_history = []
 
     for epoch in range(epochs):
@@ -323,10 +290,17 @@ def MUKSB(
 
                 remain_prompts = [descriptions[label] for label in remain_labels]
                 forget_prompts = [descriptions[label] for label in forget_labels]
-                pseudo_prompts = [
-                    descriptions[(int(class_to_forget) + 1) % num_classes]
-                    for _ in forget_labels
-                ]
+
+                # Anchor (pseudo) prompt: where the forgotten identity is steered.
+                #   fixed → a neutral generic person  (ESD-style identity erasure)
+                #   next  → another celebrity's caption (class-relabel, like MUKSB_cls)
+                if anchor_mode == "next":
+                    pseudo_prompts = [
+                        descriptions[(int(label) + 1) % num_classes]
+                        for label in forget_labels
+                    ]
+                else:  # "fixed"
+                    pseudo_prompts = [anchor_prompt for _ in forget_labels]
 
                 # ── retain loss ───────────────────────────────────────────────
                 remain_batch = {
@@ -359,9 +333,9 @@ def MUKSB(
 
                 gr_flat = _flatten_grads(parameters, grads_r)
                 gf_flat = _flatten_grads(parameters, grads_f)
-
                 del grads_r, grads_f
 
+                # ── project onto masked subspace if mask provided ──────────────
                 if mask is not None:
                     gr_input = gr_flat[mask]
                     gf_input = gf_flat[mask]
@@ -370,12 +344,10 @@ def MUKSB(
                     gf_input = gf_flat
 
                 # ── KS bargaining merge ───────────────────────────────────────
-                lambda_ks, cos_phi, g_star, effective_scale = ks_step(
-                    gr_input, gf_input,
-                )
-
+                lambda_ks, cos_phi, g_star, effective_scale = ks_step(gr_input, gf_input)
                 cos_phi_history.append(cos_phi.item())
 
+                # ── anti-parallel check ───────────────────────────────────────
                 if torch.norm(g_star).item() < 1e-6:
                     skipped_steps += 1
                     logger.debug(
@@ -387,9 +359,9 @@ def MUKSB(
                     continue
 
                 g_star_scaled = effective_scale * g_star
-
                 del gr_input, gf_input
 
+                # ── expand back to full parameter space ───────────────────────
                 if mask is not None:
                     update_full = torch.zeros_like(gr_flat)
                     update_full[mask] = g_star_scaled
@@ -398,6 +370,7 @@ def MUKSB(
 
                 del gr_flat, gf_flat, g_star, g_star_scaled
 
+                # ── write update into model gradients ─────────────────────────
                 optimizer.zero_grad()
                 _unpack_to_grads(parameters, update_full)
                 del update_full
@@ -418,7 +391,7 @@ def MUKSB(
                 step += 1
 
                 if (step + 1) % 10 == 0:
-                    avg_cos = float(np.mean(cos_phi_history[-10:])) if cos_phi_history else 0.0
+                    avg_cos   = float(np.mean(cos_phi_history[-10:])) if cos_phi_history else 0.0
                     skip_rate = skipped_steps / max(total_steps, 1)
                     logger.info(
                         f"step={step}"
@@ -440,16 +413,15 @@ def MUKSB(
                 )
                 pbar.update(1)
 
-        epoch_time = time.time() - epoch_start
+        epoch_time      = time.time() - epoch_start
         skip_rate_epoch = skipped_steps / max(total_steps, 1)
         logger.info(
-            f"Epoch {epoch+1} done | "
-            f"{epoch_time:.2f}s ({epoch_time/60:.2f} min) | "
+            f"Epoch {epoch+1} done | {epoch_time:.2f}s ({epoch_time/60:.2f} min) | "
             f"cumulative skip_rate={skip_rate_epoch:.3f}"
         )
 
         model.eval()
-        if (epoch + 1) % 1 == 0 and epoch != epochs - 1:
+        if (epoch + 1) % 5 == 0 and epoch != epochs - 1:
             save_model(
                 model, name, epoch + 1,
                 save_compvis=False, save_diffusers=True,
@@ -460,22 +432,15 @@ def MUKSB(
         gc.collect()
 
     # ── save final model ──────────────────────────────────────────────────────
-    total_time = time.time() - total_start
+    total_time      = time.time() - total_start
     final_skip_rate = skipped_steps / max(total_steps, 1)
-    logger.info("======== MUKSB OBJECT TRAINING FINISHED ========")
-    logger.info(
-        f"Total time: {total_time:.2f}s "
-        f"({total_time/60:.2f} min | {total_time/3600:.2f} hrs)"
-    )
-    logger.info(
-        f"Anti-parallel skips: {skipped_steps}/{total_steps} "
-        f"({final_skip_rate*100:.1f}%)"
-    )
+    logger.info("======== MUKSB CELEBRITY TRAINING FINISHED ========")
+    logger.info(f"Total time: {total_time:.2f}s ({total_time/60:.2f} min)")
+    logger.info(f"Anti-parallel skips: {skipped_steps}/{total_steps} ({final_skip_rate*100:.1f}%)")
     if cos_phi_history:
         logger.info(
             f"cos_φ stats: mean={np.mean(cos_phi_history):.4f}  "
-            f"min={np.min(cos_phi_history):.4f}  "
-            f"max={np.max(cos_phi_history):.4f}"
+            f"min={np.min(cos_phi_history):.4f}  max={np.max(cos_phi_history):.4f}"
         )
 
     model.eval()
@@ -486,9 +451,7 @@ def MUKSB(
         diffusers_config_file=diffusers_config_path,
     )
     save_history(losses, name)
-    logger.info(f"Model and loss history saved under: {MODELS_ROOT}/{name}/")
-    print(f"RUN_TAG={name}")
-    return name
+    logger.info(f"Model and loss history saved under: models/{name}/")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -503,31 +466,28 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
         description=(
-            "MUKSB object-concept removal (KS Bargaining) on objectnette2 — "
-            "same code path as Imagenette class removal, any of the 10 classes."
+            "MUKSB: celebrity identity unlearning for Stable Diffusion "
+            "(class-wise, KS bargaining)"
         )
     )
-
-    parser.add_argument("--class_to_forget", type=str, default="dog",
-                        help="class index (0-9) or class name (e.g. dog, car) to erase")
-    parser.add_argument("--root", type=str, default=OBJECTNETTE_ROOT,
-                        help="objectnette2 dataset root")
-    parser.add_argument("--train_method",    type=str,   default="full",
+    parser.add_argument("--class_to_forget", type=str, default="0",
+                        help="Celebrity index to erase (0..N-1, per prompts/celebrity.csv)")
+    parser.add_argument("--train_method",    type=str, default="full",
                         choices=["full", "noxattn", "xattn", "selfattn",
                                  "notime", "xlayer", "selflayer"])
-    parser.add_argument("--batch_size",  type=int,   default=8)
+    parser.add_argument("--batch_size",  type=int,   default=4)
     parser.add_argument("--epochs",      type=int,   default=5)
-    parser.add_argument("--lr",          type=float, default=5e-6)
+    parser.add_argument("--lr",          type=float, default=1e-5)
     parser.add_argument("--ckpt_path",   type=str,
-                        default="/storage/s25017/models/ldm/sd-v1-4-full-ema.ckpt",
-                        help="SD v1.4 checkpoint. Defaults to the fast local /storage "
-                             "copy (NFS /scratch is much slower to read).")
+                        default="models/ldm/sd-v1-4-full-ema.ckpt")
     parser.add_argument("--mask_variant", type=_mask_variant_type, default="None",
                         choices=list(MASK_VARIANT_CHOICES) + [None],
-                        help="parameter selection strategy for sparse update "
-                             "(random / forget_fisher / salun / dual_fisher)")
+                        help="Parameter selection strategy for sparse update "
+                             "(random / forget_fisher / salun / dual_fisher). "
+                             "Omit for dense update.")
     parser.add_argument("--mask_density",    type=float, default=0.5)
-    parser.add_argument("--lambda_tradeoff", type=float, default=1.0)
+    parser.add_argument("--lambda_tradeoff", type=float, default=1.0,
+                        help="λ in S_diff = F̂_f − λ·F̂_r  (dual_fisher only)")
     parser.add_argument("--config_path", type=str,
                         default="configs/stable-diffusion/v1-inference.yaml")
     parser.add_argument("--diffusers_config_path", type=str,
@@ -538,23 +498,26 @@ if __name__ == "__main__":
     parser.add_argument("--with_l1",     action="store_true", default=False)
     parser.add_argument("--beta",        type=float, default=1.0)
     parser.add_argument("--alpha",       type=float, default=1e-4)
+    parser.add_argument("--anchor_mode", type=str,   default="next",
+                        choices=["fixed", "next"],
+                        help="next → pseudo-label: steer the forgotten identity to "
+                             "the next celebrity's caption descriptions[(c+1)%%N] "
+                             "(matches MUKSB_cls.py); fixed → steer to --anchor_prompt.")
+    parser.add_argument("--anchor_prompt", type=str, default="a photo of a person",
+                        help="Neutral target caption for the forgotten identity "
+                             "(used when --anchor_mode fixed).")
 
     args = parser.parse_args()
 
-    # resolve class name/index -> ImageFolder label index
-    class_idx, classes = resolve_class_index(args.class_to_forget, args.root)
-
-    logger, log_file = setup_logger(name=f"MUKSB_obj_{classes[class_idx]}_{EXTRA}")
-    logger.info("======== MUKSB OBJECT STARTED ========")
+    logger, log_file = setup_logger(name=f"MUKSB_celeb{args.class_to_forget}_{EXTRA}")
+    logger.info("======== MUKSB CELEBRITY STARTED ========")
     logger.info(f"Log: {log_file}")
-    logger.info(f"Resolved class_to_forget='{args.class_to_forget}' -> "
-                f"index {class_idx} ('{classes[class_idx]}')  |  all classes: {classes}")
     logger.info(f"Args: {vars(args)}")
 
     setup_seed(42)
 
     MUKSB(
-        class_to_forget       = class_idx,
+        class_to_forget       = int(args.class_to_forget),
         train_method          = args.train_method,
         batch_size            = args.batch_size,
         epochs                = args.epochs,
@@ -571,6 +534,7 @@ if __name__ == "__main__":
         with_l1               = args.with_l1,
         beta                  = args.beta,
         alpha                 = args.alpha,
-        root                  = args.root,
+        anchor_mode           = args.anchor_mode,
+        anchor_prompt         = args.anchor_prompt,
         logger                = logger,
     )

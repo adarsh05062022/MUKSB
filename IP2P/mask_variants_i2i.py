@@ -1,6 +1,6 @@
 """
-i2i/mask_variants_i2i.py
-========================
+IP2P/mask_variants_i2i.py
+=========================
 Four parameter-selection strategies for the MUKSB NSFW *I2I* ablation.
 
 Adapted from the SD T2I MUKSB mask_variants by routing forward passes
@@ -309,7 +309,7 @@ def compute_dual_fisher_mask(
 
 def build_mask(
     variant: str,
-    model,             # diffusers UNet2DConditionModel
+    model,
     vae,
     text_encoder,
     tokenizer,

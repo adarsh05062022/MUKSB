@@ -1,6 +1,6 @@
 """
-i2i/generate_nsfw_i2i.py
-========================
+IP2P/generate_nsfw_i2i.py
+=========================
 Run the unlearned InstructPix2Pix pipeline on (source image, NSFW
 edit instruction) pairs and save the edited outputs as PNGs.
 
@@ -9,17 +9,17 @@ Output PNGs can be fed straight into the existing NSFW evaluation
 
 Usage
 -----
-  python i2i/generate_nsfw_i2i.py \\
+  python generate_nsfw_i2i.py \\
       --model_path  models/i2p-nsfw-MUKSB-i2i-dual_fisher-.../epoch_5 \\
       --src_dir     /storage/s25017/Datasets/NSFW_removal/with_dress \\
-      --output_dir  i2i/eval_generated \\
+      --output_dir  eval_generated \\
       --device      0
 
   # Baseline (untouched IP2P):
-  python i2i/generate_nsfw_i2i.py \\
+  python generate_nsfw_i2i.py \\
       --model_path  timbrooks/instruct-pix2pix \\
       --src_dir     /storage/s25017/Datasets/NSFW_removal/with_dress \\
-      --output_dir  i2i/eval_generated \\
+      --output_dir  eval_generated \\
       --device      0
 """
 
@@ -116,7 +116,7 @@ if __name__ == "__main__":
         help="Directory of source PNGs to edit.",
     )
     parser.add_argument(
-        "--output_dir", type=str, default="i2i/eval_generated",
+        "--output_dir", type=str, default="eval_generated",
     )
     parser.add_argument("--device", type=str, default="0")
 

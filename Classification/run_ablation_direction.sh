@@ -21,21 +21,21 @@
 # ── Methods to compare ────────────────────────────────────────────
 METHODS=("MUKSB"  "MUKSB_RawSum"  "MUKSB_MeanUnit")
 # One dedicated GPU per method (index-aligned with METHODS)
-METHOD_GPUS=(1     6               7)
+METHOD_GPUS=(2     3       7)
 
 # ── Classes to forget (run sequentially) ─────────────────────────
-CLASS_LIST=(1 4)
+CLASS_LIST=(0 1 2 3 4 5 6 7 8 9)
 
 # ── Single seed ───────────────────────────────────────────────────
 SEED=1
 
 # ── Epochs (same for all methods and classes) ─────────────────────
-UNLEARN_EPOCHS=30
+UNLEARN_EPOCHS=10
 
 # ── Paths ─────────────────────────────────────────────────────────
 MODEL_PATH="/scratch/s25017/MUKSB/Classification/checkpoints/resnet18_cifar10/0model_SA_best.pth.tar"
 DATA_DIR="/storage/s25017/Datasets/CIFAR10"
-RESULTS_ROOT="results_ablation_direction"
+RESULTS_ROOT="results_ablation_direction_lr_0_03_bs_256"
 
 # ── Dataset / Architecture ────────────────────────────────────────
 DATASET="cifar10"
@@ -43,13 +43,13 @@ ARCH="resnet18"
 NUM_CLASSES=10
 
 # ── Shared unlearning hyperparams ────────────────────────────────
-UNLEARN_LR=0.017
+UNLEARN_LR=0.03
 GAMMA=0.5
 WITH_L1=false
 ALPHA=0.2
 
 # ── Misc ──────────────────────────────────────────────────────────
-BATCH_SIZE=512
+BATCH_SIZE=256
 PRINT_FREQ=50
 DECREASING_LR="91,136"
 

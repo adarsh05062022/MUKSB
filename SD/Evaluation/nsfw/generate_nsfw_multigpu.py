@@ -47,17 +47,31 @@ def load_pipeline(model_path: str, device: str):
     unet         = UNet2DConditionModel.from_pretrained(base, subfolder="unet")
 
     if model_path and os.path.exists(model_path):
-        state = torch.load(model_path, map_location="cpu", weights_only=False)
-        if "state_dict" in state:
-            state = state["state_dict"]
-        unet_state = {k.replace("model.diffusion_model.", ""): v
-                      for k, v in state.items()
-                      if k.startswith("model.diffusion_model.")}
-        if unet_state:
-            missing, unexpected = unet.load_state_dict(unet_state, strict=False)
+        if os.path.isdir(model_path):
+            text_encoder = CLIPTextModel.from_pretrained(model_path)
+            print(f"[TextEncoder] loaded HF dir {model_path}")
         else:
-            missing, unexpected = unet.load_state_dict(state, strict=False)
-        print(f"[UNet] loaded {model_path} | missing={len(missing)}  unexpected={len(unexpected)}")
+            state = torch.load(model_path, map_location="cpu", weights_only=False)
+            if "state_dict" in state:
+                state = state["state_dict"]
+            first_key = next(iter(state))
+            if first_key.startswith("text_model."):
+                # AdvUnlearn-style: text encoder checkpoint
+                # Strip text_model. prefix if model uses bare keys (newer transformers)
+                model_first_key = next(iter(text_encoder.state_dict()))
+                if not model_first_key.startswith("text_model."):
+                    state = {k.replace("text_model.", "", 1): v for k, v in state.items()}
+                missing, unexpected = text_encoder.load_state_dict(state, strict=False)
+                print(f"[TextEncoder] loaded {model_path} | missing={len(missing)}  unexpected={len(unexpected)}")
+            else:
+                unet_state = {k.replace("model.diffusion_model.", ""): v
+                              for k, v in state.items()
+                              if k.startswith("model.diffusion_model.")}
+                if unet_state:
+                    missing, unexpected = unet.load_state_dict(unet_state, strict=False)
+                else:
+                    missing, unexpected = unet.load_state_dict(state, strict=False)
+                print(f"[UNet] loaded {model_path} | missing={len(missing)}  unexpected={len(unexpected)}")
     else:
         print("[UNet] No checkpoint — using vanilla SD v1.4.")
 
@@ -129,8 +143,23 @@ def run_worker(args, partition_idx: int, total_partitions: int):
     if "case_number" not in df.columns and df.columns[0].startswith("Unnamed"):
         df = df.rename(columns={df.columns[0]: "row_idx"})
 
+    # Schema-agnostic column detection. CSVs differ: most I2P/attack sets use
+    # `prompt`/`case_number`/`evaluation_seed`, but mma-diffusion uses `adv_prompt`
+    # with none of the others. Mirrors load_prompts_any in eval_nsfw_attacks.py.
+    cols = set(df.columns)
+    if   "prompt"     in cols: pcol = "prompt"
+    elif "adv_prompt" in cols: pcol = "adv_prompt"
+    else:
+        raise ValueError(f"No 'prompt'/'adv_prompt' column in {args.prompts_path}: "
+                         f"{list(df.columns)}")
+    has_seed = "evaluation_seed"     in cols
+    has_guid = "evaluation_guidance" in cols
+    has_case = "case_number"         in cols
+
     row_start, row_end = get_row_slice(len(df), partition_idx, total_partitions)
-    df_slice = df.iloc[row_start:row_end].reset_index(drop=True)
+    # Keep the original (global) index so filenames stay unique across partitions
+    # when we fall back to the row index for case_number.
+    df_slice = df.iloc[row_start:row_end]
 
     print(f"\n{'='*65}")
     print(f"Worker  gpu_ids[{partition_idx}] = cuda:{gpu_phys}  (visible as cuda:0)")
@@ -142,12 +171,21 @@ def run_worker(args, partition_idx: int, total_partitions: int):
     vae, tokenizer, text_encoder, unet, scheduler = load_pipeline(args.model_path, device)
 
     total_saved = 0
-    for _, row in tqdm(df_slice.iterrows(), total=len(df_slice),
-                       desc=f"GPU {gpu_phys}"):
-        case_number  = int(row["case_number"])
-        prompt       = str(row["prompt"])
-        base_seed    = int(row["evaluation_seed"])
-        img_guidance = float(row.get("evaluation_guidance", args.guidance_scale))
+    for global_idx, row in tqdm(df_slice.iterrows(), total=len(df_slice),
+                                desc=f"GPU {gpu_phys}"):
+        prompt = row[pcol]
+        if not isinstance(prompt, str) or not prompt.strip():
+            continue
+        prompt       = prompt.strip()
+        case_number  = (int(row["case_number"])
+                        if has_case and not pd.isna(row["case_number"])
+                        else int(global_idx))
+        base_seed    = (int(row["evaluation_seed"])
+                        if has_seed and not pd.isna(row["evaluation_seed"])
+                        else int(global_idx))
+        img_guidance = (float(row["evaluation_guidance"])
+                        if has_guid and not pd.isna(row["evaluation_guidance"])
+                        else args.guidance_scale)
 
         for img_idx in range(args.n_per_prompt):
             out_path = os.path.join(save_dir, f"{case_number:05d}_{img_idx}.png")
