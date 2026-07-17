@@ -1,19 +1,3 @@
-"""
-SDXL/mask_variants.py
-=====================
-Parameter-selection (saliency mask) strategies for the SDXL MUKSB NSFW ablation.
-Mirrors SD/mask_variants.py but uses the Diffusers SDXL API instead of
-CompVis/LDM — no model.shared_step / model.get_input / model.apply_model.
-
-Strategies
-----------
-(a) random        — uniform random top-k%
-(b) forget_fisher — forget Fisher: score = Z(F_f)
-(c) salun         — gradient magnitude: score = Z(mean |∇L_f|)
-(d) dual_fisher   — dual Fisher combined score (proposed)
-
-All variants return a flat bool tensor of the requested density.
-"""
 
 import torch
 import torch.nn.functional as F

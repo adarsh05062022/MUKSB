@@ -1,22 +1,4 @@
-"""
-IP2P/mask_variants_i2i.py
-=========================
-Four parameter-selection strategies for the MUKSB NSFW *I2I* ablation.
 
-Adapted from the SD T2I MUKSB mask_variants by routing forward passes
-through the diffusers UNet using InstructPix2Pix 8-channel inputs
-(noisy target latent concatenated with the source-image latent along
-the channel dim).
-
-All variants return a flat bool tensor of the requested density ρ.
-
-Strategies
-----------
-(a) random        — uniform random top-k%
-(b) forget_fisher — score = Z(F_f)
-(c) salun         — score = Z(mean |∇L_f|) (SalUn-style gradient saliency)
-(d) dual_fisher   — score = ½Z(log F_f − log F_r) + ½Z(F_f/σ_f − λF_r/σ_r)
-"""
 
 import torch
 import torch.utils.data as tud

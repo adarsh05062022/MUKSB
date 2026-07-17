@@ -21,7 +21,7 @@ from logger.logger import setup_logger
 from mask_variants import build_mask_nsfw, MASK_VARIANT_CHOICES
 
 
-EXTRA = "updated_new_lr"
+EXTRA = "conflict analysis"
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -83,6 +83,25 @@ def _unpack_to_grads(params, flat_vec: torch.Tensor):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Gradient-conflict logging (for conflict_analysis/plot_conflict.py)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _cos_log(a, b, eps: float = 1e-8) -> float:
+    """Cosine similarity of two flat tensors as a python float."""
+    n = a.norm().clamp_min(eps) * b.norm().clamp_min(eps)
+    return (a @ b / n).item()
+
+
+def _dump_conflict(conflict_log, out_path, logger=None):
+    os.makedirs(os.path.dirname(os.path.abspath(out_path)), exist_ok=True)
+    import json
+    with open(out_path, "w") as f:
+        json.dump(conflict_log, f)
+    msg = f"[conflict] wrote {len(conflict_log)} steps -> {out_path}"
+    (logger.info if logger else print)(msg)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # L1 regularisation helper
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -100,9 +119,9 @@ def save_model(
     model, name, num,
     compvis_config_file=None, diffusers_config_file=None,
     device="cpu", save_compvis=False, save_diffusers=True,
-    logger=None
+    logger=None, save_root="models",
 ):
-    folder_path = f"models/{name}"
+    folder_path = f"{save_root}/{name}"
     os.makedirs(folder_path, exist_ok=True)
     path = (
         f"{folder_path}/{name}-epoch_{num}.pt" if num is not None
@@ -113,14 +132,14 @@ def save_model(
         print("Saving model in Diffusers format")
         savemodelDiffusers(
             name, compvis_config_file, diffusers_config_file,
-            device=device, num=num,
+            device=device, num=num, models_root=save_root,
         )
     if not save_compvis and os.path.exists(path):
         os.remove(path)
 
 
-def save_history(losses, name, word_print):
-    folder_path = f"models/{name}"
+def save_history(losses, name, word_print, save_root="models"):
+    folder_path = f"{save_root}/{name}"
     os.makedirs(folder_path, exist_ok=True)
     with open(f"{folder_path}/loss.txt", "w") as f:
         f.writelines([str(v) + "\n" for v in losses])
@@ -160,10 +179,20 @@ def MUKSB(
     forget_path,
     remain_path,
     logger,
+    conflict_out=None,
+    conflict_max_steps=0,
+    seed=42,
 ):
     total_start = time.time()
+    save_root = "models/multiseed"
+    analysis_mode = conflict_out is not None
     logger.info("======== MUKSB NSFW (Magnitude-Aware KS Bargaining) TRAINING STARTED ========")
     logger.info(f"EXTRA = {EXTRA}")
+    if analysis_mode:
+        logger.info(
+            f"[conflict] analysis mode ON -> {conflict_out} "
+            f"(max_steps={conflict_max_steps or 'all'}); checkpoints will NOT be saved"
+        )
 
     model = setup_model(config_path, ckpt_path, device)
     criteria = torch.nn.MSELoss()
@@ -226,19 +255,20 @@ def MUKSB(
         run_tag = (
             f"compvis-nsfw-MUKSB-{mask_variant}"
             f"-rho{int(mask_density*100)}pct"
-            f"-method_{train_method}-lr_{lr}_E{epochs}_U{num_forget}_{EXTRA}"
+            f"-method_{train_method}-lr_{lr}_E{epochs}_U{num_forget}_seed{seed}_{EXTRA}"
         )
     else:
         mask = None
         run_tag = (
             f"compvis-nsfw-MUKSB"
-            f"-method_{train_method}-lr_{lr}_E{epochs}_U{num_forget}_{EXTRA}"
+            f"-method_{train_method}-lr_{lr}_E{epochs}_U{num_forget}_seed{seed}_{EXTRA}"
         )
 
     model.train()
     optimizer = torch.optim.Adam(parameters, lr=lr)
     losses    = []
     step      = 0
+    conflict_log = []   # per-step gradient-cosine log for plot_conflict.py
 
     word_wear = "a photo of a person wearing clothes"
 
@@ -303,6 +333,32 @@ def MUKSB(
                     gr_masked, gf_masked
                 )
 
+                # ── gradient-conflict log: g_r/g_f vs MUKSB (g*) and MOO-sum ───
+                if analysis_mode:
+                    with torch.no_grad():
+                        _g_naive = gr_masked + gf_masked  # MOO sum (raw gradients)
+                        conflict_log.append({
+                            "epoch":       epoch,
+                            "step":        len(conflict_log) + 1,
+                            "cos_rf":      cos_phi.item(),
+                            # cosine is scale-invariant, so g* stands in for
+                            # the scaled MUKSB update (effective_scale * g_star)
+                            "cos_f_muksb": _cos_log(gf_masked, g_star),
+                            "cos_r_muksb": _cos_log(gr_masked, g_star),
+                            "cos_f_naive": _cos_log(gf_masked, _g_naive),
+                            "cos_r_naive": _cos_log(gr_masked, _g_naive),
+                        })
+                        del _g_naive
+
+                    if conflict_max_steps and len(conflict_log) >= conflict_max_steps:
+                        logger.info(
+                            f"[conflict] reached {conflict_max_steps} logged steps — "
+                            f"stopping early"
+                        )
+                        del gr_flat, gf_flat, gr_masked, gf_masked, grads_r, grads_f, g_star
+                        _dump_conflict(conflict_log, conflict_out, logger)
+                        return
+
                 if torch.norm(g_star).item() < 1e-6:  # anti-parallel → skip
                     logger.info(
                         f"step={step}: anti-parallel gradients "
@@ -350,7 +406,7 @@ def MUKSB(
                         f"  loss_r={loss_r.item():.4f}"
                         f"  loss_u={loss_u.item():.4f}"
                     )
-                    save_history(losses, run_tag, "nsfw")
+                    save_history(losses, run_tag, "nsfw", save_root=save_root)
 
                 pbar.set_postfix(loss_r=f"{loss_r:.4f}", lam=f"{lambda_ks.item():.3f}")
                 pbar.update(1)
@@ -359,12 +415,19 @@ def MUKSB(
         logger.info(f"Epoch {epoch + 1} done | {epoch_time:.1f}s ({epoch_time/60:.2f} min)")
 
         model.eval()
-        if (epoch + 1) % 1 == 0 and epoch != epochs - 1:
+        if not analysis_mode and (epoch + 1) % 1 == 0 and epoch != epochs - 1:
             save_model(model, run_tag, epoch+1,
                        compvis_config_file=config_path,
                        diffusers_config_file=diffusers_config_path,
-                       save_compvis=False, save_diffusers=True, logger=logger)
+                       save_compvis=False, save_diffusers=True, logger=logger,
+                       save_root=save_root)
         torch.cuda.empty_cache(); gc.collect()
+
+    # In analysis mode, dump the conflict log and skip final checkpoint save.
+    if analysis_mode:
+        _dump_conflict(conflict_log, conflict_out, logger)
+        logger.info("======== MUKSB NSFW CONFLICT ANALYSIS FINISHED ========")
+        return
 
     total_time = time.time() - total_start
     logger.info("======== MUKSB NSFW TRAINING FINISHED ========")
@@ -375,9 +438,10 @@ def MUKSB(
     save_model(model, run_tag, epochs,
                compvis_config_file=config_path,
                diffusers_config_file=diffusers_config_path,
-               save_compvis=False, save_diffusers=True, logger=logger)
-    save_history(losses, run_tag, "nsfw")
-    logger.info(f"Model and loss history saved under: models/{run_tag}/")
+               save_compvis=False, save_diffusers=True, logger=logger,
+               save_root=save_root)
+    save_history(losses, run_tag, "nsfw", save_root=save_root)
+    logger.info(f"Model and loss history saved under: {save_root}/{run_tag}/")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -391,7 +455,7 @@ if __name__ == "__main__":
         description="MUKSB Magnitude-Aware: KS-Bargaining NSFW concept unlearning for Stable Diffusion"
     )
     parser.add_argument("--train_method",         type=str,   default="full")
-    parser.add_argument("--batch_size",            type=int,   default=8)
+    parser.add_argument("--batch_size",            type=int,   default=4)
     parser.add_argument("--epochs",                type=int,   default=1)
     parser.add_argument("--lr",                    type=float, default=1e-5)
     parser.add_argument("--ckpt_path",             type=str,
@@ -414,8 +478,8 @@ if __name__ == "__main__":
                         default="configs/stable-diffusion/v1-inference.yaml")
     parser.add_argument("--diffusers_config_path", type=str,
                         default="diffusers_unet_config.json")
-    parser.add_argument("--device",                type=str,   default="4")
-    parser.add_argument("--image_size",            type=int,   default=512)
+    parser.add_argument("--device",                type=str,   default="5")
+    parser.add_argument("--image_size",            type=int,   default=256)
     parser.add_argument("--ddim_steps",            type=int,   default=50)
     parser.add_argument("--with_l1",               action="store_true", default=False)
     parser.add_argument("--alpha",                 type=float, default=1e-4,
@@ -426,6 +490,18 @@ if __name__ == "__main__":
                         default="/storage/s25017/Datasets/NSFW_removal/nude")
     parser.add_argument("--remain_path",           type=str,
                         default="/storage/s25017/Datasets/NSFW_removal/with_dress")
+
+    # ── gradient-conflict analysis (for conflict_analysis/plot_conflict.py) ───
+    parser.add_argument("--conflict_log", action="store_true", default=False,
+                        help="log per-step g_r/g_f cosines and dump conflict_log.json "
+                             "(no checkpoints saved)")
+    parser.add_argument("--conflict_out", type=str, default=None,
+                        help="path to write conflict_log.json "
+                             "(default: conflict_analysis/nsfw/conflict_log.json)")
+    parser.add_argument("--conflict_max_steps", type=int, default=0,
+                        help="stop after this many logged steps (0 = run all epochs)")
+    parser.add_argument("--seed",                  type=int,   default=92,
+                        help="Random seed for reproducibility")
     args = parser.parse_args()
 
     logger.info("======== MUKSB NSFW MAGNITUDE TRAINING STARTED ========")
@@ -433,11 +509,18 @@ if __name__ == "__main__":
     logger.info(f"Args     : {vars(args)}")
 
     # reproducibility
-    torch.manual_seed(42)
-    torch.cuda.manual_seed_all(42)
-    np.random.seed(42)
-    random.seed(42)
+    logger.info(f"Seed     : {args.seed}")
+    torch.manual_seed(args.seed)
+    torch.cuda.manual_seed_all(args.seed)
+    np.random.seed(args.seed)
+    random.seed(args.seed)
     torch.backends.cudnn.deterministic = True
+
+    conflict_out = None
+    if args.conflict_log:
+        conflict_out = args.conflict_out or os.path.join(
+            _THIS_DIR, "conflict_analysis", "nsfw", "conflict_log.json",
+        )
 
     MUKSB(
         train_method         = args.train_method,
@@ -459,4 +542,7 @@ if __name__ == "__main__":
         forget_path          = args.forget_path,
         remain_path          = args.remain_path,
         logger               = logger,
+        conflict_out         = conflict_out,
+        conflict_max_steps   = args.conflict_max_steps,
+        seed                 = args.seed,
     )

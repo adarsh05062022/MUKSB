@@ -240,7 +240,23 @@ def setup_model_dataset(args):
             seed=args.seed, only_mark=True, shuffle=True,
             forget_fraction=getattr(args, "forget_fraction", 0.1))
         setup_seed(args.train_seed or args.seed)
-        model = resnet34(pretrained=True)
+        imagenet_weights = getattr(args, "imagenet_weights", None)
+        if imagenet_weights:
+            # Initialise from a converted torchvision-format ImageNet backbone
+            # (e.g. microsoft/resnet-34 via convert_hf_resnet34.py) instead of
+            # the default torchvision ImageNet weights.
+            model = resnet34(pretrained=False)
+            ckpt = torch.load(imagenet_weights, map_location="cpu", weights_only=False)
+            state_dict = ckpt.get("state_dict", ckpt) if isinstance(ckpt, dict) else ckpt
+            missing, unexpected = model.load_state_dict(state_dict, strict=False)
+            # Only the classifier head may be missing/unexpected (it is replaced below).
+            assert all("fc" in k for k in list(missing) + list(unexpected)), (
+                f"Unexpected backbone key mismatch loading {imagenet_weights}: "
+                f"missing={missing}, unexpected={unexpected}"
+            )
+            print(f"Initialised CelebA ResNet-34 from ImageNet backbone: {imagenet_weights}")
+        else:
+            model = resnet34(pretrained=True)
         model.fc = torch.nn.Linear(model.fc.in_features, classes)
         model.normalize = normalization
         return model, train_full_loader, val_loader, test_loader, forget_loader, retain_loader

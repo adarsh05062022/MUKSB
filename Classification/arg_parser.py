@@ -29,6 +29,15 @@ def parse_args():
         help="architecture for imagenet size samples",
     )
     parser.add_argument(
+        "--imagenet_weights",
+        type=str,
+        default=None,
+        help="path to a torchvision-format ImageNet backbone checkpoint to "
+        "initialise the model from (e.g. converted microsoft/resnet-34). "
+        "If None, the default torchvision ImageNet weights are used. "
+        "Currently honoured by the CelebA model builder.",
+    )
+    parser.add_argument(
         "--train_y_file",
         type=str,
         default="./labels/train_ys.pth",

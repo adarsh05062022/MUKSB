@@ -24,7 +24,7 @@ from train_scripts.dataset import (
 from mask_variants import build_mask, MASK_VARIANT_CHOICES
 
 
-EXTRA = ""
+EXTRA = "conflict_analysis"
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -91,6 +91,25 @@ def _unpack_to_grads(parameters, flat_vec):
         chunk = flat_vec[offset: offset + n].view_as(p)
         p.grad = chunk.clone() if p.grad is None else p.grad.copy_(chunk)
         offset += n
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Gradient-conflict logging (for conflict_analysis/plot_conflict.py)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _cos_log(a, b, eps: float = 1e-8) -> float:
+    """Cosine similarity of two flat tensors as a python float."""
+    n = a.norm().clamp_min(eps) * b.norm().clamp_min(eps)
+    return (a @ b / n).item()
+
+
+def _dump_conflict(conflict_log, out_path, logger=None):
+    os.makedirs(os.path.dirname(os.path.abspath(out_path)), exist_ok=True)
+    import json
+    with open(out_path, "w") as f:
+        json.dump(conflict_log, f)
+    msg = f"[conflict] wrote {len(conflict_log)} steps -> {out_path}"
+    (logger.info if logger else print)(msg)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -198,9 +217,17 @@ def MUKSB(
     beta,
     alpha,
     logger,
+    conflict_out=None,
+    conflict_max_steps=0,
 ):
     total_start = time.time()
+    analysis_mode = conflict_out is not None
     logger.info("======== MUKSB (KS Bargaining — Improved) TRAINING STARTED ========")
+    if analysis_mode:
+        logger.info(
+            f"[conflict] analysis mode ON -> {conflict_out} "
+            f"(max_steps={conflict_max_steps or 'all'}); checkpoints will NOT be saved"
+        )
     logger.info(f"class_to_forget={class_to_forget}  train_method={train_method}")
 
     # ── model + data ─────────────────────────────────────────────────────────
@@ -263,6 +290,7 @@ def MUKSB(
     skipped_steps   = 0
     total_steps     = 0
     cos_phi_history = []
+    conflict_log    = []   # per-step gradient-cosine log for plot_conflict.py
 
     for epoch in range(epochs):
         epoch_start = time.time()
@@ -338,6 +366,32 @@ def MUKSB(
                 )
 
                 cos_phi_history.append(cos_phi.item())
+
+                # ── gradient-conflict log: g_r/g_f vs MUKSB (g*) and MOO-sum ───
+                if analysis_mode:
+                    with torch.no_grad():
+                        _g_naive = gr_input + gf_input  # MOO sum (raw gradients)
+                        conflict_log.append({
+                            "epoch":       epoch,
+                            "step":        total_steps,
+                            "cos_rf":      cos_phi.item(),
+                            # cosine is scale-invariant, so g* stands in for
+                            # the scaled MUKSB update (effective_scale * g_star)
+                            "cos_f_muksb": _cos_log(gf_input, g_star),
+                            "cos_r_muksb": _cos_log(gr_input, g_star),
+                            "cos_f_naive": _cos_log(gf_input, _g_naive),
+                            "cos_r_naive": _cos_log(gr_input, _g_naive),
+                        })
+                        del _g_naive
+
+                    if conflict_max_steps and len(conflict_log) >= conflict_max_steps:
+                        logger.info(
+                            f"[conflict] reached {conflict_max_steps} logged steps — "
+                            f"stopping early"
+                        )
+                        del gr_flat, gf_flat, gr_input, gf_input, g_star
+                        _dump_conflict(conflict_log, conflict_out, logger)
+                        return
 
                 # ── anti-parallel check ───────────────────────────────────────
                 # g_star is zero only on true anti-parallel conflict.
@@ -421,7 +475,7 @@ def MUKSB(
         )
 
         model.eval()
-        if (epoch + 1) % 1 == 0 and epoch != epochs - 1:
+        if not analysis_mode and (epoch + 1) % 1 == 0 and epoch != epochs - 1:
             save_model(
                 model, name, epoch + 1,
                 save_compvis=False, save_diffusers=True,
@@ -430,6 +484,12 @@ def MUKSB(
             )
         torch.cuda.empty_cache()
         gc.collect()
+
+    # In analysis mode, dump the conflict log and skip final checkpoint save.
+    if analysis_mode:
+        _dump_conflict(conflict_log, conflict_out, logger)
+        logger.info("======== MUKSB CONFLICT ANALYSIS FINISHED ========")
+        return
 
     # ── save final model ──────────────────────────────────────────────────────
     total_time = time.time() - total_start
@@ -513,6 +573,16 @@ if __name__ == "__main__":
     parser.add_argument("--beta",        type=float, default=1.0)
     parser.add_argument("--alpha",       type=float, default=1e-4)
 
+    # ── gradient-conflict analysis (for conflict_analysis/plot_conflict.py) ───
+    parser.add_argument("--conflict_log", action="store_true", default=False,
+                        help="log per-step g_r/g_f cosines and dump conflict_log.json "
+                             "(no checkpoints saved)")
+    parser.add_argument("--conflict_out", type=str, default=None,
+                        help="path to write conflict_log.json "
+                             "(default: conflict_analysis/<tag>/conflict_log.json)")
+    parser.add_argument("--conflict_max_steps", type=int, default=0,
+                        help="stop after this many logged steps (0 = run all epochs)")
+
     args = parser.parse_args()
 
     logger, log_file = setup_logger(name=f"MUKSB_cls{args.class_to_forget}_{EXTRA}")
@@ -521,6 +591,13 @@ if __name__ == "__main__":
     logger.info(f"Args: {vars(args)}")
 
     setup_seed(42)
+
+    conflict_out = None
+    if args.conflict_log:
+        conflict_out = args.conflict_out or os.path.join(
+            _THIS_DIR, "conflict_analysis",
+            f"cls_{args.class_to_forget}", "conflict_log.json",
+        )
 
     MUKSB(
         class_to_forget       = int(args.class_to_forget),
@@ -541,4 +618,6 @@ if __name__ == "__main__":
         beta                  = args.beta,
         alpha                 = args.alpha,
         logger                = logger,
+        conflict_out          = conflict_out,
+        conflict_max_steps    = args.conflict_max_steps,
     )

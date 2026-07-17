@@ -114,6 +114,8 @@ SD/workers_logs/
 
 # ── Markdown / docs ───────────────────────────────────────────────────────────
 **/*.md
+!README.md
+!**/README.md
 
 # ── AI assistants & code-review tooling ───────────────────────────────────────
 CLAUDE.md

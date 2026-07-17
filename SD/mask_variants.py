@@ -7,12 +7,11 @@ target density ρ, so the downstream Nash gradient update is unchanged.
 
 Strategies
 ----------
-(a) random        — uniform random top-k% selection (no Fisher at all)
-(b) forget_fisher — single-sided: score = Z(F_f)  [eq. 7 only]
+(a) random        — uniform random top-k% selection 
+(b) forget_fisher — single-sided: score = Z(F_f)  
 (c) salun         — gradient-magnitude saliency: score = Z(mean |∇L_f|)
                     mirrors SalUn (https://arxiv.org/abs/2310.12508)
-(d) dual_fisher   — SSU full dual score: ½Z(S_ratio) + ½Z(S_diff)
-                    [eqs. 10-13, the proposed method]
+(d) dual_fisher   — SSU {https://doi.org/10.1016/j.patrec.2026.07.006}
 
 Each public function has the signature:
     compute_<name>_mask(...) -> (mask_flat: BoolTensor)
@@ -26,26 +25,6 @@ import random
 import torch
 from tqdm import tqdm
 
-# ── Pseudo-concepts for the forget loss ───────────────────────────────────────
-# Semantically unrelated to all Imagenette-10 classes so the model is not
-# just redirected to a neighbouring in-domain concept.
-PSEUDO_CONCEPTS = [
-    "a red apple on a wooden table",
-    "a cup of coffee with steam",
-    "a green leaf on a branch",
-    "a sandy beach at sunset",
-    "a snow-covered mountain peak",
-    "a brick wall with ivy growing on it",
-    "a yellow sunflower in a field",
-    "a glass of water on a desk",
-    "a fluffy white cloud in a blue sky",
-    "a lit candle in a dark room",
-    "a loaf of bread on a cutting board",
-    "a stack of books on a wooden shelf",
-    "a potted plant by a sunny window",
-    "a ceramic bowl filled with fruit",
-    "a gravel path through a garden",
-]
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -85,7 +64,6 @@ def _accumulate_forget_fisher_and_gradmag(
 
         forget_images  = forget_images.to(device)
         forget_prompts = [descriptions[int(lbl)] for lbl in forget_labels]
-        # pseudo_prompts = [random.choice(PSEUDO_CONCEPTS) for _ in forget_labels]
         next_cls       = (class_to_forget + 1) % len(descriptions)
         pseudo_prompts = [descriptions[next_cls] for _ in forget_labels]
 
